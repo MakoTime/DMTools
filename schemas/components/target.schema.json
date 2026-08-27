@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "target.schema.json",
+    "title": "D&D 5e Target",
+    "description": "A target specification for a D&D 5e action or spell.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "type"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "self",
+                "touch",
+                "range"
+            ]
+        },
+        "range": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "target": {
+            "$ref": "../values/target_type.schema.json"
+        },
+        "count": {
+            "$ref": "components/target_count.schema.json"
+        },
+        "zone": {
+            "type": "object",
+            "required": [
+                "type",
+                "size"
+            ],
+            "properties": {
+                "type": {
+                    "$ref": "../values/target_zone.schema.json"
+                },
+                "size": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false
+        },
+        "description": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": false
+}

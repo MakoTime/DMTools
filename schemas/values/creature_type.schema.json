@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "creature_type.schema.json",
+    "title": "D&D 5e Creature Type",
+    "description": "A type of creature in D&D 5e.",
+    "type": "string",
+    "enum": [
+        "Aberration",
+        "Beast",
+        "Celestial",
+        "Construct",
+        "Dragon",
+        "Elemental",
+        "Fey",
+        "Fiend",
+        "Giant",
+        "Humanoid",
+        "Monstrosity",
+        "Ooze",
+        "Plant",
+        "Undead"
+    ]
+}

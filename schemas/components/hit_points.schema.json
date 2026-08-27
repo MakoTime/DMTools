@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "hit_points.schema.json",
+    "title": "D&D 5e Hit Points",
+    "description": "The hit point state of a creature.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "maximum",
+        "current"
+    ],
+    "properties": {
+        "maximum": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "current": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "temporary": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+        },
+        "maximum_change": {
+            "type": "integer",
+            "default": 0
+        }
+    },
+    "additionalProperties": false
+}

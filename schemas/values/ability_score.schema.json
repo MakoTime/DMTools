@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "ability_score.schema.json",
+    "title": "D&D 5e Ability Score",
+    "description": "A D&D 5e ability score.",
+    "type": "string",
+    "enum": [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma"
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "duration.schema.json",
+    "title": "D&D 5e Duration",
+    "description": "A D&D 5e duration.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "instantaneous",
+        "short_rest",
+        "long_rest",
+        "until_dispelled",
+        "until_saved",
+        "round",
+        "next_round",
+        "minute",
+        "hour",
+        "day",
+        "dusk",
+        "dawn",
+        "week",
+        "month",
+        "year"
+    ]
+}

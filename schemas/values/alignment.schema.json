@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "alignment.schema.json",
+    "title": "D&D 5e Alignment",
+    "description": "A D&D 5e creature's alignment.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "properties": {
+        "order": {
+            "description": "The creature's position on the lawful-chaotic axis.",
+            "type": "string",
+            "enum": [
+                "lawful",
+                "neutral",
+                "chaotic"
+            ]
+        },
+        "morality": {
+            "description": "The creature's position on the good-evil axis.",
+            "type": "string",
+            "enum": [
+                "good",
+                "neutral",
+                "evil"
+            ]
+        },
+        "unaligned": {
+            "description": "The creature has no alignment.",
+            "type": "boolean",
+            "const": true
+        }
+    },
+    "oneOf": [
+        {
+            "required": [
+                "order"
+            ],
+            "not": {
+                "required": [
+                    "unaligned"
+                ]
+            }
+        },
+        {
+            "required": [
+                "morality"
+            ],
+            "not": {
+                "required": [
+                    "unaligned"
+                ]
+            }
+        },
+        {
+            "required": [
+                "order",
+                "morality"
+            ],
+            "not": {
+                "required": [
+                    "unaligned"
+                ]
+            }
+        },
+        {
+            "required": [
+                "unaligned"
+            ],
+            "not": {
+                "anyOf": [
+                    {
+                        "required": [
+                            "order"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "morality"
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "additionalProperties": false
+}

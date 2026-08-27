@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "die.schema.json",
+    "title": "D&D 5e Die",
+    "description": "A D&D 5e die.",
+    "$comment": "version 0.2.0",
+    "type": "integer",
+    "enum": [
+        1,
+        4,
+        6,
+        8,
+        10,
+        12,
+        20,
+        100
+    ]
+}

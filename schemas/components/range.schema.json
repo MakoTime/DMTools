@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "range.schema.json",
+    "title": "D&D 5e Range",
+    "description": "The normal and long range of an attack or weapon.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "normal",
+        "long"
+    ],
+    "properties": {
+        "normal": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "long": {
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false
+}

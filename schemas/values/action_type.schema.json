@@ -1,0 +1,17 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "action_type.schema.json",
+    "title": "D&D 5e Action Type",
+    "description": "The type of action used by a D&D 5e creature or character feature.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "action",
+        "bonus_action",
+        "reaction",
+        "free_action",
+        "legendary_action",
+        "lair_action",
+        "mythic_action"
+    ]
+}

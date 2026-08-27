@@ -1,0 +1,209 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "Creature.schema.json",
+    "title": "D&D 5e Creature",
+    "description": "A D&D 5e creature, including player characters, NPCs, and monsters.",
+    "$comment": "version 0.3.0",
+    "type": "object",
+    "required": [
+        "name",
+        "speed",
+        "hit_points",
+        "ability_scores",
+        "armor_class"
+    ],
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "size": {
+            "type": "string",
+            "enum": [
+                "tiny",
+                "small",
+                "medium",
+                "large",
+                "huge",
+                "gargantuan"
+            ]
+        },
+        "creature_type": {
+            "type": "string"
+        },
+        "alignment": {
+            "type": "string"
+        },
+        "ability_scores": {
+            "$ref": "../components/ability_scores.schema.json"
+        },
+        "hit_points": {
+            "$ref": "../components/hit_points.schema.json"
+        },
+        "armor_class": {
+            "type": "object",
+            "required": [
+                "value"
+            ],
+            "properties": {
+                "value": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        },
+        "speed": {
+            "$ref": "../components/speed.schema.json"
+        },
+        "saving_throws": {
+            "$ref": "../components/saving_throws.schema.json"
+        },
+        "skills": {
+            "type": "object",
+            "properties": {
+                "athletics": {
+                    "type": "integer"
+                },
+                "acrobatics": {
+                    "type": "integer"
+                },
+                "sleight_of_hand": {
+                    "type": "integer"
+                },
+                "stealth": {
+                    "type": "integer"
+                },
+                "arcana": {
+                    "type": "integer"
+                },
+                "history": {
+                    "type": "integer"
+                },
+                "investigation": {
+                    "type": "integer"
+                },
+                "nature": {
+                    "type": "integer"
+                },
+                "religion": {
+                    "type": "integer"
+                },
+                "animal_handling": {
+                    "type": "integer"
+                },
+                "insight": {
+                    "type": "integer"
+                },
+                "medicine": {
+                    "type": "integer"
+                },
+                "perception": {
+                    "type": "integer"
+                },
+                "survival": {
+                    "type": "integer"
+                },
+                "deception": {
+                    "type": "integer"
+                },
+                "intimidation": {
+                    "type": "integer"
+                },
+                "performance": {
+                    "type": "integer"
+                },
+                "persuasion": {
+                    "type": "integer"
+                }
+            },
+            "additionalProperties": false
+        },
+        "senses": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/sense.schema.json"
+            }
+        },
+        "languages": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        },
+        "proficiency_bonus": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "challenge": {
+            "type": "string"
+        },
+        "condition_immunities": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/condition.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "damage_immunities": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/damage_type.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "damage_resistances": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/damage_type.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "damage_vulnerabilities": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/damage_type.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/feature.schema.json"
+            }
+        },
+        "actions": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/action.schema.json"
+            }
+        },
+        "reactions": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/action.schema.json"
+            }
+        },
+        "legendary_actions": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/action.schema.json"
+            }
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "image": {
+            "$ref": "../components/image.schema.json"
+        },
+        "source": {
+            "$ref": "../components/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

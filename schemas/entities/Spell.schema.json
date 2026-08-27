@@ -1,0 +1,80 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "Spell.schema.json",
+    "title": "D&D 5e Spell",
+    "description": "This schema describes a D&D 5e spell.",
+    "$comment": "version 0.3.0",
+    "type": "object",
+    "required": [
+        "name",
+        "description",
+        "level",
+        "casting_time",
+        "components",
+        "duration"
+    ],
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "higher_level": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "level": {
+            "$ref": "../values/spell_level.schema.json"
+        },
+        "casting_time": {
+            "$ref": "../values/action_duration.schema.json"
+        },
+        "target": {
+            "$ref": "../values/target.schema.json"
+        },
+        "components": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/spell_component.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "material": {
+            "$ref": "../components/material_component.schema.json"
+        },
+        "ritual": {
+            "type": "boolean",
+            "default": false
+        },
+        "concentration": {
+            "type": "boolean",
+            "default": false
+        },
+        "duration": {
+            "$ref": "../values/duration.schema.json"
+        },
+        "school": {
+            "$ref": "../values/spell_school.schema.json"
+        },
+        "effects": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/effect.schema.json"
+            },
+            "minItems": 1
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tag.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "damage.schema.json",
+    "title": "D&D 5e Damage",
+    "description": "A D&D 5e damage roll.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "type",
+        "roll"
+    ],
+    "properties": {
+        "type": {
+            "$ref": "../values/damage_type.schema.json"
+        },
+        "roll": {
+            "$ref": "../components/roll.schema.json"
+        },
+        "modifier": {
+            "type": "integer",
+            "default": 0
+        }
+    },
+    "additionalProperties": false
+}

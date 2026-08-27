@@ -1,0 +1,54 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "character.schema.json",
+    "title": "D&D 5e Character",
+    "description": "JSON Schema for D&D 5e Character data.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "Creature.schema.json"
+        }
+    ],
+    "required": [
+        "race",
+        "classes",
+        "ability_scores",
+        "background"
+    ],
+    "properties": {
+        "xp": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+        },
+        "hit_points": {
+            "$ref": "../components/hit_points.schema.json"
+        },
+        "race": {
+            "$ref": "Race.schema.json"
+        },
+        "classes": {
+            "type": "array",
+            "items": {
+                "$ref": "Class.schema.json"
+            }
+        },
+        "ability_scores": {
+            "$ref": "../components/ability_scores.schema.json"
+        },
+        "background": {
+            "$ref": "../components/background.schema.json"
+        },
+        "proficiency_bonus": {
+            "type": "integer",
+            "minimum": 2
+        },
+        "equipment": {
+            "type": "array",
+            "items": {
+                "$ref": "Equipment.schema.json"
+            }
+        }
+    }
+}

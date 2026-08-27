@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "armor_type.schema.json",
+    "title": "D&D 5e Armor Type",
+    "description": "A type of D&D 5e armor.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "padded",
+        "leather",
+        "studded_leather",
+        "hide",
+        "chain_shirt",
+        "scale_mail",
+        "breastplate",
+        "half_plate",
+        "ring_mail",
+        "chain_mail",
+        "splint",
+        "plate",
+        "shield"
+    ]
+}

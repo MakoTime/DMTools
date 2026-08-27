@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "spell_choice.schema.json",
+    "title": "D&D 5e Spell Choice",
+    "description": "A choice of one or more spells from a defined set of eligible spells.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "filter"
+    ],
+    "properties": {
+        "filter": {
+            "$ref": "../components/spell_filter.schema.json"
+        },
+        "choice_count": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "casting_ability": {
+            "oneOf": [
+                {
+                    "$ref": "../values/ability_score.schema.json"
+                },
+                {
+                    "type": "string",
+                    "enum": [
+                        "ability_score_choice"
+                    ]
+                }
+            ]
+        },
+        "uses": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "recharge": {
+            "$ref": "../values/duration.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

@@ -1,0 +1,119 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "Race.schema.json",
+    "title": "D&D 5e Race",
+    "description": "JSON Schema for D&D 5e Creature Race.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "examples": [
+                "Dragonborn"
+            ]
+        },
+        "subtype": {
+            "type": "string",
+            "examples": [
+                "Silver"
+            ]
+        },
+        "size": {
+            "$ref": "../values/size.schema.json"
+        },
+        "movement": {
+            "$ref": "../components/movement.schema.json"
+        },
+        "ability_score_increases": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/ability_score_increase.schema.json"
+            }
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/feature.schema.json"
+            }
+        },
+        "actions": {
+            "type": "array",
+            "description": "Special actions gained by the race or race subtype.",
+            "items": {
+                "$ref": "../components/Action.schema.json"
+            }
+        },
+        "skill_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/skill.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "weapon_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/weapon_proficiency.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "armor_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/armor_proficiency.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "tool_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tool.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "vehicle_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/vehicle.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "instrument_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/instrument.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "gaming_set_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/gaming_set.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "spells": {
+            "type": "array",
+            "items": {
+                "$ref": "Spell.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "feats": {
+            "type": "array",
+            "items": {
+                "$ref": "Feat.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "senses": {
+            "$ref": "../components/senses.schema.json"
+        },
+        "source": {
+            "$ref": "../components/source.schema.json"
+        }
+    }
+}

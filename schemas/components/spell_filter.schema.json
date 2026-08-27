@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "spell_filter.schema.json",
+    "title": "D&D 5e Spell Filter",
+    "description": "Criteria used to determine which spells are eligible for selection.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "properties": {
+        "classes": {
+            "description": "Classes whose spell list must contain the spell.",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "schools": {
+            "description": "Schools of magic the spell must belong to.",
+            "type": "array",
+            "items": {
+                "$ref": "spell_school.schema.json"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "levels": {
+            "description": "Spell levels the spell must have.",
+            "type": "array",
+            "items": {
+                "$ref": "spell_level.schema.json"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "minProperties": 1,
+    "additionalProperties": false
+}

@@ -1,0 +1,12 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "weapon_category.schema.json",
+    "title": "D&D 5e Weapon Category",
+    "description": "A D&D 5e weapon category.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "simple",
+        "martial"
+    ]
+}

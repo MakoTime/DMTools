@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "movement_type.schema.json",
+    "title": "D&D 5e Movement Type",
+    "description": "A type of movement for a creature.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "walk",
+        "fly",
+        "hover",
+        "swim",
+        "climb",
+        "burrow"
+    ]
+}

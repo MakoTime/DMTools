@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "target_zone.schema.json",
+    "title": "D&D 5e Target Zone",
+    "description": "The shape or scope of an action or spell's target.",
+    "$comment": "version 0.2.0",
+    "type": "string",
+    "enum": [
+        "single",
+        "line",
+        "cone",
+        "cube",
+        "cylinder",
+        "sphere"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "roll.schema.json",
+    "title": "D&D 5e Dice Roll",
+    "description": "A D&D 5e dice roll.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "dice"
+    ],
+    "properties": {
+        "dice": {
+            "$ref": "../values/die.schema.json"
+        },
+        "count": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "modifier": {
+            "type": "integer",
+            "default": 0
+        }
+    },
+    "additionalProperties": false
+}

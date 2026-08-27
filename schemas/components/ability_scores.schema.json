@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "ability_scores.schema.json",
+    "title": "D&D 5e Ability Scores",
+    "description": "The ability scores of a D&D 5e creature.",
+    "type": "object",
+    "properties": {
+        "strength": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "dexterity": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "constitution": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "intelligence": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "wisdom": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "charisma": {
+            "type": "integer",
+            "minimum": 1
+        }
+    },
+    "required": [
+        "strength",
+        "dexterity",
+        "constitution",
+        "intelligence",
+        "wisdom",
+        "charisma"
+    ],
+    "additionalProperties": false
+}

@@ -1,0 +1,4 @@
+PySide6
+pandas
+pytest
+pysqlite3
