@@ -75,7 +75,7 @@
             },
             "uniqueItems": true
         },
-        "spells": {
+        "spell_grants": {
             "type": "array",
             "items": {
                 "$ref": "../components/spell_grant.schema.json"
@@ -93,6 +93,12 @@
                 "$ref": "../values/tag.schema.json"
             },
             "uniqueItems": true
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/feature.schema.json"
+            }
         },
         "source": {
             "$ref": "../values/source.schema.json"

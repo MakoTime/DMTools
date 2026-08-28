@@ -1,0 +1,47 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/bonus.schema.json",
+    "title": "D&D 5e Magic Item Bonus",
+    "description": "A numerical bonus granted by a magic item.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "type",
+        "value"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "attack",
+                "damage",
+                "armor_class",
+                "ability_score",
+                "maximum_hit_points",
+                "saving_throw"
+            ]
+        },
+        "value": {
+            "type": "integer"
+        },
+        "ability": {
+            "$ref": "../values/ability_score.schema.json"
+        }
+    },
+    "if": {
+        "properties": {
+            "type": {
+                "const": "ability_score"
+            }
+        },
+        "required": [
+            "type"
+        ]
+    },
+    "then": {
+        "required": [
+            "ability"
+        ]
+    },
+    "additionalProperties": false
+}

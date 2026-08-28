@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/magic_item_charges.schema.json",
+    "title": "D&D 5e Magic Item Charges",
+    "description": "Charges and recharge behavior for a magic item.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": [
+        "maximum"
+    ],
+    "properties": {
+        "maximum": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "recharge": {
+            "oneOf": [
+                {
+                    "$ref": "roll.schema.json"
+                },
+                {
+                    "type": "string",
+                    "const": "all"
+                }
+            ]
+        },
+        "recharge_duration": {
+            "$ref": "duration_amount.schema.json"
+        },
+        "depletion": {
+            "type": "string",
+            "minLength": 1
+        }
+    },
+    "if": {
+        "required": [
+            "recharge"
+        ]
+    },
+    "then": {
+        "required": [
+            "recharge_duration"
+        ]
+    },
+    "additionalProperties": false
+}

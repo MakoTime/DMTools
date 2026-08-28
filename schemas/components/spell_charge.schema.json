@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/spell_charge.schema.json",
+    "title": "D&D 5e Spell Charge",
+    "description": "A spell that can be cast by expending charges from a magic item.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": [
+        "spell"
+    ],
+    "properties": {
+        "spell": {
+            "$ref": "../values/spell.schema.json"
+        },
+        "charges": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        }
+    },
+    "additionalProperties": false
+}

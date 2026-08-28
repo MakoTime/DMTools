@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/item_category.schema.json",
+    "title": "D&D 5e Item Category",
+    "description": "A category of item.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "armor",
+                "potion",
+                "ring",
+                "rod",
+                "scroll",
+                "staff",
+                "wand",
+                "weapon",
+                "wonderous_item",
+                "adventuring_gear",
+                "tool"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}

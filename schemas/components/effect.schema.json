@@ -33,6 +33,12 @@
         "condition": {
             "$ref": "../values/condition.schema.json"
         },
+        "grants": {
+            "type": "array",
+            "items": {
+                "$ref": "grant.schema.json"
+            }
+        },
         "description": {
             "type": "string",
             "input": "textarea"

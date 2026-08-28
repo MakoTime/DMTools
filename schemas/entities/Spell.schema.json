@@ -85,6 +85,12 @@
         },
         "source": {
             "$ref": "../values/source.schema.json"
+        },
+        "grants": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/grant.schema.json"
+            }
         }
     },
     "additionalProperties": false

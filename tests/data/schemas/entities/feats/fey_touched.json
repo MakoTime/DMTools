@@ -1,0 +1,54 @@
+{
+    "name": "Fey Touched",
+    "ability_score_increases": [
+        {
+            "ability": {
+                "abilities": [
+                    "intelligence",
+                    "wisdom",
+                    "charisma"
+                ],
+                "choice_count": 1
+            },
+            "amount": 1
+        }
+    ],
+    "features": [
+        {
+            "name": "Fey Touched",
+            "description": "Your exposure to the Feywild's magic grants you the following benefits:\n\nIncrease your Intelligence, Wisdom, or Charisma score by 1, to a maximum of 20.\n\nYou learn the misty step spell and one 1st-level spell of your choice. The 1st-level spell must be from the divination or enchantment school of magic.\n\nYou can cast each of these spells without expending a spell slot once. You must finish a long rest before you can cast a spell in this way again. You can also cast these spells using spell slots you have of the appropriate level. The spells' spellcasting ability is the ability increased by this feat."
+        }
+    ],
+    "spell_grants": [
+        {
+            "spells": [
+                "misty step"
+            ],
+            "uses": 1,
+            "recharge": "long_rest",
+            "casting_ability": "ability_score_choice"
+        },
+        {
+            "choices": [
+                {
+                    "filter": {
+                        "schools": [
+                            "divination",
+                            "enchantment"
+                        ],
+                        "levels": [
+                            1
+                        ]
+                    },
+                    "choice_count": 1,
+                    "uses": 1,
+                    "recharge": "long_rest",
+                    "casting_ability": "ability_score_choice"
+                }
+            ]
+        }
+    ],
+    "source": {
+        "text": "Tasha's Cauldron of Everything p. 79"
+    }
+}

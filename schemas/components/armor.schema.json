@@ -1,15 +1,10 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "entities/Armor.schema.json",
+    "$id": "components/armor.schema.json",
     "title": "D&D 5e Armor",
     "description": "Armor or a shield in the catalog. Extends Item.",
     "$comment": "version 0.4.0",
     "type": "object",
-    "allOf": [
-        {
-            "$ref": "Item.schema.json"
-        }
-    ],
     "required": [
         "category",
         "armor_class"
@@ -18,7 +13,7 @@
         "category": {
             "$ref": "../values/armor_category.schema.json"
         },
-        "armor_type": {
+        "type": {
             "$ref": "../values/armor_type.schema.json"
         },
         "armor_class": {

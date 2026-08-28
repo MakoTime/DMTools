@@ -2,8 +2,8 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "entities/Item.schema.json",
     "title": "D&D 5e Item",
-    "description": "A physical item in the catalog. Not a quantity on a character sheet.",
-    "$comment": "version 0.4.0",
+    "description": "An item in the catalog.",
+    "$comment": "version 0.5.0",
     "type": "object",
     "required": [
         "name"
@@ -17,35 +17,37 @@
             "type": "string",
             "input": "textarea"
         },
-        "weight": {
-            "type": "number",
-            "minimum": 0,
-            "default": 0
+        "category": {
+            "$ref": "../values/item_category.schema.json"
         },
-        "cost": {
+        "weapon": {
+            "$ref": "../components/weapon.schema.json"
+        },
+        "armor": {
+            "$ref": "../components/armor.schema.json"
+        },
+        "magic_item": {
+            "$ref": "../components/magic_item.schema.json"
+        },
+        "weight": {
             "type": "number",
             "minimum": 0
         },
-        "magic": {
-            "type": "boolean",
-            "default": false
+        "cost": {
+            "$ref": "../components/cost.schema.json"
         },
-        "rarity": {
-            "$ref": "../values/rarity.schema.json"
-        },
-        "attunement": {
-            "type": "boolean",
-            "default": false
-        },
-        "tags": {
+        "features": {
             "type": "array",
             "items": {
-                "$ref": "../values/tag.schema.json"
-            },
-            "uniqueItems": true
+                "$ref": "../components/feature.schema.json"
+            }
         },
         "source": {
             "$ref": "../values/source.schema.json"
+        },
+        "image": {
+            "$ref": "../components/image.schema.json"
         }
-    }
+    },
+    "additionalProperties": false
 }

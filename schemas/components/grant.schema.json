@@ -1,0 +1,112 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/grant.schema.json",
+    "title": "D&D 5e Grant",
+    "description": "A non-numeric characteristic granted by an item or effect.",
+    "$comment": "version 0.3.0",
+    "type": "object",
+    "required": [
+        "type"
+    ],
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": [
+                "advantage",
+                "disadvantage",
+                "resistance",
+                "vulnerability",
+                "immunity",
+                "sense",
+                "movement"
+            ]
+        },
+        "ability_check": {
+            "$ref": "../values/ability_score.schema.json"
+        },
+        "skill": {
+            "$ref": "../values/skill_name.schema.json"
+        },
+        "saving_throw": {
+            "oneOf": [
+                {
+                    "$ref": "../values/ability_score.schema.json"
+                },
+                {
+                    "$ref": "../values/condition.schema.json"
+                }
+            ]
+        },
+        "condition": {
+            "$ref": "../values/condition.schema.json"
+        },
+        "damage_type": {
+            "$ref": "../values/damage_type.schema.json"
+        },
+        "sense": {
+            "$ref": "../values/sense_type.schema.json"
+        },
+        "distance": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "movement_type": {
+            "$ref": "../values/movement_type.schema.json"
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        }
+    },
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "enum": [
+                            "resistance",
+                            "vulnerability",
+                            "immunity"
+                        ]
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "damage_type"
+                ]
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "sense"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "sense",
+                    "distance"
+                ]
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "movement"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "movement_type",
+                    "distance"
+                ]
+            }
+        }
+    ],
+    "additionalProperties": false
+}

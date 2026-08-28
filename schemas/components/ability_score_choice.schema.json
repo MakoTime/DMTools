@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/ability_score_choice.schema.json",
+    "title": "D&D 5e Ability Score Choice",
+    "description": "A choice of one or more ability scores to increase.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": [
+        "abilities"
+    ],
+    "properties": {
+        "abilities": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/ability_score.schema.json"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "choice_count": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "amount": {
+            "type": "integer",
+            "minimum": 1
+        }
+    },
+    "additionalProperties": false
+}

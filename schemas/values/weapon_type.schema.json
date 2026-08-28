@@ -44,7 +44,8 @@
                 "crossbow_hand",
                 "crossbow_heavy",
                 "longbow",
-                "net"
+                "net",
+                "any_sword"
             ]
         },
         {
