@@ -14,7 +14,7 @@
             "$ref": "../values/movement_type.schema.json"
         },
         "speed": {
-            "$ref": "speed.schema.json"
+            "$ref": "../values/speed.schema.json"
         }
     },
     "additionalProperties": false

@@ -25,7 +25,10 @@
             "$ref": "../values/size.schema.json"
         },
         "movement": {
-            "$ref": "../components/movement.schema.json"
+            "type": "array",
+            "items": {
+                "$ref": "../components/movement.schema.json"
+            }
         },
         "ability_score_increases": {
             "type": "array",

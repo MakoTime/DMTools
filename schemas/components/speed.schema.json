@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "speed.schema.json",
+    "title": "D&D 5e Speed",
+    "description": "A creature's speed for a specific type of movement.",
+    "$comment": "version 0.3.0",
+    "type": "object",
+    "required": [
+        "distance",
+        "unit"
+    ],
+    "properties": {
+        "distance": {
+            "$ref": "../values/distance.schema.json"
+        },
+        "unit": {
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false
+}
