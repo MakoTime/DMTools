@@ -1,0 +1,88 @@
+{
+    "name": "Acolyte",
+    "size": "medium",
+    "creature_type": "humanoid",
+    "alignment": "any",
+    "ability_scores": {
+        "strength": 10,
+        "dexterity": 10,
+        "constitution": 10,
+        "intelligence": 10,
+        "wisdom": 14,
+        "charisma": 11
+    },
+    "hit_points": {
+        "maximum": 9,
+        "current": 9,
+        "temporary": 0
+    },
+    "hit_dice": {
+        "count": 2,
+        "die": 8
+    },
+    "armor_class": {
+        "value": 10
+    },
+    "movement": [
+        {
+            "movement_type": "walk",
+            "speed": {
+                "distance": 30,
+                "unit": "feet"
+            }
+        }
+    ],
+    "skills": {
+        "medicine": 4,
+        "religion": 2
+    },
+    "passive_perception": 12,
+    "languages": [
+        "any one language (usually Common)"
+    ],
+    "challenge_rating": "1/4",
+    "features": [
+        {
+            "name": "Spellcasting",
+            "description": "The acolyte is a 1st-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The acolyte has the following cleric spells prepared:"
+        }
+    ],
+    "actions": [
+        {
+            "name": "Club",
+            "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage."
+        }
+    ],
+    "spell_casting": {
+        "ability": "wisdom",
+        "save_dc": 12,
+        "attack_bonus": 4,
+        "spells_known": {
+            "cantrips": [
+                "light",
+                "sacred flame",
+                "thaumaturgy"
+            ],
+            "level_1": {
+                "slots": 3,
+                "spells": [
+                    "bless",
+                    "cure wounds",
+                    "sanctuary"
+                ]
+            },
+            "FAIL": {
+                "slots": 1,
+                "spells": [
+                    "guidance"
+                ]
+            }
+        }
+    },
+    "environments": [
+        "urban"
+    ],
+    "source": {
+        "text": "Monster Manual p. 342"
+    }
+}

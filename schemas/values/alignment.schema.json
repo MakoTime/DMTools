@@ -2,65 +2,50 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "values/alignment.schema.json",
     "title": "D&D 5e Alignment",
-    "description": "A creature's alignment. Both axes together, or unaligned.",
-    "$comment": "version 0.4.0",
-    "type": "object",
-    "properties": {
-        "order": {
-            "description": "Position on the lawful-chaotic axis.",
-            "type": "string",
-            "enum": [
-                "lawful",
-                "neutral",
-                "chaotic"
-            ]
-        },
-        "morality": {
-            "description": "Position on the good-evil axis.",
-            "type": "string",
-            "enum": [
-                "good",
-                "neutral",
-                "evil"
-            ]
-        },
-        "unaligned": {
-            "description": "The creature has no alignment.",
-            "type": "boolean",
-            "const": true
-        }
-    },
+    "description": "A creature's alignment.",
+    "$comment": "version 0.5.0",
     "oneOf": [
         {
-            "required": [
-                "order",
-                "morality"
+            "type": "object",
+            "properties": {
+                "order": {
+                    "type": "string",
+                    "enum": [
+                        "lawful",
+                        "neutral",
+                        "chaotic"
+                    ]
+                },
+                "morality": {
+                    "type": "string",
+                    "enum": [
+                        "good",
+                        "neutral",
+                        "evil"
+                    ]
+                }
+            },
+            "minProperties": 1,
+            "anyOf": [
+                {
+                    "required": [
+                        "order"
+                    ]
+                },
+                {
+                    "required": [
+                        "morality"
+                    ]
+                }
             ],
-            "not": {
-                "required": [
-                    "unaligned"
-                ]
-            }
+            "additionalProperties": false
         },
         {
-            "required": [
-                "unaligned"
-            ],
-            "not": {
-                "anyOf": [
-                    {
-                        "required": [
-                            "order"
-                        ]
-                    },
-                    {
-                        "required": [
-                            "morality"
-                        ]
-                    }
-                ]
-            }
+            "type": "string",
+            "enum": [
+                "unaligned",
+                "any"
+            ]
         }
-    ],
-    "additionalProperties": false
+    ]
 }

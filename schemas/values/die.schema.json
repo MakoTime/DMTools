@@ -4,14 +4,21 @@
     "title": "D&D 5e Die",
     "description": "A polyhedral die used in D&D 5e.",
     "$comment": "version 0.4.0",
-    "type": "integer",
-    "enum": [
-        4,
-        6,
-        8,
-        10,
-        12,
-        20,
-        100
+    "anyOf": [
+        {
+            "type": "integer",
+            "enum": [
+                4,
+                6,
+                8,
+                10,
+                12,
+                20,
+                100
+            ]
+        },
+        {
+            "$ref": "custom_int.schema.json"
+        }
     ]
 }

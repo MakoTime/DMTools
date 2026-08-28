@@ -6,7 +6,8 @@
     "$comment": "version 0.4.0",
     "type": "object",
     "required": [
-        "dice"
+        "dice",
+        "count"
     ],
     "properties": {
         "dice": {
@@ -16,10 +17,6 @@
             "type": "integer",
             "minimum": 1,
             "default": 1
-        },
-        "modifier": {
-            "type": "integer",
-            "default": 0
         }
     },
     "additionalProperties": false

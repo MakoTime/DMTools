@@ -3,7 +3,7 @@
     "$id": "entities/Creature.schema.json",
     "title": "D&D 5e Creature",
     "description": "A creature in play, including player characters, NPCs, and monsters. Left open so Character and Monster may add fields.",
-    "$comment": "version 0.4.0",
+    "$comment": "version 0.5.0",
     "type": "object",
     "required": [
         "name"
@@ -67,6 +67,10 @@
             "items": {
                 "$ref": "../components/sense.schema.json"
             }
+        },
+        "passive_perception": {
+            "type": "integer",
+            "minimum": 0
         },
         "languages": {
             "type": "array",
@@ -137,6 +141,23 @@
             "items": {
                 "$ref": "../components/spell_slot.schema.json"
             }
+        },
+        "roll_table": {
+            "$ref": "../components/roll_table.schema.json"
+        },
+        "challenge_rating": {
+            "type": [
+                "number",
+                "string"
+            ]
+        },
+        "environments": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
         },
         "description": {
             "type": "string",

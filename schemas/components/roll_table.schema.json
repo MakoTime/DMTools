@@ -1,0 +1,25 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/roll_table.schema.json",
+    "title": "D&D 5e Roll Table",
+    "description": "A table of outcomes determined by a die roll.",
+    "$comment": "version 0.2.0",
+    "type": "object",
+    "required": [
+        "roll",
+        "entries"
+    ],
+    "properties": {
+        "roll": {
+            "$ref": "roll.schema.json"
+        },
+        "entries": {
+            "type": "array",
+            "items": {
+                "$ref": "roll_table_entry.schema.json"
+            },
+            "minItems": 1
+        }
+    },
+    "additionalProperties": false
+}

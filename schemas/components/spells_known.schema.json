@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/spells_known.schema.json",
+    "title": "D&D 5e Spells Known",
+    "description": "The spells known or prepared by a creature and the spell slots available at each spell level.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "properties": {
+        "cantrips": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/spell.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "level_1": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_2": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_3": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_4": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_5": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_6": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_7": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_8": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "level_9": {
+            "$ref": "#/$defs/spell_level"
+        },
+        "at_will": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/spell.schema.json"
+            },
+            "uniqueItems": true
+        }
+    },
+    "$defs": {
+        "spell_level": {
+            "type": "object",
+            "properties": {
+                "slots": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "spells": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "../values/spell.schema.json"
+                    },
+                    "uniqueItems": true
+                }
+            },
+            "required": [
+                "slots",
+                "spells"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false
+}

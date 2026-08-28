@@ -1,0 +1,269 @@
+{
+    "name": "Adult Blue Dracolich",
+    "size": "huge",
+    "creature_type": "undead",
+    "alignment": {
+        "order": "lawful",
+        "morality": "evil"
+    },
+    "ability_scores": {
+        "strength": 25,
+        "dexterity": 10,
+        "constitution": 23,
+        "intelligence": 16,
+        "wisdom": 15,
+        "charisma": 19
+    },
+    "hit_points": {
+        "maximum": 225,
+        "current": 225,
+        "temporary": 0
+    },
+    "hit_dice": {
+        "count": 18,
+        "die": 12
+    },
+    "armor_class": {
+        "value": 19,
+        "description": "Natural armor"
+    },
+    "movement": [
+        {
+            "movement_type": "walk",
+            "speed": {
+                "distance": 40,
+                "unit": "feet"
+            }
+        },
+        {
+            "movement_type": "burrow",
+            "speed": {
+                "distance": 30,
+                "unit": "feet"
+            }
+        },
+        {
+            "movement_type": "fly",
+            "speed": {
+                "distance": 80,
+                "unit": "feet"
+            }
+        }
+    ],
+    "saving_throws": {
+        "dexterity": 5,
+        "constitution": 11,
+        "wisdom": 7,
+        "charisma": 9
+    },
+    "skills": {
+        "perception": 12,
+        "stealth": 5
+    },
+    "senses": [
+        {
+            "type": "blindsight",
+            "distance": 60,
+            "distance_type": "feet"
+        },
+        {
+            "type": "darkvision",
+            "distance": 120,
+            "distance_type": "feet"
+        }
+    ],
+    "passive_perception": 22,
+    "languages": [
+        "Common",
+        "Draconic"
+    ],
+    "condition_immunities": [
+        "charmed",
+        "exhaustion",
+        "frightened",
+        "paralyzed",
+        "poisoned"
+    ],
+    "damage_immunities": [
+        "lightning",
+        "poison"
+    ],
+    "damage_resistances": [
+        "necrotic"
+    ],
+    "damage_vulnerabilities": [],
+    "features": [
+        {
+            "name": "Legendary Resistance (3/Day)",
+            "description": "If the dracolich fails a saving throw, it can choose to succeed instead."
+        },
+        {
+            "name": "Magic Resistance",
+            "description": "The dracolich has advantage on saving throws against spells and other magical effects."
+        }
+    ],
+    "actions": [
+        {
+            "name": "Multiattack",
+            "description": "The dracolich can use its Frightful Presence. It then makes three attacks: one with its bite and two with its claws."
+        },
+        {
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +12 to hit, reach 10 ft., one target. Hit: 18 (2d10+7) piercing damage plus 5 (1d10) lightning damage.",
+            "effects": [
+                {
+                    "attack_hit": {
+                        "type": "melee",
+                        "bonus": 12,
+                        "effects": [
+                            {
+                                "damage": {
+                                    "type": "piercing",
+                                    "roll": {
+                                        "dice": 10,
+                                        "count": 2
+                                    },
+                                    "modifier": 7
+                                }
+                            },
+                            {
+                                "damage": {
+                                    "type": "lightning",
+                                    "roll": {
+                                        "dice": 10,
+                                        "count": 1
+                                    },
+                                    "modifier": 0
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Claw",
+            "description": "Melee Weapon Attack: +12 to hit, reach 5 ft., one target. Hit: 14 (2d6+7) slashing damage.",
+            "effects": [
+                {
+                    "attack_hit": {
+                        "type": "melee",
+                        "bonus": 12,
+                        "effects": [
+                            {
+                                "damage": {
+                                    "type": "slashing",
+                                    "roll": {
+                                        "dice": 6,
+                                        "count": 2
+                                    },
+                                    "modifier": 7
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Tail",
+            "description": "Melee Weapon Attack: +12 to hit, reach 15 ft., one target. Hit: 16 (2d8+7) bludgeoning damage.",
+            "effects": [
+                {
+                    "attack_hit": {
+                        "type": "melee",
+                        "bonus": 12,
+                        "effects": [
+                            {
+                                "damage": {
+                                    "type": "bludgeoning",
+                                    "roll": {
+                                        "dice": 8,
+                                        "count": 2
+                                    },
+                                    "modifier": 7
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Frightful Presence",
+            "description": "Each creature of the dracolich's choice that is within 120 feet of the dracolich and aware of it must succeed on a DC 18 Wisdom saving throw or become frightened for 1 minute. A creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a creature's saving throw is successful or the effect ends for it, the creature is immune to the dracolich's Frightful Presence for the next 24 hours.",
+            "effects": [
+                {
+                    "attack_save": {
+                        "ability": "wisdom",
+                        "dc": 18,
+                        "failure": [
+                            {
+                                "condition": "frightened"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Lightning Breath (Recharge 5-6)",
+            "description": "The dracolich exhales lightning in a 90-foot line that is 5 feet wide. Each creature in that line must make a DC 20 Dexterity saving throw, taking 66 (12d10) lightning damage on a failed save, or half as much damage on a successful one.",
+            "effects": [
+                {
+                    "attack_save": {
+                        "ability": "dexterity",
+                        "dc": 20,
+                        "success": [
+                            {
+                                "damage": {
+                                    "type": "lightning",
+                                    "roll": {
+                                        "dice": 10,
+                                        "count": 12
+                                    }
+                                }
+                            }
+                        ],
+                        "failure": [
+                            {
+                                "damage": {
+                                    "type": "lightning",
+                                    "roll": {
+                                        "dice": 10,
+                                        "count": 12
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "legendary_actions": [
+        {
+            "name": "Legendary Actions (3/Turn)",
+            "description": "The dracolich can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. The dracolich regains spent legendary actions at the start of its turn."
+        },
+        {
+            "name": "Detect",
+            "description": "The dracolich makes a Wisdom (Perception) check."
+        },
+        {
+            "name": "Tail Attack",
+            "description": "The dracolich makes a tail attack."
+        },
+        {
+            "name": "Wing Attack (Costs 2 Actions)",
+            "description": "The dracolich beats its tattered wings. Each creature within 10 ft. of the dracolich must succeed on a DC 21 Dexterity saving throw or take 14 (2d6+7) bludgeoning damage and be knocked prone. After beating its wings this way, the dracolich can fly up to half its flying speed."
+        }
+    ],
+    "challenge_rating": 17,
+    "environments": [
+        "desert"
+    ],
+    "source": {
+        "text": "Monster Manual p. 84"
+    }
+}

@@ -1,50 +1,111 @@
+from __future__ import annotations
+
 import json
-import os
-from jsonschema import RefResolver, Draft7Validator
+import sys
+from pathlib import Path
+from typing import Any
 
-class SchemaValidator:
-    def __init__(self, schema_dir):
-        self.schema_dir = schema_dir
-        # Ensure we are pointing at the root 'schemas/' folder
-        self.base_uri = f"file:///{os.path.abspath(schema_dir).replace(os.sep, '/')}/"
+from jsonschema import Draft7Validator
+from referencing import Registry, Resource
+from referencing.jsonschema import DRAFT7
 
-    def validate(self, data, schema_filename):
-        schema_path = os.path.join(self.schema_dir, schema_filename)
-        with open(schema_path, 'r') as f:
-            schema = json.load(f)
 
-        # The base URI must point to the schemas root directory,
-        # so that relative paths like "../values/..." work regardless of where
-        # the entity schema is located.
-        base_uri = f"file:///{os.path.abspath(self.schema_dir).replace(os.sep, '/')}/"
+def load_json(path: Path):
+    with path.open("r", encoding="utf-8") as file:
+        return json.load(file)
 
-        # We need a store to cache all schemas so they can be resolved by their $id
-        # or path.
-        store = {}
-        for root, _, files in os.walk(self.schema_dir):
-            for file in files:
-                if file.endswith('.json'):
-                    path = os.path.join(root, file)
-                    with open(path, 'r') as f:
-                        try:
-                            s = json.load(f)
-                            # Create an absolute reference path for this file
-                            rel_path = os.path.relpath(path, self.schema_dir).replace(os.sep, '/')
-                            store[base_uri + rel_path] = s
 
-                            # Also register by ID if present
-                            if "$id" in s:
-                                store[base_uri + s["$id"]] = s
-                        except json.JSONDecodeError:
-                            continue
+def build_registry(schema_root: Path) -> Registry:
+    registry = Registry()
 
-        resolver = RefResolver(base_uri=base_uri, referrer=schema, store=store)
+    for path in schema_root.rglob("*.schema.json"):
+        schema = load_json(path)
+        schema_id = schema.get("$id")
+
+        if schema_id:
+            registry = registry.with_resource(
+                schema_id,
+                Resource.from_contents(schema, default_specification=DRAFT7),
+            )
+
+    return registry
+
+
+def validate(
+    schema_path: Path,
+    data: Path | dict,
+    schema_root: Path,
+) -> bool:
+    schema = load_json(schema_path)
+    if isinstance(data, Path):
+        data = load_json(data)
+
+    registry = build_registry(schema_root)
+
+    validator = Draft7Validator(
+        schema,
+        registry=registry,
+    )
+
+    errors = sorted(
+        validator.iter_errors(data),
+        key=lambda error: list(error.absolute_path),
+    )
+    msgs = []
+    for error in errors:
+        location = ".".join(
+            str(part)
+            for part in error.absolute_path
+        )
+
+        if not location:
+            location = "<root>"
+
+        print(f"  {location}: {error.message}")
+        msgs.append(f"  {location}: {error.message}")
         
-        validator = Draft7Validator(schema, resolver=resolver)
-        errors = list(validator.iter_errors(data))
-        return errors
+    if msgs:
+        raise ValueError("Validation errors:\n" + "\n".join(msgs))
 
-def validate_entity(entity_data, schema_path):
-    validator = SchemaValidator("schemas")
-    return validator.validate(entity_data, schema_path)
+    return True
 
+
+def main() -> int:
+    if len(sys.argv) != 4:
+        print(
+            "Usage: python validate.py "
+            "<schema-root> <schema.json> <data.json>"
+        )
+        return 1
+
+    schema_root = Path(sys.argv[1]).resolve()
+    schema_path = Path(sys.argv[2]).resolve()
+    data_path = Path(sys.argv[3]).resolve()
+
+    if not schema_root.is_dir():
+        print(f"Schema directory not found: {schema_root}")
+        return 1
+
+    if not schema_path.is_file():
+        print(f"Schema not found: {schema_path}")
+        return 1
+
+    if not data_path.is_file():
+        print(f"Data file not found: {data_path}")
+        return 1
+
+    try:
+        valid = validate(
+            schema_path,
+            data_path,
+            schema_root,
+        )
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"Validation failed: {error}")
+        return 1
+
+    return 0 if valid else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

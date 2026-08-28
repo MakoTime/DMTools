@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/spell.schema.json",
+    "title": "D&D 5e Spell",
+    "description": "A reference to a spell.",
+    "$comment": "version 0.1.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "minLength": 1
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}
