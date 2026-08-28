@@ -6,6 +6,7 @@ class SchemaImporter:
         "creatures": "entities/Creature.schema.json",
         "items": "entities/Item.schema.json",
         "spells": "entities/Spell.schema.json",
+        "races": "entities/Race.schema.json",
     }
 
     def __init__(self, schema_root: Path, data_root: Path):
