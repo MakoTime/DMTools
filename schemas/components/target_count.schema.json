@@ -41,13 +41,29 @@
         },
         {
             "required": [
+                "minimum",
                 "maximum"
             ]
         },
         {
             "required": [
                 "minimum"
-            ]
+            ],
+            "not": {
+                "required": [
+                    "maximum"
+                ]
+            }
+        },
+        {
+            "required": [
+                "maximum"
+            ],
+            "not": {
+                "required": [
+                    "minimum"
+                ]
+            }
         }
     ],
     "additionalProperties": false

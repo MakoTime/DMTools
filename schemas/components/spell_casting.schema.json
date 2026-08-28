@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "components/spellcasting.schema.json",
+    "$id": "components/spell_casting.schema.json",
     "title": "D&D 5e Spellcasting",
     "description": "A creature's spellcasting abilities and spells.",
     "$comment": "version 0.1.0",
@@ -17,7 +17,7 @@
             "type": "integer"
         },
         "spells_known": {
-            "$ref": "spells_known.schema.json"
+            "$ref": "../components/spells_known.schema.json"
         }
     },
     "additionalProperties": false

@@ -19,6 +19,9 @@
         "modifier": {
             "type": "integer",
             "default": 0
+        },
+        "ability": {
+            "$ref": "../values/ability_score.schema.json"
         }
     },
     "additionalProperties": false

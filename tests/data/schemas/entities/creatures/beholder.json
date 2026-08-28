@@ -1,0 +1,265 @@
+{
+    "name": "Beholder",
+    "size": "large",
+    "creature_type": "aberration",
+    "alignment": {
+        "order": "lawful",
+        "morality": "evil"
+    },
+    "ability_scores": {
+        "strength": 10,
+        "dexterity": 14,
+        "constitution": 18,
+        "intelligence": 17,
+        "wisdom": 15,
+        "charisma": 17
+    },
+    "hit_points": {
+        "maximum": 189,
+        "current": 189,
+        "temporary": 0
+    },
+    "hit_dice": {
+        "count": 19,
+        "dice": 10
+    },
+    "armor_class": {
+        "value": 18,
+        "description": "Natural armor"
+    },
+    "movement": [
+        {
+            "movement_type": "walk",
+            "speed": {
+                "distance": 0,
+                "unit": "feet"
+            }
+        },
+        {
+            "movement_type": "fly",
+            "speed": {
+                "distance": 20,
+                "unit": "feet"
+            },
+            "hover": true
+        }
+    ],
+    "saving_throws": {
+        "intelligence": 8,
+        "wisdom": 7,
+        "charisma": 8
+    },
+    "skills": {
+        "perception": 12
+    },
+    "condition_immunities": [
+        "prone"
+    ],
+    "senses": [
+        {
+            "type": "darkvision",
+            "distance": 120,
+            "distance_type": "feet"
+        }
+    ],
+    "passive_perception": 22,
+    "languages": [
+        "Deep Speech",
+        "Undercommon"
+    ],
+    "challenge_rating": 13,
+    "features": [
+        {
+            "name": "Antimagic Cone",
+            "description": "The beholder's central eye creates an area of antimagic, as in the antimagic field spell, in a 150-foot cone. At the start of each of its turns, the beholder decides which way the cone faces and whether the cone is active. The area works against the beholder's own eye rays."
+        }
+    ],
+    "actions": [
+        {
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 14 (4d6) piercing damage.",
+            "target": {
+                "targeting": "range",
+                "range": {
+                    "amount": 5,
+                    "unit": "feet"
+                },
+                "count": {
+                    "maximum": 1
+                }
+            },
+            "effects": [
+                {
+                    "attack_hit": {
+                        "type": "melee",
+                        "bonus": 5,
+                        "effects": [
+                            {
+                                "damage": {
+                                    "type": "piercing",
+                                    "roll": {
+                                        "count": 4,
+                                        "dice": 6
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Eye Rays",
+            "description": "The beholder shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 ft. of it.",
+            "target": {
+                "targeting": "range",
+                "range": {
+                    "amount": 120,
+                    "unit": "feet"
+                },
+                "count": {
+                    "minimum": 1,
+                    "maximum": 3
+                }
+            }
+        }
+    ],
+    "legendary_actions": [
+        {
+            "name": "Legendary Actions (3/Turn)",
+            "description": "The beholder can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. The beholder regains spent legendary actions at the start of its turn."
+        },
+        {
+            "name": "Eye Ray",
+            "description": "The beholder uses one random eye ray."
+        }
+    ],
+    "roll_table": {
+        "dice": 10,
+        "entries": [
+            {
+                "roll": 1,
+                "result": "Charm Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or be charmed by the beholder for 1 hour, or until the beholder harms the creature."
+                    }
+                ]
+            },
+            {
+                "roll": 2,
+                "result": "Paralyzing Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must succeed on a DC 16 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+                    }
+                ]
+            },
+            {
+                "roll": 3,
+                "result": "Fear Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or be frightened for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success."
+                    }
+                ]
+            },
+            {
+                "roll": 4,
+                "result": "Slowing Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must succeed on a DC 16 Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute, it cannot take reactions, and it can take either an action or a bonus action on its turn, not both."
+                    }
+                ]
+            },
+            {
+                "roll": 5,
+                "result": "Enervation Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must make a DC 16 Constitution saving throw, taking half as much damage on a successful save."
+                    },
+                    {
+                        "damage": {
+                            "type": "necrotic",
+                            "roll": {
+                                "count": 8,
+                                "dice": 8
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "roll": 6,
+                "result": "Telekinetic Ray",
+                "effects": [
+                    {
+                        "description": "If the target is a creature, it must succeed on a DC 16 Strength saving throw or be moved up to 30 ft. in any direction and restrained until the start of the beholder's next turn or until the beholder is incapacitated. If the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 ft. in any direction."
+                    }
+                ]
+            },
+            {
+                "roll": 7,
+                "result": "Sleep Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must succeed on a DC 16 Wisdom saving throw or fall unconscious for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead."
+                    }
+                ]
+            },
+            {
+                "roll": 8,
+                "result": "Petrification Ray",
+                "effects": [
+                    {
+                        "description": "The targeted creature must make a DC 16 Dexterity saving throw. On a failed save, the creature begins to turn to stone and is restrained. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is petrified."
+                    }
+                ]
+            },
+            {
+                "roll": 9,
+                "result": "Disintegration Ray",
+                "effects": [
+                    {
+                        "damage": {
+                            "type": "force",
+                            "roll": {
+                                "count": 10,
+                                "dice": 8
+                            }
+                        }
+                    },
+                    {
+                        "description": "If this damage reduces a creature to 0 hit points, its body becomes a pile of fine gray dust."
+                    }
+                ]
+            },
+            {
+                "roll": 10,
+                "result": "Death Ray",
+                "effects": [
+                    {
+                        "damage": {
+                            "type": "necrotic",
+                            "roll": {
+                                "count": 10,
+                                "dice": 10
+                            }
+                        }
+                    },
+                    {
+                        "description": "The target dices if the ray reduces it to 0 hit points."
+                    }
+                ]
+            }
+        ]
+    },
+    "environments": [
+        "underdark"
+    ],
+    "source": {
+        "text": "Monster Manual p. 28"
+    }
+}

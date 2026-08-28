@@ -6,7 +6,7 @@
     "$comment": "version 0.4.0",
     "type": "object",
     "required": [
-        "die"
+        "dice"
     ],
     "properties": {
         "count": {
@@ -14,8 +14,8 @@
             "minimum": 1,
             "default": 1
         },
-        "die": {
-            "$ref": "../values/die.schema.json"
+        "dice": {
+            "$ref": "../values/dice.schema.json"
         }
     },
     "additionalProperties": false

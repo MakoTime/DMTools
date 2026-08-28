@@ -21,7 +21,7 @@
     },
     "hit_dice": {
         "count": 18,
-        "die": 12
+        "dice": 12
     },
     "armor_class": {
         "value": 19,

@@ -7,7 +7,7 @@
     "type": "object",
     "required": [
         "name",
-        "hit_die"
+        "hit_dice"
     ],
     "properties": {
         "name": {
@@ -17,8 +17,8 @@
             "type": "string",
             "input": "textarea"
         },
-        "hit_die": {
-            "$ref": "../values/die.schema.json"
+        "hit_dice": {
+            "$ref": "../values/dice.schema.json"
         },
         "primary_abilities": {
             "type": "array",

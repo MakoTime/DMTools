@@ -3,11 +3,26 @@
     "$id": "components/effect.schema.json",
     "title": "D&D 5e Effect",
     "description": "An effect produced by an action, spell, feature, or attack.",
-    "$comment": "version 0.4.0",
+    "$comment": "version 0.5.0",
     "type": "object",
     "properties": {
         "damage": {
             "$ref": "damage.schema.json"
+        },
+        "healing": {
+            "$ref": "roll.schema.json"
+        },
+        "max_hit_points": {
+            "$ref": "roll.schema.json"
+        },
+        "temporary_hit_points": {
+            "$ref": "roll.schema.json"
+        },
+        "ability_score": {
+            "$ref": "roll.schema.json"
+        },
+        "exhaustion": {
+            "$ref": "roll.schema.json"
         },
         "attack_hit": {
             "$ref": "attack_hit.schema.json"

@@ -2,18 +2,15 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "components/roll_table_entry.schema.json",
     "title": "D&D 5e Roll Table Entry",
-    "description": "An outcome in a roll table.",
-    "$comment": "version 0.2.0",
+    "description": "An outcome corresponding to a roll result.",
+    "$comment": "version 0.3.0",
     "type": "object",
     "required": [
+        "roll",
         "result"
     ],
     "properties": {
-        "minimum": {
-            "type": "integer",
-            "minimum": 1
-        },
-        "maximum": {
+        "roll": {
             "type": "integer",
             "minimum": 1
         },
@@ -29,18 +26,5 @@
             "minItems": 1
         }
     },
-    "anyOf": [
-        {
-            "required": [
-                "minimum",
-                "maximum"
-            ]
-        },
-        {
-            "required": [
-                "minimum"
-            ]
-        }
-    ],
     "additionalProperties": false
 }

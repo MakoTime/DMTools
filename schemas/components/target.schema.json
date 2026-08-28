@@ -3,13 +3,13 @@
     "$id": "components/target.schema.json",
     "title": "D&D 5e Target",
     "description": "A target specification for an action or spell.",
-    "$comment": "version 0.4.0",
+    "$comment": "version 0.5.0",
     "type": "object",
     "required": [
-        "type"
+        "targeting"
     ],
     "properties": {
-        "type": {
+        "targeting": {
             "type": "string",
             "enum": [
                 "self",
@@ -18,10 +18,9 @@
             ]
         },
         "range": {
-            "type": "integer",
-            "minimum": 0
+            "$ref": "../components/distance.schema.json"
         },
-        "target": {
+        "type": {
             "$ref": "../values/target_type.schema.json"
         },
         "count": {
@@ -50,13 +49,10 @@
     },
     "if": {
         "properties": {
-            "type": {
+            "targeting": {
                 "const": "range"
             }
-        },
-        "required": [
-            "type"
-        ]
+        }
     },
     "then": {
         "required": [

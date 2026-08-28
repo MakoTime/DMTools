@@ -18,7 +18,7 @@
     },
     "hit_dice": {
         "count": 2,
-        "die": 8
+        "dice": 8
     },
     "armor_class": {
         "value": 10
@@ -50,7 +50,35 @@
     "actions": [
         {
             "name": "Club",
-            "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage."
+            "description": "Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage.",
+            "type": "action",
+            "target": {
+                "targeting": "range",
+                "range": {
+                    "amount": 5,
+                    "unit": "feet"
+                }
+            },
+            "effects": [
+                {
+                    "attack_hit": {
+                        "type": "melee_weapon",
+                        "bonus": 2,
+                        "effects": [
+                            {
+                                "damage": {
+                                    "type": "bludgeoning",
+                                    "roll": {
+                                        "count": 1,
+                                        "dice": 4
+                                    },
+                                    "modifier": 0
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
         }
     ],
     "spell_casting": {
@@ -69,12 +97,6 @@
                     "bless",
                     "cure wounds",
                     "sanctuary"
-                ]
-            },
-            "FAIL": {
-                "slots": 1,
-                "spells": [
-                    "guidance"
                 ]
             }
         }

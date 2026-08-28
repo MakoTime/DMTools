@@ -136,11 +136,8 @@
                 "$ref": "../components/action.schema.json"
             }
         },
-        "spell_slots": {
-            "type": "array",
-            "items": {
-                "$ref": "../components/spell_slot.schema.json"
-            }
+        "spell_casting": {
+            "$ref": "../components/spell_casting.schema.json"
         },
         "roll_table": {
             "$ref": "../components/roll_table.schema.json"
@@ -169,5 +166,6 @@
         "source": {
             "$ref": "../values/source.schema.json"
         }
-    }
+    },
+    "additionalProperties": false
 }

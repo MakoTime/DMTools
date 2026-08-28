@@ -327,7 +327,7 @@ class TestSchemas(unittest.TestCase):
 #             },
 #             "hit_dice": {
 #                 "count": 18,
-#                 "die": "d12"
+#                 "dice": "d12"
 #             },
 #             "armor_class": {
 #                 "value": 19,

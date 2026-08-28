@@ -29,9 +29,6 @@
             "items": {
                 "$ref": "effect.schema.json"
             }
-        },
-        "source": {
-            "$ref": "../values/source.schema.json"
         }
     },
     "additionalProperties": false
