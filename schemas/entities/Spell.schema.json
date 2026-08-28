@@ -73,6 +73,9 @@
                 "$ref": "../components/effect.schema.json"
             }
         },
+        "roll_table": {
+            "$ref": "../components/roll_table.schema.json"
+        },
         "tags": {
             "type": "array",
             "items": {

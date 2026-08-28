@@ -21,7 +21,7 @@
         "effects": {
             "type": "array",
             "items": {
-                "$ref": "effect_result.schema.json"
+                "$ref": "effect.schema.json"
             },
             "minItems": 1
         }

@@ -6,8 +6,7 @@
     "$comment": "version 0.4.0",
     "type": "object",
     "required": [
-        "ability",
-        "dc"
+        "ability"
     ],
     "properties": {
         "ability": {
@@ -20,13 +19,13 @@
         "success": {
             "type": "array",
             "items": {
-                "$ref": "effect_result.schema.json"
+                "$ref": "effect.schema.json"
             }
         },
         "failure": {
             "type": "array",
             "items": {
-                "$ref": "effect_result.schema.json"
+                "$ref": "effect.schema.json"
             }
         }
     },

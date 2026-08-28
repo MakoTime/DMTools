@@ -19,9 +19,10 @@
         "effects": {
             "type": "array",
             "items": {
-                "$ref": "effect_result.schema.json"
+                "$ref": "effect.schema.json"
             }
         }
     },
+    "minProperties": 1,
     "additionalProperties": false
 }
