@@ -1,39 +1,89 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "Class.schema.json",
+    "$id": "entities/Class.schema.json",
     "title": "D&D 5e Class",
-    "description": "JSON Schema for D&D 5e Character Class.",
-    "$comment": "version 0.1.1",
+    "description": "A character class definition in the catalog, not a level on a character sheet.",
+    "$comment": "version 0.4.0",
     "type": "object",
-    "required": ["name", "level"],
+    "required": [
+        "name",
+        "hit_die"
+    ],
     "properties": {
         "name": {
-            "type": "string"
+            "$ref": "../values/class_name.schema.json"
         },
-        "level": {
-            "type": "integer",
-            "minimum": 1
-        },
-        "subtype": {
-            "type": "string"
+        "description": {
+            "type": "string",
+            "input": "textarea"
         },
         "hit_die": {
-            "type": "integer",
-            "enum": [1, 2, 4, 6, 8, 10, 12, 20]
+            "$ref": "../values/die.schema.json"
         },
-        "spellcasting": {
-            "type": "string",
-            "default": "",
-            "enum": ["", "str", "dex", "con", "int", "wis", "cha"]
+        "primary_abilities": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/ability_score.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "saving_throws": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/ability_score.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "armor_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/armor_proficiency.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "weapon_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/weapon_proficiency.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "tool_proficiencies": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tool.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "skill_choices": {
+            "$ref": "../components/skill_choice.schema.json"
         },
         "features": {
             "type": "array",
             "items": {
-                "$ref": "feature.schema.json"
+                "$ref": "../components/feature.schema.json"
             }
         },
+        "spellcasting": {
+            "$ref": "../components/spellcasting.schema.json"
+        },
+        "subclass_level": {
+            "description": "Class level at which a subclass is chosen.",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20,
+            "default": 3
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tag.schema.json"
+            },
+            "uniqueItems": true
+        },
         "source": {
-            "$ref": "source.schema.json"
+            "$ref": "../values/source.schema.json"
         }
-    }
+    },
+    "additionalProperties": false
 }

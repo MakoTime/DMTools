@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Equipment.schema.json",
+    "title": "D&D 5e Equipment",
+    "description": "A catalog item on a character sheet, with quantity.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "item"
+    ],
+    "properties": {
+        "item": {
+            "oneOf": [
+                {
+                    "$ref": "Item.schema.json"
+                },
+                {
+                    "$ref": "Weapon.schema.json"
+                },
+                {
+                    "$ref": "Armor.schema.json"
+                }
+            ]
+        },
+        "quantity": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "equipped": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "additionalProperties": false
+}

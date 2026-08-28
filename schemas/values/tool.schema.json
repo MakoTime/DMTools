@@ -1,33 +1,40 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "tool.schema.json",
+    "$id": "values/tool.schema.json",
     "title": "D&D 5e Tool",
-    "description": "A D&D 5e tool.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "alchemist_supplies",
-        "brewer_supplies",
-        "calligrapher_supplies",
-        "carpenter_tools",
-        "cartographer_tools",
-        "cobbler_tools",
-        "cook_utensils",
-        "glassblower_tools",
-        "jeweler_tools",
-        "leatherworker_tools",
-        "mason_tools",
-        "painter_supplies",
-        "potter_tools",
-        "smith_tools",
-        "tinker_tools",
-        "weaver_tools",
-        "woodcarver_tools",
-        "disguise_kit",
-        "forgery_kit",
-        "herbalism_kit",
-        "navigator_tools",
-        "poisoner_kit",
-        "thieves_tools"
+    "description": "A tool proficiency.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "alchemist_supplies",
+                "brewer_supplies",
+                "calligrapher_supplies",
+                "carpenter_tools",
+                "cartographer_tools",
+                "cobbler_tools",
+                "cook_utensils",
+                "glassblower_tools",
+                "jeweler_tools",
+                "leatherworker_tools",
+                "mason_tools",
+                "painter_supplies",
+                "potter_tools",
+                "smith_tools",
+                "tinker_tools",
+                "weaver_tools",
+                "woodcarver_tools",
+                "disguise_kit",
+                "forgery_kit",
+                "herbalism_kit",
+                "navigator_tools",
+                "poisoner_kit",
+                "thieves_tools"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

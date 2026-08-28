@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "source.schema.json",
+    "$id": "values/source.schema.json",
     "title": "Data Source",
     "description": "The source from which the data was obtained.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "object",
     "properties": {
         "text": {
@@ -30,10 +30,14 @@
     },
     "anyOf": [
         {
-            "required": ["text"]
+            "required": [
+                "text"
+            ]
         },
         {
-            "required": ["href"]
+            "required": [
+                "href"
+            ]
         }
     ],
     "additionalProperties": false

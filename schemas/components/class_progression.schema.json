@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/class_progression.schema.json",
+    "title": "D&D 5e Class Progression",
+    "description": "A class and optional subclass taken on a character sheet, with the current level in that class.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "name",
+        "level"
+    ],
+    "properties": {
+        "name": {
+            "$ref": "../values/class_name.schema.json"
+        },
+        "subclass": {
+            "type": "string",
+            "minLength": 1
+        },
+        "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+        }
+    },
+    "additionalProperties": false
+}

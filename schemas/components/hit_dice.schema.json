@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/hit_dice.schema.json",
+    "title": "D&D 5e Hit Dice",
+    "description": "Hit dice used by a class definition or monster stat block.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "die"
+    ],
+    "properties": {
+        "count": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "die": {
+            "$ref": "../values/die.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

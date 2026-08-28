@@ -1,16 +1,15 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "weapon_proficiency.schema.json",
+    "$id": "components/weapon_proficiency.schema.json",
     "title": "D&D 5e Weapon Proficiency",
-    "description": "A D&D 5e weapon proficiency.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "oneOf": [
+    "description": "A weapon proficiency: a category or a specific weapon type.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
         {
-            "$ref": "weapon_type.schema.json"
+            "$ref": "../values/weapon_category.schema.json"
         },
         {
-            "$ref": "weapon_category.schema.json"
+            "$ref": "../values/weapon_type.schema.json"
         }
     ]
 }

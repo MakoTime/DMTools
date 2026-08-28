@@ -1,14 +1,21 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "gaming_set.schema.json",
+    "$id": "values/gaming_set.schema.json",
     "title": "D&D 5e Gaming Set",
-    "description": "A D&D 5e gaming set.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "dice_set",
-        "playing_cards",
-        "dragonchess",
-        "three_dragon_ante"
+    "description": "A gaming set.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "dice_set",
+                "playing_cards",
+                "dragonchess",
+                "three_dragon_ante"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

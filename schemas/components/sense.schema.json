@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "sense.schema.json",
+    "$id": "components/sense.schema.json",
     "title": "D&D 5e Sense",
     "description": "A special sense and its effective range.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "type",
@@ -11,14 +11,15 @@
     ],
     "properties": {
         "type": {
-            "$ref": "sense_type.schema.json"
+            "$ref": "../values/sense_type.schema.json"
         },
         "distance": {
             "type": "integer",
             "minimum": 0
         },
         "distance_type": {
-            "$ref": "distance_type.schema.json"
+            "$ref": "../values/distance_type.schema.json",
+            "default": "feet"
         }
     },
     "additionalProperties": false

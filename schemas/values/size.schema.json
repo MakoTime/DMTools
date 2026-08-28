@@ -1,16 +1,23 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "size.schema.json",
+    "$id": "values/size.schema.json",
     "title": "D&D 5e Creature Size",
-    "description": "A D&D 5e creature size.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "tiny",
-        "small",
-        "medium",
-        "large",
-        "huge",
-        "gargantuan"
+    "description": "A creature size category.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "tiny",
+                "small",
+                "medium",
+                "large",
+                "huge",
+                "gargantuan"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

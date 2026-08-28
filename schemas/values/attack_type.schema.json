@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/attack_type.schema.json",
+    "title": "D&D 5e Attack Type",
+    "description": "The kind of attack roll made against a target.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "melee_weapon",
+                "ranged_weapon",
+                "melee_spell",
+                "ranged_spell"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}

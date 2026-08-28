@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "hit_points.schema.json",
+    "$id": "components/hit_points.schema.json",
     "title": "D&D 5e Hit Points",
-    "description": "The hit point state of a creature.",
-    "$comment": "version 0.2.0",
+    "description": "The current hit point state of a creature in play.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "maximum",

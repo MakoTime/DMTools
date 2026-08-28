@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "target_count.schema.json",
+    "$id": "components/target_count.schema.json",
     "title": "D&D 5e Target Count",
     "description": "The number of targets an action or spell can affect.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "object",
     "properties": {
         "minimum": {
@@ -21,19 +21,33 @@
     },
     "oneOf": [
         {
-            "required": ["all"],
+            "required": [
+                "all"
+            ],
             "not": {
                 "anyOf": [
-                    { "required": ["minimum"] },
-                    { "required": ["maximum"] }
+                    {
+                        "required": [
+                            "minimum"
+                        ]
+                    },
+                    {
+                        "required": [
+                            "maximum"
+                        ]
+                    }
                 ]
             }
         },
         {
-            "required": ["maximum"]
+            "required": [
+                "maximum"
+            ]
         },
         {
-            "required": ["minimum"]
+            "required": [
+                "minimum"
+            ]
         }
     ],
     "additionalProperties": false

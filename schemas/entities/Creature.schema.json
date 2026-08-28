@@ -1,43 +1,35 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "Creature.schema.json",
+    "$id": "entities/Creature.schema.json",
     "title": "D&D 5e Creature",
-    "description": "A D&D 5e creature, including player characters, NPCs, and monsters.",
-    "$comment": "version 0.3.0",
+    "description": "A creature in play, including player characters, NPCs, and monsters. Left open so Character and Monster may add fields.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
-        "name",
-        "speed",
-        "hit_points",
-        "ability_scores",
-        "armor_class"
+        "name"
     ],
     "properties": {
         "name": {
-            "type": "string"
+            "type": "string",
+            "minLength": 1
         },
         "size": {
-            "type": "string",
-            "enum": [
-                "tiny",
-                "small",
-                "medium",
-                "large",
-                "huge",
-                "gargantuan"
-            ]
+            "$ref": "../values/size.schema.json"
         },
         "creature_type": {
-            "type": "string"
+            "$ref": "../values/creature_type.schema.json"
         },
         "alignment": {
-            "type": "string"
+            "$ref": "../values/alignment.schema.json"
         },
         "ability_scores": {
             "$ref": "../components/ability_scores.schema.json"
         },
         "hit_points": {
             "$ref": "../components/hit_points.schema.json"
+        },
+        "hit_dice": {
+            "$ref": "../components/hit_dice.schema.json"
         },
         "armor_class": {
             "type": "object",
@@ -55,71 +47,20 @@
             },
             "additionalProperties": false
         },
-        "speed": {
-            "$ref": "../components/speed.schema.json"
+        "movement": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/movement.schema.json"
+            }
         },
         "saving_throws": {
             "$ref": "../components/saving_throws.schema.json"
         },
         "skills": {
             "type": "object",
-            "properties": {
-                "athletics": {
-                    "type": "integer"
-                },
-                "acrobatics": {
-                    "type": "integer"
-                },
-                "sleight_of_hand": {
-                    "type": "integer"
-                },
-                "stealth": {
-                    "type": "integer"
-                },
-                "arcana": {
-                    "type": "integer"
-                },
-                "history": {
-                    "type": "integer"
-                },
-                "investigation": {
-                    "type": "integer"
-                },
-                "nature": {
-                    "type": "integer"
-                },
-                "religion": {
-                    "type": "integer"
-                },
-                "animal_handling": {
-                    "type": "integer"
-                },
-                "insight": {
-                    "type": "integer"
-                },
-                "medicine": {
-                    "type": "integer"
-                },
-                "perception": {
-                    "type": "integer"
-                },
-                "survival": {
-                    "type": "integer"
-                },
-                "deception": {
-                    "type": "integer"
-                },
-                "intimidation": {
-                    "type": "integer"
-                },
-                "performance": {
-                    "type": "integer"
-                },
-                "persuasion": {
-                    "type": "integer"
-                }
-            },
-            "additionalProperties": false
+            "additionalProperties": {
+                "type": "integer"
+            }
         },
         "senses": {
             "type": "array",
@@ -138,9 +79,6 @@
         "proficiency_bonus": {
             "type": "integer",
             "minimum": 0
-        },
-        "challenge": {
-            "type": "string"
         },
         "condition_immunities": {
             "type": "array",
@@ -194,6 +132,12 @@
                 "$ref": "../components/action.schema.json"
             }
         },
+        "spell_slots": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/spell_slot.schema.json"
+            }
+        },
         "description": {
             "type": "string",
             "input": "textarea"
@@ -202,8 +146,7 @@
             "$ref": "../components/image.schema.json"
         },
         "source": {
-            "$ref": "../components/source.schema.json"
+            "$ref": "../values/source.schema.json"
         }
-    },
-    "additionalProperties": false
+    }
 }

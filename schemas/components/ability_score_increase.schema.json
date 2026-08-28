@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "ability_score_increase.schema.json",
+    "$id": "components/ability_score_increase.schema.json",
     "title": "D&D 5e Ability Score Increase",
-    "description": "An ability score increase granted by a D&D 5e feature.",
-    "$comment": "version 0.2.0",
+    "description": "An ability score increase: a fixed ability, or a choice from a list.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "amount"

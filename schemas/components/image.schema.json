@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/image.schema.json",
+    "title": "Image",
+    "description": "An image asset.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "uri",
+        "alt"
+    ],
+    "properties": {
+        "uri": {
+            "type": "string",
+            "format": "uri"
+        },
+        "alt": {
+            "type": "string",
+            "description": "Text to display if the image cannot load."
+        },
+        "caption": {
+            "type": "string",
+            "description": "Text to display below the image."
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

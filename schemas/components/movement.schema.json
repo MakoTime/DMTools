@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "movement.schema.json",
+    "$id": "components/movement.schema.json",
     "title": "D&D 5e Movement",
-    "description": "A creature's movement for a specific type of movement.",
-    "$comment": "version 0.3.0",
+    "description": "A creature's speed for one movement type. Hover is a flag on fly speed.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "movement_type",
@@ -14,7 +14,11 @@
             "$ref": "../values/movement_type.schema.json"
         },
         "speed": {
-            "$ref": "../values/speed.schema.json"
+            "$ref": "speed.schema.json"
+        },
+        "hover": {
+            "type": "boolean",
+            "default": false
         }
     },
     "additionalProperties": false

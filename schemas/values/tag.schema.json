@@ -1,14 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "tag.schema.json",
-    "title": "D&D 5e Tag",
-    "description": "A generic tag used to categorize or identify data.",
-    "$comment": "version 0.2.0",
+    "$id": "values/tag.schema.json",
+    "title": "Tag",
+    "description": "A free-form tag used to categorise data.",
+    "$comment": "version 0.4.0",
     "type": "string",
     "minLength": 1,
     "examples": [
-        "Wizard",
-        "Bronze Dragon",
-        "Orc"
+        "wizard",
+        "bronze_dragon",
+        "orc"
     ]
 }

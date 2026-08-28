@@ -1,0 +1,55 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Armor.schema.json",
+    "title": "D&D 5e Armor",
+    "description": "Armor or a shield in the catalog. Extends Item.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "allOf": [
+        {
+            "$ref": "Item.schema.json"
+        }
+    ],
+    "required": [
+        "category",
+        "armor_class"
+    ],
+    "properties": {
+        "category": {
+            "$ref": "../values/armor_category.schema.json"
+        },
+        "armor_type": {
+            "$ref": "../values/armor_type.schema.json"
+        },
+        "armor_class": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "add_dexterity": {
+            "description": "Whether Dexterity modifier is added to armor class, and the optional cap.",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "maximum": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "enabled"
+            ],
+            "additionalProperties": false
+        },
+        "stealth_disadvantage": {
+            "type": "boolean",
+            "default": false
+        },
+        "strength_requirement": {
+            "type": "integer",
+            "minimum": 1
+        }
+    }
+}

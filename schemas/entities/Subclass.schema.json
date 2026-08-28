@@ -1,0 +1,48 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Subclass.schema.json",
+    "title": "D&D 5e Subclass",
+    "description": "A subclass definition that belongs to a class in the catalog.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "name",
+        "class"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "class": {
+            "$ref": "../values/class_name.schema.json"
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/feature.schema.json"
+            }
+        },
+        "spells": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/spell_grant.schema.json"
+            }
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tag.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

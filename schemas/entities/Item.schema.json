@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Item.schema.json",
+    "title": "D&D 5e Item",
+    "description": "A physical item in the catalog. Not a quantity on a character sheet.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "weight": {
+            "type": "number",
+            "minimum": 0,
+            "default": 0
+        },
+        "cost": {
+            "type": "number",
+            "minimum": 0
+        },
+        "magic": {
+            "type": "boolean",
+            "default": false
+        },
+        "rarity": {
+            "$ref": "../values/rarity.schema.json"
+        },
+        "attunement": {
+            "type": "boolean",
+            "default": false
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/tag.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    }
+}

@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/casting_time.schema.json",
+    "title": "D&D 5e Casting Time",
+    "description": "How long it takes to cast a spell.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "unit"
+    ],
+    "properties": {
+        "amount": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1
+        },
+        "unit": {
+            "type": "string",
+            "enum": [
+                "action",
+                "bonus_action",
+                "reaction",
+                "round",
+                "minute",
+                "hour"
+            ]
+        }
+    },
+    "if": {
+        "properties": {
+            "unit": {
+                "enum": [
+                    "round",
+                    "minute",
+                    "hour"
+                ]
+            }
+        },
+        "required": [
+            "unit"
+        ]
+    },
+    "then": {
+        "required": [
+            "amount"
+        ]
+    },
+    "additionalProperties": false
+}

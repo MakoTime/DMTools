@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "spell_slot.schema.json",
+    "$id": "components/spell_slot.schema.json",
     "title": "D&D 5e Spell Slot",
-    "description": "A spell slot for a D&D 5e spell level.",
-    "$comment": "version 0.2.0",
+    "description": "Spell slots for one spell level on a creature in play.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "level",
@@ -22,7 +22,7 @@
             "minimum": 0
         },
         "recharge": {
-            "$ref": "../values/duration.schema.json"
+            "$ref": "../values/recharge.schema.json"
         }
     },
     "additionalProperties": false

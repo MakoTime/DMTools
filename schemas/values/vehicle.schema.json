@@ -1,13 +1,20 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "vehicle.schema.json",
+    "$id": "values/vehicle.schema.json",
     "title": "D&D 5e Vehicle",
-    "description": "A D&D 5e vehicle type.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "land",
-        "water",
-        "air"
+    "description": "A vehicle proficiency group.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "land",
+                "water",
+                "air"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

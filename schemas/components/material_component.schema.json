@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "material_component.schema.json",
+    "$id": "components/material_component.schema.json",
     "title": "D&D 5e Material Component",
-    "description": "The material component required to cast a D&D 5e spell.",
-    "$comment": "version 0.2.0",
+    "description": "The material component required to cast a spell.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "description"

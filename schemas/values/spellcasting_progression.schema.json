@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/spellcasting_progression.schema.json",
+    "title": "D&D 5e Spellcasting Progression",
+    "description": "How quickly a class gains spell slots.",
+    "$comment": "version 0.4.0",
+    "type": "string",
+    "enum": [
+        "full",
+        "half",
+        "third",
+        "pact"
+    ]
+}

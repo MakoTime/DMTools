@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "target.schema.json",
+    "$id": "components/target.schema.json",
     "title": "D&D 5e Target",
-    "description": "A target specification for a D&D 5e action or spell.",
-    "$comment": "version 0.2.0",
+    "description": "A target specification for an action or spell.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "type"
@@ -25,7 +25,7 @@
             "$ref": "../values/target_type.schema.json"
         },
         "count": {
-            "$ref": "components/target_count.schema.json"
+            "$ref": "target_count.schema.json"
         },
         "zone": {
             "type": "object",
@@ -47,6 +47,21 @@
         "description": {
             "type": "string"
         }
+    },
+    "if": {
+        "properties": {
+            "type": {
+                "const": "range"
+            }
+        },
+        "required": [
+            "type"
+        ]
+    },
+    "then": {
+        "required": [
+            "range"
+        ]
     },
     "additionalProperties": false
 }

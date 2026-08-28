@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "saving_throws.schema.json",
-    "title": "D&D 5e Saving Throws",
-    "description": "The saving throw modifiers for the six ability scores.",
-    "$comment": "version 0.2.0",
+    "$id": "components/saving_throws.schema.json",
+    "title": "D&D 5e Saving Throw Modifiers",
+    "description": "Saving throw modifiers for the six ability scores on a creature in play.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "properties": {
         "strength": {

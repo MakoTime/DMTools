@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "attack_hit.schema.json",
+    "$id": "components/attack_hit.schema.json",
     "title": "D&D 5e Attack Hit",
-    "description": "An attack roll used to determine whether an attack hits its target.",
-    "$comment": "version 0.2.0",
+    "description": "An attack roll used to determine whether an attack hits.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "type"
@@ -19,7 +19,7 @@
         "effects": {
             "type": "array",
             "items": {
-                "$ref": "../components/effect.schema.json"
+                "$ref": "effect_result.schema.json"
             }
         }
     },

@@ -1,22 +1,28 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "weapon_tag.schema.json",
-    "title": "D&D 5e Weapon Tag",
-    "description": "A property or tag applied to a D&D 5e weapon.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "ammunition",
-        "finesse",
-        "heavy",
-        "light",
-        "loading",
-        "reach",
-        "special",
-        "thrown",
-        "two_handed",
-        "versatile",
-        "lance",
-        "net"
+    "$id": "values/weapon_tag.schema.json",
+    "title": "D&D 5e Weapon Property",
+    "description": "A property applied to a weapon.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "ammunition",
+                "finesse",
+                "heavy",
+                "light",
+                "loading",
+                "monk",
+                "reach",
+                "special",
+                "thrown",
+                "two_handed",
+                "versatile"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

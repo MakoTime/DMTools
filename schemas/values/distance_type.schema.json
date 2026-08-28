@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "distance_type.schema.json",
-    "title": "D&D 5e Distance Type",
+    "$id": "values/distance_type.schema.json",
+    "title": "D&D 5e Distance Unit",
     "description": "A unit used to describe a distance.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "string",
     "enum": [
         "feet",

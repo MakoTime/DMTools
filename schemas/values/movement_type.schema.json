@@ -1,16 +1,22 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "movement_type.schema.json",
+    "$id": "values/movement_type.schema.json",
     "title": "D&D 5e Movement Type",
-    "description": "A type of movement for a creature.",
-    "$comment": "version 0.2.0",
-    "type": "string",
-    "enum": [
-        "walk",
-        "fly",
-        "hover",
-        "swim",
-        "climb",
-        "burrow"
+    "description": "A type of movement. Hover is a flag on fly speed, not its own type.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "walk",
+                "fly",
+                "swim",
+                "climb",
+                "burrow"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
     ]
 }

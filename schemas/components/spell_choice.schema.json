@@ -1,16 +1,16 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "spell_choice.schema.json",
+    "$id": "components/spell_choice.schema.json",
     "title": "D&D 5e Spell Choice",
     "description": "A choice of one or more spells from a defined set of eligible spells.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "filter"
     ],
     "properties": {
         "filter": {
-            "$ref": "../components/spell_filter.schema.json"
+            "$ref": "spell_filter.schema.json"
         },
         "choice_count": {
             "type": "integer",
@@ -35,7 +35,7 @@
             "minimum": 1
         },
         "recharge": {
-            "$ref": "../values/duration.schema.json"
+            "$ref": "../values/recharge.schema.json"
         }
     },
     "additionalProperties": false

@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/action.schema.json",
+    "title": "D&D 5e Action",
+    "description": "An action a creature, race, class, or feat may use.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "name",
+        "description"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "type": {
+            "$ref": "../values/action_type.schema.json"
+        },
+        "target": {
+            "$ref": "target.schema.json"
+        },
+        "effects": {
+            "type": "array",
+            "items": {
+                "$ref": "effect.schema.json"
+            }
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}

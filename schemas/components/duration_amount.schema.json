@@ -1,18 +1,44 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "duration_amount.schema.json",
-    "title": "JSON Schema for D&D 5e Duration Amount",
-    "description": "This schema describes a D&D 5e duration amount.",
-    "$comment": "version 0.2.0",
+    "$id": "components/duration_amount.schema.json",
+    "title": "D&D 5e Duration Amount",
+    "description": "A duration with an optional numeric amount, such as 8 hours or instantaneous.",
+    "$comment": "version 0.4.0",
     "type": "object",
+    "required": [
+        "duration"
+    ],
     "properties": {
         "amount": {
             "type": "integer",
-            "minimum": 0
+            "minimum": 1
         },
         "duration": {
             "$ref": "../values/duration.schema.json"
         }
     },
-    "required": ["amount", "duration"]
+    "if": {
+        "properties": {
+            "duration": {
+                "enum": [
+                    "round",
+                    "minute",
+                    "hour",
+                    "day",
+                    "week",
+                    "month",
+                    "year"
+                ]
+            }
+        },
+        "required": [
+            "duration"
+        ]
+    },
+    "then": {
+        "required": [
+            "amount"
+        ]
+    },
+    "additionalProperties": false
 }

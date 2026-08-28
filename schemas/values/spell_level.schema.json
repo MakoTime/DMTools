@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "spell_level.schema.json",
-    "title": "JSON Schema for D&D 5e Spell Level",
-    "description": "This schema describes a D&D 5e spell level.",
-    "$comment": "version 0.2.0",
+    "$id": "values/spell_level.schema.json",
+    "title": "D&D 5e Spell Level",
+    "description": "A spell level, where 0 is a cantrip.",
+    "$comment": "version 0.4.0",
     "type": "integer",
     "minimum": 0,
     "maximum": 9

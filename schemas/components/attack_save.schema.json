@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "attack_save.schema.json",
-    "title": "D&D 5e Saving Throw",
+    "$id": "components/attack_save.schema.json",
+    "title": "D&D 5e Saving Throw Effect",
     "description": "A saving throw used to determine whether an effect affects a target.",
-    "$comment": "version 0.2.0",
+    "$comment": "version 0.4.0",
     "type": "object",
     "required": [
         "ability",
@@ -20,16 +20,14 @@
         "success": {
             "type": "array",
             "items": {
-                "$ref": "../components/effect.schema.json"
-            },
-            "uniqueItems": true
+                "$ref": "effect_result.schema.json"
+            }
         },
         "failure": {
             "type": "array",
             "items": {
-                "$ref": "../components/effect.schema.json"
-            },
-            "uniqueItems": true
+                "$ref": "effect_result.schema.json"
+            }
         }
     },
     "additionalProperties": false

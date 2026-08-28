@@ -1,9 +1,9 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "effect.schema.json",
+    "$id": "components/effect.schema.json",
     "title": "D&D 5e Effect",
-    "description": "A D&D 5e effect produced by an action, spell, feature, attack, or other game mechanic.",
-    "$comment": "version 0.2.0",
+    "description": "An effect produced by an action, spell, feature, or attack.",
+    "$comment": "version 0.4.0",
     "type": "object",
     "properties": {
         "damage": {

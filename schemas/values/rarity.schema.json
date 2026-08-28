@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/rarity.schema.json",
+    "title": "D&D 5e Item Rarity",
+    "description": "The rarity of a magic item.",
+    "$comment": "version 0.4.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "common",
+                "uncommon",
+                "rare",
+                "very_rare",
+                "legendary",
+                "artifact"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}
