@@ -4,7 +4,7 @@
 
 Convert D&D 5e XML source data in:
 
-* `C:\Users\Dungeon Master\Documents\git\DMTools\5e Official Only.xml`
+`C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml`
 
 into:
 
@@ -17,20 +17,147 @@ The existing JSON Schemas define the normalized data model. The XML provides the
 
 Do not redesign the data model unless a genuine schema gap is discovered.
 
+## Repository Map
+
+Repository root:
+
+`C:\Users\benve\Documents\Programming\DMTools`
+
+Known project structure:
+
+```text
+DMTools/
+│
+├── 5eFile.xml
+│
+├── schemas/
+│   ├── entities/
+│   │   └── Entity-level JSON Schemas
+│   │
+│   ├── components/
+│   │   └── Reusable JSON Schema components
+│   │
+│   ├── values/
+│   │   └── Reusable values, enums, and constrained definitions
+│   │
+│   └── validator.py
+│       └── Project JSON Schema validation utilities
+│
+└── tests/
+    ├── test_schemas.py
+    │   └── Primary JSON Schema tests
+    │
+    └── data/
+        └── schemas/
+            └── entities/
+                └── Schema test data / fixtures
+```
+
+### Authoritative Paths
+
+| Purpose                  | Path                                                                 |
+| ------------------------ | -------------------------------------------------------------------- |
+| Repository root          | `C:\Users\benve\Documents\Programming\DMTools`                       |
+| Entity schemas           | `schemas/entities/`                                                  |
+| Shared schema components | `schemas/components/`                                                |
+| Schema values/enums      | `schemas/values/`                                                    |
+| Schema validator         | `schemas/validator.py`                                               |
+| Schema tests             | `tests/test_schemas.py`                                              |
+| Schema test data         | `tests/data/schemas/entities/`                                       |
+| XML source               | `C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml` |
+
+### Important
+
+The map above contains only locations that have been verified.
+
+Do not assume that an unlisted directory or file exists.
+
+Before creating or modifying files:
+
+1. Inspect the relevant directory.
+2. Search for an existing equivalent.
+3. Follow the existing project organization.
+4. Only create a new file or directory when required by the project's existing architecture.
+
+If a required project location is not listed here, inspect the repository rather than guessing.
+
+## XML Source and Import
+
+The authoritative source data is:
+
+`C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml`
+
+There is currently **no existing XML parser/importer** in the repository.
+
+Creating the XML parsing/extraction layer is an explicit task in `Ai-Tasks.md`.
+
+When XML parsing functionality is required:
+
+* Inspect the XML structure directly before designing the parser.
+* Do not assume the XML structure matches the JSON Schema structure.
+* Keep XML parsing separate from schema-specific normalization where practical.
+* Prefer a reusable parser/data-extraction layer over embedding XML parsing logic directly into fixture-generation code.
+* Preserve source information during parsing.
+* Do not discard XML information merely because the current schema does not represent it.
+* Do not invent mechanics during parsing.
+* Use the existing JSON Schemas as the authority for normalization.
+* Add tests for important XML parsing behaviour.
+* Keep the parser focused on the actual XML format present in the source file.
+* Do not build a generalized XML framework when a small focused parser is sufficient.
+
+### XML Parsing Development Order
+
+When XML parsing is required:
+
+1. Inspect representative sections of the XML.
+2. Identify the XML structure used by the target entity.
+3. Determine which information is structural and which is descriptive text.
+4. Implement the smallest reusable parser necessary.
+5. Add tests for the parser.
+6. Extract representative source entities.
+7. Normalize the extracted data against the existing JSON Schema.
+8. Validate the resulting fixtures.
+9. Only then proceed to Pydantic model generation.
+
+The parser should answer:
+
+> What does the XML say?
+
+The normalizer should answer:
+
+> How does our schema represent it?
+
+Do not combine XML parsing, D&D interpretation, schema normalization, fixture generation, and Pydantic generation into one monolithic implementation when they can reasonably be separated.
+
+## Development Commands
+
+Do not assume commands. Inspect the repository's existing configuration and documentation to determine the correct commands.
+
+The primary test framework is expected to be pytest, but the agent MUST verify the project's actual test configuration before relying on this assumption.
+
+At minimum, determine:
+
+* How to run the full test suite.
+* How to run `tests/test_schemas.py`.
+* How to run an individual test.
+* Whether any project-specific pytest configuration or arguments are required.
+
+Once verified, prefer targeted tests during development and the broader relevant suite before declaring a task complete.
+
 ## Autonomous Execution Rules
 
 The agent operates incrementally.
 
 * Do NOT attempt to process the entire repository in a single task.
 * Do NOT attempt to process every entity type unless explicitly instructed.
-* Work on ONE entity type at a time.
+* Work on ONE task at a time.
 * Within an entity type, work on ONE coherent implementation unit at a time.
 * Before modifying files, inspect the relevant existing implementation.
 * After each meaningful change, run the most relevant tests.
-* Do not continue to the next entity type until the current one satisfies the Definition of Done.
+* Do not continue to the next task until the current task satisfies its Definition of Done.
 * If a decision is ambiguous and cannot be resolved from the repository, schema, or source XML, stop and report the ambiguity rather than guessing.
 * The current user request defines the task scope.
-* If no specific entity type is specified, inspect the repository and determine the first incomplete entity type according to the existing implementation. Report the proposed scope before making substantial changes.
+* If no specific task is specified, use `Ai-Tasks.md` to determine the first incomplete task.
 * Never claim a task is complete without running the relevant tests.
 
 ## Non-Negotiable Rules
@@ -96,7 +223,6 @@ Unless explicitly required by the current task, DO NOT:
 * Replace the project's validation framework.
 * Replace existing test infrastructure.
 * Introduce new dependencies.
-* Rewrite the XML parser/importer.
 * Modify unrelated schemas.
 * Modify unrelated entity types.
 * Generate large numbers of fixtures.
@@ -105,6 +231,7 @@ Unless explicitly required by the current task, DO NOT:
 * Remove existing tests because they are inconvenient.
 * Weaken validation to make a fixture pass.
 * Change working behaviour merely for stylistic reasons.
+* Build a generalized XML parsing framework when a focused parser is sufficient.
 
 ## Workflow
 
@@ -115,11 +242,11 @@ Always perform the following steps in order.
 Identify:
 
 * JSON Schema location.
-* Existing fixtures.
+* Existing fixtures and test data.
 * Existing schema tests.
-* Pydantic model location.
-* Existing model tests.
-* XML parser/importer code.
+* Pydantic model location, if present.
+* Existing model tests, if present.
+* XML-related utilities, if present.
 * Existing shared components and values.
 
 Determine which conventions the project already uses before creating anything.
@@ -239,8 +366,6 @@ Examples:
 
 Do not duplicate the mechanical information unnecessarily.
 
-For example, do not add a generic feature solely because a dedicated structured field already contains the same information, unless the source trait itself is useful and should be preserved. In that case retain the trait description as source information.
-
 ### 6. Validate immediately
 
 Every generated fixture MUST be validated against its root schema.
@@ -260,48 +385,11 @@ validation test
 
 Fix the correct layer.
 
-Pay particular attention to:
-
-* `oneOf` accidentally matching multiple branches.
-* `anyOf` being used where `oneOf` is required.
-* Missing `additionalProperties: false`.
-* Incorrect `$ref` paths.
-* `$id` values that do not match project conventions.
-* Incorrect conditional requirements.
-* Incorrect nesting.
-* Required fields incorrectly omitted.
-* Optional fields incorrectly required.
-
-After fixing a validation failure, rerun the relevant validation before continuing.
-
 ### 7. Add synthetic examples
 
 After the XML-derived fixtures pass validation, create a small number of synthetic examples.
 
 Synthetic examples exist to test schema functionality that the source XML does not cover.
-
-Examples include:
-
-```text
-alignment with only order
-alignment with only morality
-alignment = any
-
-instantaneous duration
-
-roll with only modifier
-roll with dice + modifier
-
-target count with minimum + maximum
-
-ability score choice
-spell choice
-
-magic item with full charge recharge
-magic item with rolled recharge
-magic item numerical bonus
-magic item non-numeric grant
-```
 
 Synthetic fixtures MUST:
 
@@ -323,6 +411,17 @@ Before creating or modifying a Pydantic model:
 3. Determine whether it can be reused.
 4. Only create a new model when no suitable existing model exists.
 
+Pydantic models MUST:
+
+* Mirror the JSON Schema structure.
+* Use the same field names.
+* Reuse existing nested models.
+* Use typed fields instead of unstructured dictionaries where practical.
+* Use enums/literals where schemas define finite values.
+* Represent optional fields as optional.
+* Preserve nested structures.
+* Avoid duplicating existing shared models.
+
 ### 9. Test and iterate
 
 For each implementation unit:
@@ -332,14 +431,7 @@ For each implementation unit:
 3. Make the smallest required change.
 4. Run the most relevant tests.
 5. Read the complete failure output.
-6. Determine whether the failure is caused by:
-
-   * implementation,
-   * fixture,
-   * schema,
-   * test,
-   * import/configuration,
-   * or environment.
+6. Determine whether the failure is caused by implementation, fixture, schema, test, import/configuration, or environment.
 7. Fix the appropriate layer.
 8. Run the tests again.
 9. Repeat until passing.
@@ -373,104 +465,13 @@ Before doing so:
 4. Add a fixture demonstrating the new capability.
 5. Add validation tests.
 
-Do not modify the schema merely because a single unusual source example is difficult to represent.
-
 ### Case 4 — Source text is ambiguous
 
 Do not guess.
 
 Preserve the source text and report the ambiguity.
 
-## Pydantic Models
-
-### Model requirements
-
-Pydantic models MUST:
-
-* Mirror the JSON Schema structure.
-* Use the same field names.
-* Reuse existing nested models.
-* Use typed fields instead of unstructured dictionaries where practical.
-* Use enums/literals where schemas define finite values.
-* Represent optional fields as optional.
-* Preserve nested structures.
-* Avoid duplicating existing shared models.
-
-Do not create models merely because a JSON object exists if an appropriate shared model already exists.
-
-### Model/schema parity
-
-Where practical, mirror schema constraints:
-
-```text
-enum
-→ Enum / Literal
-
-minimum
-→ numeric constraint
-
-minItems
-→ list constraint
-
-required
-→ non-optional field
-
-optional schema field
-→ Optional field
-```
-
-Complex JSON Schema conditional logic may require Pydantic validators or discriminated model structures.
-
-Do not make the Pydantic model stricter than the schema without a clear reason.
-
-## Pydantic Round-Trip Tests
-
-For every representative fixture:
-
-```text
-fixture JSON
-    ↓
-schema validation
-    ↓
-Pydantic model_validate()
-    ↓
-model_dump()
-    ↓
-schema validation
-```
-
-The dumped Pydantic representation MUST remain schema-valid.
-
-Tests should verify:
-
-```python
-model = Model.model_validate(data)
-data = model.model_dump(...)
-```
-
-and validate `data` against the corresponding JSON Schema.
-
-Where serialization options are required by the project's existing conventions, use those conventions consistently.
-
-## Test Strategy
-
-Add tests for:
-
-* XML-derived fixtures.
-* Synthetic fixtures.
-* Important invalid cases.
-* Pydantic construction.
-* Pydantic round-tripping.
-* Newly introduced schema constraints.
-* Newly introduced schema components.
-
-Tests should verify the data contract, not implementation details.
-
-Prefer targeted tests during development, followed by the broader relevant test suite before declaring the task complete.
-
 ## Entity Coverage
-
-When processing a source XML file, consider all supported entity types represented in the file.
 
 Current major entity types include:
 
@@ -485,7 +486,7 @@ Class
 
 The agent should not assume every XML file contains every entity type.
 
-For each entity type that is explicitly selected for processing:
+For each entity type explicitly selected for processing:
 
 1. Select representative source examples.
 2. Generate normalized JSON.
@@ -495,8 +496,6 @@ For each entity type that is explicitly selected for processing:
 6. Add tests.
 7. Run the relevant test suite.
 8. Complete the Definition of Done before moving to another entity type.
-
-Do not automatically move to the next entity type unless the current task explicitly authorizes continued processing.
 
 ## Naming
 
@@ -508,16 +507,7 @@ JSON fields and Python fields should normally use:
 snake_case
 ```
 
-Fixture filenames should be descriptive and stable:
-
-```text
-acolyte.json
-beholder.json
-high_elf.json
-prismatic_spray.json
-fey_touched.json
-wand_of_orcus.json
-```
+Fixture filenames should be descriptive and stable.
 
 Do not rename existing fixtures without a reason.
 
@@ -526,21 +516,23 @@ Do not rename existing fixtures without a reason.
 At the end of a task, report:
 
 ```text
-Entity types processed:
+Task completed:
 
-Source fixtures added:
+Files added:
 
-Synthetic fixtures added:
-
-Schemas changed:
-
-Pydantic models added/updated:
+Files modified:
 
 Tests added:
 
 Tests passing:
 
+Schemas changed:
+
+Pydantic models added/updated:
+
 Known unsupported mechanics:
+
+Known unresolved issues:
 ```
 
 For unsupported mechanics, explain whether they were:
@@ -549,24 +541,19 @@ For unsupported mechanics, explain whether they were:
 * ambiguous in the source,
 * or blocked by a schema limitation.
 
-Also report any unresolved issues that prevent the Definition of Done from being satisfied.
-
 Do not report an item as complete if the relevant tests have not passed.
 
 ## Definition of Done
 
 A task is complete only when:
 
-* Representative source fixtures have been generated.
-* Fixtures pass JSON Schema validation.
-* Useful synthetic examples have been added.
-* Pydantic models exist for the represented structures.
-* Fixtures can be parsed into Pydantic models.
-* Pydantic round-tripped data remains schema-valid.
+* The required implementation has been completed.
+* Relevant tests have been added or updated.
 * Relevant tests pass.
-* No unrelated schemas or models were unnecessarily changed.
 * No known failing tests have been ignored, disabled, or weakened.
+* No unrelated schemas or models were unnecessarily changed.
 * Any unsupported or ambiguous mechanics have been explicitly reported.
+* The task's specific acceptance criteria in `Ai-Tasks.md` have been satisfied.
 
 ## Guiding Principle
 
