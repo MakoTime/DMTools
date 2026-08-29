@@ -1,0 +1,13 @@
+{
+    "tag": "root",
+    "attributes": {},
+    "text": "Text before",
+    "children": [
+        {
+            "tag": "element",
+            "attributes": {},
+            "text": "Content",
+            "children": []
+        }
+    ]
+}

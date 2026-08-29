@@ -4,7 +4,7 @@
 
 Convert D&D 5e XML source data in:
 
-`C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml`
+`5eFile.xml`
 
 into:
 
@@ -64,7 +64,7 @@ DMTools/
 | Schema validator         | `schemas/validator.py`                                               |
 | Schema tests             | `tests/test_schemas.py`                                              |
 | Schema test data         | `tests/data/schemas/entities/`                                       |
-| XML source               | `C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml` |
+| XML source               | `5eFile.xml` |
 
 ### Important
 
@@ -85,7 +85,7 @@ If a required project location is not listed here, inspect the repository rather
 
 The authoritative source data is:
 
-`C:\Users\Dungeon Master\Documents\git\DMTools\5eFile.xml`
+`5eFile.xml`
 
 There is currently **no existing XML parser/importer** in the repository.
 
@@ -576,3 +576,66 @@ invented structured data + lost source information
 ```
 
 When uncertain, preserve the source text rather than guessing.
+
+## Development Commands
+
+Run Python tests using the project's Python interpreter:
+
+```text
+python -m pytest
+```
+
+Do NOT use the standalone `pytest` command unless there is a specific project requirement to do so.
+
+This ensures pytest runs through the active Python environment and avoids relying on a separate pytest executable being available on `PATH`.
+
+### Targeted Tests
+
+During development, run the smallest relevant test set first.
+
+For the XML parser:
+
+```text
+python -m pytest tests/test_xml_parser.py -v
+```
+
+For schema tests:
+
+```text
+python -m pytest tests/test_schemas.py -v
+```
+
+For a specific test:
+
+```text
+python -m pytest tests/test_xml_parser.py::test_name -v
+```
+
+Before declaring a task complete, run the broader relevant test suite:
+
+```text
+python -m pytest -v
+```
+
+### Test Failure Procedure
+
+When a test fails:
+
+1. Read the complete traceback.
+2. Identify whether the failure is caused by:
+
+   * implementation,
+   * fixture,
+   * schema,
+   * test,
+   * import/package configuration,
+   * dependency/environment,
+   * or an unrelated existing failure.
+3. Fix the appropriate layer.
+4. Rerun the failing targeted test.
+5. Rerun the relevant broader tests.
+6. Do not modify environment variables such as `PATH` or `PYTHONPATH` as a first-line workaround.
+7. Do not disable or weaken a test to make it pass.
+
+If an import failure occurs, inspect the repository's package structure and existing test configuration before changing imports or project configuration.
+

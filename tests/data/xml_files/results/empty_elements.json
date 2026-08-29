@@ -1,0 +1,25 @@
+{
+    "tag": "root",
+    "attributes": {},
+    "text": "",
+    "children": [
+        {
+            "tag": "empty",
+            "attributes": {},
+            "text": null,
+            "children": []
+        },
+        {
+            "tag": "also_empty",
+            "attributes": {},
+            "text": null,
+            "children": []
+        },
+        {
+            "tag": "text",
+            "attributes": {},
+            "text": "Content",
+            "children": []
+        }
+    ]
+}

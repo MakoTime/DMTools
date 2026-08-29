@@ -1,0 +1,25 @@
+{
+    "tag": "root",
+    "attributes": {},
+    "text": "",
+    "children": [
+        {
+            "tag": "value",
+            "attributes": {},
+            "text": "10",
+            "children": []
+        },
+        {
+            "tag": "value",
+            "attributes": {},
+            "text": "20",
+            "children": []
+        },
+        {
+            "tag": "value",
+            "attributes": {},
+            "text": "30",
+            "children": []
+        }
+    ]
+}

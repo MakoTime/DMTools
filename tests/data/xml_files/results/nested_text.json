@@ -1,0 +1,19 @@
+{
+    "tag": "root",
+    "attributes": {},
+    "text": "",
+    "children": [
+        {
+            "tag": "text",
+            "attributes": {},
+            "text": "First line",
+            "children": []
+        },
+        {
+            "tag": "text",
+            "attributes": {},
+            "text": "Second line",
+            "children": []
+        }
+    ]
+}

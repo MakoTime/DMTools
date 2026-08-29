@@ -1,0 +1,16 @@
+{
+    "tag": "root",
+    "attributes": {
+        "type": "creature",
+        "source": "test"
+    },
+    "text": "",
+    "children": [
+        {
+            "tag": "name",
+            "attributes": {},
+            "text": "Dragon",
+            "children": []
+        }
+    ]
+}
