@@ -23,13 +23,46 @@ Repository root:
 
 `C:\Users\benve\Documents\Programming\DMTools`
 
-Known project structure:
+Verified project structure:
 
 ```text
 DMTools/
 │
 ├── 5eFile.xml
-│
+├── Ai-Tasks.md
+├── main.py
+├── menu.py
+├── requirements.txt
+├── application/
+│   ├── database_service.py
+│   ├── file_window.py
+│   ├── project_controller.py
+│   ├── project_serializer.py
+│   ├── project_version.py
+│   ├── sql_import.py
+│   └── controllers/db_controller.py
+├── components/
+│   ├── database/objects/object_base.py
+│   └── tree/{model.py,search.py,view.py}
+├── dialog/
+│   ├── base/{editor,popup_editor,tab_editor,widget_editor}/
+│   ├── database/{factory.py,model.py,view.py}
+│   ├── db_base/{factory.py,model.py,view.py}
+│   └── notify/{factory.py,model.py,view.py,notify.ui}
+├── models/
+│   ├── common.py
+│   ├── components.py
+│   ├── item.py
+│   ├── monster.py
+│   └── search_strings.py
+├── objects/
+│   └── Database, JSON, query, shopkeeper, and table objects
+├── parsers/
+│   ├── item_adaptor.py
+│   ├── item_parser.py
+│   ├── monster_adaptor.py
+│   ├── monster_parser.py
+│   └── xml_parser.py
 ├── schemas/
 │   ├── entities/
 │   │   └── Entity-level JSON Schemas
@@ -44,13 +77,14 @@ DMTools/
 │       └── Project JSON Schema validation utilities
 │
 └── tests/
-    ├── test_schemas.py
-    │   └── Primary JSON Schema tests
+    ├── test_*.py
+    │   └── Parser, model, database, dialog, and schema tests
     │
     └── data/
-        └── schemas/
-            └── entities/
-                └── Schema test data / fixtures
+        ├── schemas/entities/
+        │   └── Schema and model fixtures
+        └── xml_files/
+            └── XML parser and source fixtures
 ```
 
 ### Authoritative Paths
@@ -81,15 +115,56 @@ Before creating or modifying files:
 
 If a required project location is not listed here, inspect the repository rather than guessing.
 
+## Current XML Inventory
+
+The supplied `5eFile.xml` has a `compendium` root and 4,507 top-level records:
+
+| XML tag | Record count |
+|---|---:|
+| `item` | 1,847 |
+| `monster` | 1,492 |
+| `spell` | 824 |
+| `feat` | 130 |
+| `race` | 104 |
+| `background` | 94 |
+| `class` | 16 |
+
+There are no separate top-level `weapon`, `equipment`, or `subclass` records in the current source. Treat those as schema concepts until the XML inventory provides evidence otherwise.
+
+Notable source structures:
+
+* `monster` records contain nested `trait`, `action`, `reaction`, and `legendary` elements, along with attacks, spell slots, defenses, and environments.
+* `spell` records contain repeated `text` elements and optional `roll` elements.
+* `race` records contain repeated traits and occasional nested `special` or `modifier` elements.
+* `background` records contain repeated traits with nested text nodes.
+* `class` records contain `autolevel` elements with `level` and optional `scoreImprovement` attributes, plus nested features, slots, and counters.
+* `item` records use category-dependent fields for damage, armor, modifiers, rolls, charges, properties, range, weight, and value.
+
+Re-run the inventory after source changes rather than relying on these counts indefinitely.
+
+## Application Architecture
+
+The repository also contains a PySide6 application. Preserve its existing Model/View/Factory dialog pattern:
+
+* Keep domain state and editable state in a model.
+* Keep Qt layout and event handling in a view.
+* Construct views through a factory that accepts the model.
+* Embedded workspace editors inherit from `dialog/base/widget_editor/WidgetEditorView`.
+* Modal editors use the popup base.
+* Tab-hosted editors use the tab base.
+* Prefer existing PySide6 and project patterns over a parallel UI architecture.
+* Keep SQLite as the source of truth; use pandas only as a temporary display/editing layer.
+* Treat external SQL or database files as import inputs and persist only the generated project-managed SQLite file under the project's `data` directory.
+
+Do not mix Qt event handling, database persistence, XML parsing, and schema normalization into one class or module.
+
 ## XML Source and Import
 
 The authoritative source data is:
 
 `5eFile.xml`
 
-There is currently **no existing XML parser/importer** in the repository.
-
-Creating the XML parsing/extraction layer is an explicit task in `Ai-Tasks.md`.
+The repository has a generic XML parser in `parsers/xml_parser.py` and source-specific Monster and Item parsing/adaptation in `parsers/`. A complete dispatcher and import pipeline for every top-level entity is still an explicit task in `Ai-Tasks.md`.
 
 When XML parsing functionality is required:
 
@@ -480,9 +555,12 @@ Creature
 Spell
 Race
 Feat
+Background
 Item
 Class
 ```
+
+The current XML also contains `monster` records, which are adapted to the Creature/Monster schema hierarchy. The source currently contains 1,847 items, 1,492 monsters, 824 spells, 130 feats, 104 races, 94 backgrounds, and 16 classes.
 
 The agent should not assume every XML file contains every entity type.
 
@@ -579,13 +657,13 @@ When uncertain, preserve the source text rather than guessing.
 
 ## Development Commands
 
-Run Python tests using the project's Python interpreter:
+Run Python tests using the project's project-local Python interpreter:
 
 ```text
-python -m pytest
+.\\.venv\\Scripts\\python.exe -m pytest
 ```
 
-Do NOT use the standalone `pytest` command unless there is a specific project requirement to do so.
+Do NOT use the standalone `pytest` command. Do not assume the system `python` points at the project environment.
 
 This ensures pytest runs through the active Python environment and avoids relying on a separate pytest executable being available on `PATH`.
 
@@ -596,25 +674,25 @@ During development, run the smallest relevant test set first.
 For the XML parser:
 
 ```text
-python -m pytest tests/test_xml_parser.py -v
+.\\.venv\\Scripts\\python.exe -m pytest tests/test_xml_parser.py -v
 ```
 
 For schema tests:
 
 ```text
-python -m pytest tests/test_schemas.py -v
+.\\.venv\\Scripts\\python.exe -m pytest tests/test_schemas.py -v
 ```
 
 For a specific test:
 
 ```text
-python -m pytest tests/test_xml_parser.py::test_name -v
+.\\.venv\\Scripts\\python.exe -m pytest tests/test_xml_parser.py::test_name -v
 ```
 
 Before declaring a task complete, run the broader relevant test suite:
 
 ```text
-python -m pytest -v
+.\\.venv\\Scripts\\python.exe -m pytest -v
 ```
 
 ### Test Failure Procedure
