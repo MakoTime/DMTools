@@ -25,7 +25,7 @@
             "$ref": "../values/ability_score.schema.json"
         },
         "skill": {
-            "$ref": "../values/skill_name.schema.json"
+            "$ref": "../values/skill.schema.json"
         },
         "saving_throw": {
             "oneOf": [

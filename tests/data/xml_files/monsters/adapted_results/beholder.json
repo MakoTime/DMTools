@@ -1,0 +1,99 @@
+{
+    "name": "Beholder",
+    "size": "large",
+    "creature_type": "aberration",
+    "alignment": {
+        "order": "lawful",
+        "morality": "evil"
+    },
+    "ability_scores": {
+        "strength": 10,
+        "dexterity": 14,
+        "constitution": 18,
+        "intelligence": 17,
+        "wisdom": 15,
+        "charisma": 17
+    },
+    "armor_class": {
+        "value": 18,
+        "description": "natural armor"
+    },
+    "hit_points": {
+        "maximum": 189,
+        "current": 189
+    },
+    "hit_dice": {
+        "count": 19,
+        "dice": 10
+    },
+    "movement": [
+        {
+            "movement_type": "walk",
+            "speed": {
+                "distance": 0,
+                "unit": "feet"
+            }
+        },
+        {
+            "movement_type": "fly",
+            "speed": {
+                "distance": 20,
+                "unit": "feet"
+            },
+            "hover": true
+        }
+    ],
+    "saving_throws": {
+        "intelligence": 8,
+        "wisdom": 7,
+        "charisma": 8
+    },
+    "skills": {
+        "perception": 12
+    },
+    "condition_immunities": [
+        "prone"
+    ],
+    "senses": [
+        {
+            "type": "darkvision",
+            "distance": 120,
+            "distance_type": "feet"
+        }
+    ],
+    "passive_perception": 22,
+    "languages": [
+        "Deep Speech",
+        "Undercommon"
+    ],
+    "features": [
+        {
+            "name": "Antimagic Cone",
+            "description": "The beholder's central eye creates an area of antimagic, as in the antimagic field spell, in a 150-foot cone. At the start of each of its turns, the beholder decides which way the cone faces and whether the cone is active. The area works against the beholder's own eye rays."
+        }
+    ],
+    "actions": [
+        {
+            "name": "Bite",
+            "description": "Melee Weapon Attack: +5 to hit, reach 5 ft., one target. Hit: 14 (4d6) piercing damage."
+        },
+        {
+            "name": "Eye Rays",
+            "description": "The beholder shoots three of the following magical eye rays at random (reroll duplicates), choosing one to three targets it can see within 120 ft. of it:\n1. Charm Ray. The targeted creature must succeed on a DC 16 Wisdom saving throw or be charmed by the beholder for 1 hour, or until the beholder harms the creature.\n2. Paralyzing Ray. The targeted creature must succeed on a DC 16 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n3. Fear Ray. The targeted creature must succeed on a DC 16 Wisdom saving throw or be frightened for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n4. Slowing Ray. The targeted creature must succeed on a DC 16 Dexterity saving throw. On a failed save, the target's speed is halved for 1 minute. In addition, the creature can't take reactions, and it can take either an action or a bonus action on its turn, not both. The creature can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.\n5. Enervation Ray. The targeted creature must make a DC 16 Constitution saving throw, taking 36 (8d8) necrotic damage on a failed save, or half as much damage on a successful one.\n6. Telekinetic Ray. If the target is a creature, it must succeed on a DC 16 Strength saving throw or the beholder moves it up to 30 ft. in any direction. It is restrained by the ray's telekinetic grip until the start of the beholder's next turn or until the beholder is incapacitated.\nIf the target is an object weighing 300 pounds or less that isn't being worn or carried, it is moved up to 30 ft. in any direction. The beholder can also exert fine control on objects with this ray, such as manipulating a simple tool or opening a door or a container.\n7. Sleep Ray. The targeted creature must succeed on a DC 16 Wisdom saving throw or fall asleep and remain unconscious for 1 minute. The target awakens if it takes damage or another creature takes an action to wake it. This ray has no effect on constructs and undead.\n8. Petrification Ray. The targeted creature must make a DC 16 Dexterity saving throw. On a failed save, the creature begins to turn to stone and is restrained. It must repeat the saving throw at the end of its next turn. On a success, the effect ends. On a failure, the creature is petrified until freed by the greater restoration spell or other magic.\n9. Disintegration Ray. If the target is a creature, it must succeed on a DC 16 Dexterity saving throw or take 45 (10d8) force damage. If this damage reduces the creature to 0 hit points, its body becomes a pile of fine gray dust.\nIf the target is a Large or smaller nonmagical object or creation of magical force, it is disintegrated without a saving throw. If the target is a Huge or larger object or creation of magical force, this ray disintegrates a 10-foot cube of it.\n10. Death Ray. The targeted creature must succeed on a DC 16 Dexterity saving throw or take 55 (10d10) necrotic damage. The target dies if the ray reduces it to 0 hit points.\n\nCharmed:\n• A charmed creature can't attack the charmer or target the charmer with harmful abilities or magical effects.\n\n• The charmer has advantage on any ability check to interact socially with the creature.\n\nFrightened:\n• A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.\n\n• The creature can't willingly move closer to the source of its fear.\n\nParalyzed:\n• A paralyzed creature is incapacitated, meaning it can't take actions or reactions, and can't move or speak.\n\n• The creature automatically fails Strength and Dexterity saving throws.\n\n• Attack rolls against the creature have advantage.\n\n• Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.\n\nPetrified:\n• A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone). Its weight increases by a factor of ten, and it ceases aging.\n\n• The creature is incapacitated (meaning it can't take actions or reactions), can't move or speak, and is unaware of its surroundings.\n\n• Attack rolls against the creature have advantage.\n\n• The creature automatically fails Strength and Dexterity saving throws.\n\n• The creature has resistance to all damage.\n\n• The creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized.\n\nRestrained:\n• A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed.\n\n• Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.\n\n• The creature has disadvantage on Dexterity saving throws.\n\nUnconscious:\n• An unconscious creature is incapacitated, meaning it can't take actions or reactions, can't move or speak, and is unaware of its surroundings.\n\n• The creature drops whatever it's holding and falls prone.\n\n• The creature automatically fails Strength and Dexterity saving throws.\n\n• Attack rolls against the creature have advantage.\n\n• Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature."
+        }
+    ],
+    "legendary_actions": [
+        {
+            "name": "Legendary Actions (3/Turn)",
+            "description": "The beholder can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. The beholder regains spent legendary actions at the start of its turn."
+        },
+        {
+            "name": "Eye Ray",
+            "description": "The beholder uses one random eye ray."
+        }
+    ],
+    "challenge_rating": 13.0,
+    "environments": [
+        "underdark"
+    ]
+}

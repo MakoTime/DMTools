@@ -1,0 +1,65 @@
+<monster>
+    <name>Purple Worm</name>
+    <size>G</size>
+    <type>monstrosity</type>
+    <alignment>unaligned</alignment>
+    <ac>18 (natural armor)</ac>
+    <hp>247 (15d20+90)</hp>
+    <speed>50 ft., burrow 30 ft.</speed>
+    <str>28</str><dex>7</dex><con>22</con><int>1</int><wis>8</wis><cha>4</cha>
+    <save>Con +11, Wis +4</save>
+    <skill/>
+    <resist/>
+    <vulnerable/>
+    <immune/>
+    <conditionImmune/>
+    <senses>blindsight 30 ft., tremorsense 60 ft.</senses>
+    <passive>9</passive>
+    <languages/>
+    <cr>15</cr>
+    <trait>
+        <name>Source</name>
+        <text>Monster Manual p. 255</text>
+    </trait>
+    <trait>
+        <name>Tunneler</name>
+        <text>The worm can burrow through solid rock at half its burrow speed and leaves a 10-foot-diameter tunnel in its wake.</text>
+    </trait>
+    <action>
+        <name>Multiattack</name>
+        <text>The worm makes two attacks: one with its bite and one with its stinger.</text>
+    </action>
+    <action>
+        <name>Bite</name>
+        <text>Melee Weapon Attack: +9 to hit, reach 10 ft., one target. Hit: 22 (3d8+9) piercing damage. If the target is a Large or smaller creature, it must succeed on a DC 19 Dexterity saving throw or be swallowed by the worm. A swallowed creature is blinded and restrained, it has total cover against attacks and other effects outside the worm, and it takes 21 (6d6) acid damage at the start of each of the worm's turns.</text>
+        <text>	If the worm takes 30 damage or more on a single turn from a creature inside it, the worm must succeed on a DC 21 Constitution saving throw at the end of that turn or regurgitate all swallowed creatures, which fall prone in a space within 10 feet of the worm. If the worm dies, a swallowed creature is no longer restrained by it and can escape from the corpse by using 20 feet of movement, exiting prone.</text>
+        <text/>
+        <text>Blinded:</text>
+        <text>• A blinded creature can't see and automatically fails any ability check that requires sight.</text>
+        <text/>
+        <text>• Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.</text>
+        <text/>
+        <text>Prone:</text>
+        <text>• A prone creature's only movement option is to crawl, unless it stands up and thereby ends the condition.</text>
+        <text/>
+        <text>• The creature has disadvantage on attack rolls.</text>
+        <text/>
+        <text>• An attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the attack roll has disadvantage.</text>
+        <text/>
+        <text>Restrained:</text>
+        <text>• A restrained creature's speed becomes 0, and it can't benefit from any bonus to its speed.</text>
+        <text/>
+        <text>• Attack rolls against the creature have advantage, and the creature's attack rolls have disadvantage.</text>
+        <text/>
+        <text>• The creature has disadvantage on Dexterity saving throws.</text>
+        <attack>Bite|9|3d8+9</attack>
+    </action>
+    <action>
+        <name>Tail Stinger</name>
+        <text>Melee Weapon Attack: +9 to hit, reach 10 ft., one creature. Hit: 19 (3d6+9) piercing damage, and the target must make a DC 19 Constitution saving throw, taking 42 (12d6) poison damage on a failed save, or half as much damage on a successful one.</text>
+        <attack>Tail Stinger|9|3d6+9</attack>
+    </action>
+    <spells/>
+    <slots/>
+    <environment>desert, underdark</environment>
+</monster>

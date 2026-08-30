@@ -3,7 +3,7 @@
     "$id": "entities/Monster.schema.json",
     "title": "D&D 5e Monster",
     "description": "A monster stat block. Extends Creature.",
-    "$comment": "version 0.4.0",
+    "$comment": "version 0.5.0",
     "type": "object",
     "allOf": [
         {
@@ -11,33 +11,22 @@
         }
     ],
     "required": [
-        "size",
-        "creature_type"
+        "challenge_rating"
     ],
     "properties": {
-        "subtype": {
-            "type": "string",
-            "examples": [
-                "goblinoid"
-            ]
-        },
         "challenge_rating": {
             "type": "number",
             "minimum": 0,
             "examples": [
+                0,
                 0.125,
                 0.25,
                 0.5,
                 1,
-                2
+                2,
+                13,
+                21
             ]
-        },
-        "tags": {
-            "type": "array",
-            "items": {
-                "$ref": "../values/tag.schema.json"
-            },
-            "uniqueItems": true
         }
     }
 }

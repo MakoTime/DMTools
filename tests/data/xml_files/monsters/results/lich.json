@@ -1,0 +1,197 @@
+{
+    "name": "Lich",
+    "size": "M",
+    "type": "undead",
+    "alignment": "any evil alignment",
+    "ac": "17 (natural armor)",
+    "hp": "135 (18d8+54)",
+    "speed": "30 ft.",
+    "ability_scores": {
+        "str": "11",
+        "dex": "16",
+        "con": "16",
+        "int": "20",
+        "wis": "14",
+        "cha": "16"
+    },
+    "saves": "Con +10, Int +12, Wis +9",
+    "skills": "Arcana +18, History +12, Insight +9, Perception +9",
+    "resistances": "cold, lightning, necrotic",
+    "vulnerabilities": null,
+    "immunities": "poison; bludgeoning, piercing, and slashing from nonmagical attacks",
+    "condition_immunities": "charmed, exhaustion, frightened, paralyzed, poisoned",
+    "senses": "truesight 120 ft.",
+    "passive": "19",
+    "languages": "Common plus up to five other languages",
+    "cr": "21",
+    "traits": [
+        {
+            "name": "Source",
+            "text": [
+                "Monster Manual p. 202"
+            ],
+            "children": []
+        },
+        {
+            "name": "Legendary Resistance (3/Day)",
+            "text": [
+                "If the lich fails a saving throw, it can choose to succeed instead."
+            ],
+            "children": []
+        },
+        {
+            "name": "Rejuvenation",
+            "text": [
+                "If it has a phylactery, a destroyed lich gains a new body in 1d10 days, regaining all its hit points and becoming active again. The new body appears within 5 feet of the phylactery."
+            ],
+            "children": []
+        },
+        {
+            "name": "Spellcasting",
+            "text": [
+                "The lich is an 18th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 20, +12 to hit with spell attacks). The lich has the following wizard spells prepared:",
+                null,
+                "Cantrips (at will): mage hand, prestidigitation, ray of frost",
+                null,
+                "• 1st level (4 slots): detect magic, magic missile, shield, thunderwave",
+                null,
+                "• 2nd level (3 slots): detect thoughts, invisibility, Melf's acid arrow, mirror image",
+                null,
+                "• 3rd level (3 slots): animate dead, counterspell, dispel magic, fireball",
+                null,
+                "• 4th level (3 slots): blight, dimension door",
+                null,
+                "• 5th level (3 slots): cloudkill, scrying",
+                null,
+                "• 6th level (1 slot): disintegrate, globe of invulnerability",
+                null,
+                "• 7th level (1 slot): finger of death, plane shift",
+                null,
+                "• 8th level (1 slot): dominate monster, power word stun",
+                null,
+                "• 9th level (1 slot): power word kill"
+            ],
+            "children": []
+        },
+        {
+            "name": "Turn Resistance",
+            "text": [
+                "The lich has advantage on saving throws against any effect that turns undead."
+            ],
+            "children": []
+        }
+    ],
+    "actions": [
+        {
+            "name": "Paralyzing Touch",
+            "text": [
+                "Melee Spell Attack: +12 to hit, reach 5 ft., one creature. Hit: 10 (3d6) cold damage. The target must succeed on a DC 18 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.",
+                null,
+                "Paralyzed:",
+                "• A paralyzed creature is incapacitated, meaning it can't take actions or reactions, and can't move or speak.",
+                null,
+                "• The creature automatically fails Strength and Dexterity saving throws.",
+                null,
+                "• Attack rolls against the creature have advantage.",
+                null,
+                "• Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature."
+            ],
+            "attacks": [
+                {
+                    "name": "Paralyzing Touch",
+                    "bonus": "12",
+                    "damage": "3d6"
+                }
+            ]
+        }
+    ],
+    "legendary_actions": [
+        {
+            "name": "Legendary Actions (3/Turn)",
+            "text": [
+                "The lich can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. The lich regains spent legendary actions at the start of its turn."
+            ],
+            "children": []
+        },
+        {
+            "name": "Cantrip",
+            "text": [
+                "The lich casts a cantrip."
+            ],
+            "children": []
+        },
+        {
+            "name": "Paralyzing Touch (Costs 2 Actions)",
+            "text": [
+                "The lich uses its Paralyzing Touch."
+            ],
+            "children": []
+        },
+        {
+            "name": "Frightening Gaze (Costs 2 Actions)",
+            "text": [
+                "The lich fixes its gaze on one creature it can see within 10 feet of it. The target must succeed on a DC 18 Wisdom saving throw against this magic or become frightened for 1 minute. The frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a target's saving throw is successful or the effect ends for it, the target is immune to the lich's gaze for the next 24 hours.",
+                null,
+                "Frightened:",
+                "• A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.",
+                null,
+                "• The creature can't willingly move closer to the source of its fear."
+            ],
+            "children": []
+        },
+        {
+            "name": "Disrupt Life (Costs 3 Actions)",
+            "text": [
+                "Each living creature within 20 feet of the lich must make a DC 18 Constitution saving throw against this magic, taking 21 (6d6) necrotic damage on a failed save, or half as much damage on a successful one."
+            ],
+            "children": [
+                {
+                    "tag": "attack",
+                    "attributes": {},
+                    "text": "Disrupt Life|0|6d6",
+                    "children": []
+                }
+            ]
+        }
+    ],
+    "spells": [
+        "mage hand",
+        "prestidigitation",
+        "ray of frost",
+        "detect magic",
+        "magic missile",
+        "shield",
+        "thunderwave",
+        "detect thoughts",
+        "invisibility",
+        "Melf's acid arrow",
+        "mirror image",
+        "animate dead",
+        "counterspell",
+        "dispel magic",
+        "fireball",
+        "blight",
+        "dimension door",
+        "cloudkill",
+        "scrying",
+        "disintegrate",
+        "globe of invulnerability",
+        "finger of death",
+        "plane shift",
+        "dominate monster",
+        "power word stun",
+        "power word kill"
+    ],
+    "slots": [
+        4,
+        3,
+        3,
+        3,
+        3,
+        1,
+        1,
+        1,
+        1
+    ],
+    "environment": []
+}

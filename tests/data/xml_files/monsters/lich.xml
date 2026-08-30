@@ -1,0 +1,103 @@
+<monster>
+    <name>Lich</name>
+    <size>M</size>
+    <type>undead</type>
+    <alignment>any evil alignment</alignment>
+    <ac>17 (natural armor)</ac>
+    <hp>135 (18d8+54)</hp>
+    <speed>30 ft.</speed>
+    <str>11</str><dex>16</dex><con>16</con><int>20</int><wis>14</wis><cha>16</cha>
+    <save>Con +10, Int +12, Wis +9</save>
+    <skill>Arcana +18, History +12, Insight +9, Perception +9</skill>
+    <resist>cold, lightning, necrotic</resist>
+    <vulnerable/>
+    <immune>poison; bludgeoning, piercing, and slashing from nonmagical attacks</immune>
+    <conditionImmune>charmed, exhaustion, frightened, paralyzed, poisoned</conditionImmune>
+    <senses>truesight 120 ft.</senses>
+    <passive>19</passive>
+    <languages>Common plus up to five other languages</languages>
+    <cr>21</cr>
+    <trait>
+        <name>Source</name>
+        <text>Monster Manual p. 202</text>
+    </trait>
+    <trait>
+        <name>Legendary Resistance (3/Day)</name>
+        <text>If the lich fails a saving throw, it can choose to succeed instead.</text>
+    </trait>
+    <trait>
+        <name>Rejuvenation</name>
+        <text>If it has a phylactery, a destroyed lich gains a new body in 1d10 days, regaining all its hit points and becoming active again. The new body appears within 5 feet of the phylactery.</text>
+    </trait>
+    <trait>
+        <name>Spellcasting</name>
+        <text>The lich is an 18th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 20, +12 to hit with spell attacks). The lich has the following wizard spells prepared: </text>
+        <text/>
+        <text>Cantrips (at will): mage hand, prestidigitation, ray of frost</text>
+        <text/>
+        <text>• 1st level (4 slots): detect magic, magic missile, shield, thunderwave</text>
+        <text/>
+        <text>• 2nd level (3 slots): detect thoughts, invisibility, Melf's acid arrow, mirror image</text>
+        <text/>
+        <text>• 3rd level (3 slots): animate dead, counterspell, dispel magic, fireball</text>
+        <text/>
+        <text>• 4th level (3 slots): blight, dimension door</text>
+        <text/>
+        <text>• 5th level (3 slots): cloudkill, scrying</text>
+        <text/>
+        <text>• 6th level (1 slot): disintegrate, globe of invulnerability</text>
+        <text/>
+        <text>• 7th level (1 slot): finger of death, plane shift</text>
+        <text/>
+        <text>• 8th level (1 slot): dominate monster, power word stun</text>
+        <text/>
+        <text>• 9th level (1 slot): power word kill</text>
+    </trait>
+    <trait>
+        <name>Turn Resistance</name>
+        <text>The lich has advantage on saving throws against any effect that turns undead.</text>
+    </trait>
+    <action>
+        <name>Paralyzing Touch</name>
+        <text>Melee Spell Attack: +12 to hit, reach 5 ft., one creature. Hit: 10 (3d6) cold damage. The target must succeed on a DC 18 Constitution saving throw or be paralyzed for 1 minute. The target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success.</text>
+        <text/>
+        <text>Paralyzed:</text>
+        <text>• A paralyzed creature is incapacitated, meaning it can't take actions or reactions, and can't move or speak.</text>
+        <text/>
+        <text>• The creature automatically fails Strength and Dexterity saving throws.</text>
+        <text/>
+        <text>• Attack rolls against the creature have advantage.</text>
+        <text/>
+        <text>• Any attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature.</text>
+        <attack>Paralyzing Touch|12|3d6</attack>
+    </action>
+    <legendary>
+        <name>Legendary Actions (3/Turn)</name>
+        <text>The lich can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. The lich regains spent legendary actions at the start of its turn.</text>
+    </legendary>
+    <legendary>
+        <name>Cantrip</name>
+        <text>The lich casts a cantrip.</text>
+    </legendary>
+    <legendary>
+        <name>Paralyzing Touch (Costs 2 Actions)</name>
+        <text>The lich uses its Paralyzing Touch.</text>
+    </legendary>
+    <legendary>
+        <name>Frightening Gaze (Costs 2 Actions)</name>
+        <text>The lich fixes its gaze on one creature it can see within 10 feet of it. The target must succeed on a DC 18 Wisdom saving throw against this magic or become frightened for 1 minute. The frightened target can repeat the saving throw at the end of each of its turns, ending the effect on itself on a success. If a target's saving throw is successful or the effect ends for it, the target is immune to the lich's gaze for the next 24 hours.</text>
+        <text/>
+        <text>Frightened:</text>
+        <text>• A frightened creature has disadvantage on ability checks and attack rolls while the source of its fear is within line of sight.</text>
+        <text/>
+        <text>• The creature can't willingly move closer to the source of its fear.</text>
+    </legendary>
+    <legendary>
+        <name>Disrupt Life (Costs 3 Actions)</name>
+        <text>Each living creature within 20 feet of the lich must make a DC 18 Constitution saving throw against this magic, taking 21 (6d6) necrotic damage on a failed save, or half as much damage on a successful one.</text>
+        <attack>Disrupt Life|0|6d6</attack>
+    </legendary>
+    <spells>mage hand, prestidigitation, ray of frost, detect magic, magic missile, shield, thunderwave, detect thoughts, invisibility, Melf's acid arrow, mirror image, animate dead, counterspell, dispel magic, fireball, blight, dimension door, cloudkill, scrying, disintegrate, globe of invulnerability, finger of death, plane shift, dominate monster, power word stun, power word kill</spells>
+    <slots>4, 3, 3, 3, 3, 1, 1, 1, 1</slots>
+    <environment/>
+</monster>

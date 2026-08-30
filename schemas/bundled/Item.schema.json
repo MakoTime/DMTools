@@ -1,0 +1,1335 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Item.schema.json",
+    "title": "D&D 5e Item",
+    "description": "An item in the catalog.",
+    "$comment": "version 0.5.0",
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "description": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "category": {
+            "$ref": "#/$defs/item_category"
+        },
+        "weapon": {
+            "$ref": "#/$defs/weapon"
+        },
+        "armor": {
+            "$ref": "#/$defs/armor"
+        },
+        "magic_item": {
+            "$ref": "#/$defs/magic_item"
+        },
+        "weight": {
+            "type": "number",
+            "minimum": 0
+        },
+        "cost": {
+            "$ref": "#/$defs/cost"
+        },
+        "features": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/feature"
+            }
+        },
+        "source": {
+            "$ref": "#/$defs/source"
+        },
+        "image": {
+            "$ref": "#/$defs/image"
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "item_category": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/item_category.schema.json",
+            "title": "D&D 5e Item Category",
+            "description": "A category of item.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "armor",
+                        "potion",
+                        "ring",
+                        "rod",
+                        "scroll",
+                        "staff",
+                        "wand",
+                        "weapon",
+                        "wonderous_item",
+                        "adventuring_gear",
+                        "tool"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "custom_value": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/custom_value.schema.json",
+            "title": "Custom Value",
+            "description": "A homebrew or otherwise non-canonical string value.",
+            "$comment": "version 0.4.0",
+            "type": "string",
+            "minLength": 1
+        },
+        "weapon": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/weapon.schema.json",
+            "title": "D&D 5e Weapon",
+            "description": "The weapon properties of an item.",
+            "$comment": "version 0.1.0",
+            "type": "object",
+            "properties": {
+                "type": {
+                    "$ref": "#/$defs/weapon_type"
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    },
+                    "minItems": 1
+                },
+                "properties": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/weapon_property"
+                    },
+                    "uniqueItems": true
+                },
+                "range": {
+                    "$ref": "#/$defs/range"
+                }
+            },
+            "additionalProperties": false
+        },
+        "weapon_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/weapon_type.schema.json",
+            "title": "D&D 5e Weapon Type",
+            "description": "A specific weapon type.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "club",
+                        "dagger",
+                        "greatclub",
+                        "handaxe",
+                        "javelin",
+                        "light_hammer",
+                        "mace",
+                        "quarterstaff",
+                        "sickle",
+                        "spear",
+                        "crossbow_light",
+                        "dart",
+                        "shortbow",
+                        "sling",
+                        "battleaxe",
+                        "flail",
+                        "glaive",
+                        "greataxe",
+                        "greatsword",
+                        "halberd",
+                        "lance",
+                        "longsword",
+                        "maul",
+                        "morningstar",
+                        "pike",
+                        "rapier",
+                        "scimitar",
+                        "shortsword",
+                        "trident",
+                        "war_pick",
+                        "warhammer",
+                        "whip",
+                        "blowgun",
+                        "crossbow_hand",
+                        "crossbow_heavy",
+                        "longbow",
+                        "net",
+                        "any_sword"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "effect": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/effect.schema.json",
+            "title": "D&D 5e Effect",
+            "description": "An effect produced by an action, spell, feature, or attack.",
+            "$comment": "version 0.5.0",
+            "type": "object",
+            "properties": {
+                "damage": {
+                    "$ref": "#/$defs/damage"
+                },
+                "healing": {
+                    "$ref": "#/$defs/roll"
+                },
+                "max_hit_points": {
+                    "$ref": "#/$defs/roll"
+                },
+                "temporary_hit_points": {
+                    "$ref": "#/$defs/roll"
+                },
+                "ability_score": {
+                    "$ref": "#/$defs/roll"
+                },
+                "exhaustion": {
+                    "$ref": "#/$defs/roll"
+                },
+                "attack_hit": {
+                    "$ref": "#/$defs/attack_hit"
+                },
+                "attack_save": {
+                    "$ref": "#/$defs/attack_save"
+                },
+                "condition": {
+                    "$ref": "#/$defs/condition"
+                },
+                "grants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/grant"
+                    }
+                },
+                "description": {
+                    "type": "string",
+                    "input": "textarea"
+                }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+        },
+        "damage": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/damage.schema.json",
+            "title": "D&D 5e Damage",
+            "description": "A damage roll.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "type",
+                "roll"
+            ],
+            "properties": {
+                "type": {
+                    "$ref": "#/$defs/damage_type"
+                },
+                "roll": {
+                    "$ref": "#/$defs/roll"
+                },
+                "modifier": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "ability": {
+                    "$ref": "#/$defs/ability_score"
+                }
+            },
+            "additionalProperties": false
+        },
+        "damage_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/damage_type.schema.json",
+            "title": "D&D 5e Damage Type",
+            "description": "A damage type.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "acid",
+                        "bludgeoning",
+                        "cold",
+                        "fire",
+                        "force",
+                        "lightning",
+                        "necrotic",
+                        "piercing",
+                        "poison",
+                        "psychic",
+                        "radiant",
+                        "slashing",
+                        "thunder"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "roll": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/roll.schema.json",
+            "title": "D&D 5e Roll with Modifier",
+            "description": "A dice roll with optional fixed and ability-based modifiers.",
+            "$comment": "version 0.2.0",
+            "type": "object",
+            "properties": {
+                "dice": {
+                    "$ref": "#/$defs/dice"
+                },
+                "count": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                },
+                "modifier": {
+                    "type": "integer"
+                },
+                "ability": {
+                    "$ref": "#/$defs/ability_score"
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "dice",
+                        "count"
+                    ]
+                },
+                {
+                    "required": [
+                        "modifier"
+                    ]
+                },
+                {
+                    "required": [
+                        "ability"
+                    ]
+                }
+            ],
+            "additionalProperties": false
+        },
+        "dice": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/dice.schema.json",
+            "title": "D&D 5e Dice",
+            "description": "Polyhedral dice used in D&D 5e.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "integer",
+                    "enum": [
+                        4,
+                        6,
+                        8,
+                        10,
+                        12,
+                        20,
+                        100
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_int"
+                }
+            ]
+        },
+        "custom_int": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/custom_int.schema.json",
+            "title": "Custom Int",
+            "description": "A homebrew or otherwise non-canonical integer value.",
+            "$comment": "version 0.4.0",
+            "type": "integer"
+        },
+        "ability_score": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/ability_score.schema.json",
+            "title": "D&D 5e Ability Score",
+            "description": "One of the six D&D 5e ability scores.",
+            "$comment": "version 0.4.0",
+            "type": "string",
+            "enum": [
+                "strength",
+                "dexterity",
+                "constitution",
+                "intelligence",
+                "wisdom",
+                "charisma"
+            ]
+        },
+        "attack_hit": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/attack_hit.schema.json",
+            "title": "D&D 5e Attack Hit",
+            "description": "An attack roll used to determine whether an attack hits.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "$ref": "#/$defs/attack_type"
+                },
+                "bonus": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    }
+                }
+            },
+            "minProperties": 1,
+            "additionalProperties": false
+        },
+        "attack_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/attack_type.schema.json",
+            "title": "D&D 5e Attack Type",
+            "description": "The kind of attack roll made against a target.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "melee_weapon",
+                        "ranged_weapon",
+                        "melee_spell",
+                        "ranged_spell"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "attack_save": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/attack_save.schema.json",
+            "title": "D&D 5e Saving Throw Effect",
+            "description": "A saving throw used to determine whether an effect affects a target.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "ability"
+            ],
+            "properties": {
+                "ability": {
+                    "$ref": "#/$defs/ability_score"
+                },
+                "dc": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "success": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    }
+                },
+                "failure": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "condition": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/condition.schema.json",
+            "title": "D&D 5e Condition",
+            "description": "A condition that can affect a creature.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "blinded",
+                        "charmed",
+                        "deafened",
+                        "exhaustion",
+                        "frightened",
+                        "grappled",
+                        "incapacitated",
+                        "invisible",
+                        "paralyzed",
+                        "petrified",
+                        "poisoned",
+                        "prone",
+                        "restrained",
+                        "stunned",
+                        "unconscious"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "grant": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/grant.schema.json",
+            "title": "D&D 5e Grant",
+            "description": "A non-numeric characteristic granted by an item or effect.",
+            "$comment": "version 0.3.0",
+            "type": "object",
+            "required": [
+                "type"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "advantage",
+                        "disadvantage",
+                        "resistance",
+                        "vulnerability",
+                        "immunity",
+                        "sense",
+                        "movement"
+                    ]
+                },
+                "ability_check": {
+                    "$ref": "#/$defs/ability_score"
+                },
+                "skill": {
+                    "$ref": "#/$defs/skill"
+                },
+                "saving_throw": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/ability_score"
+                        },
+                        {
+                            "$ref": "#/$defs/condition"
+                        }
+                    ]
+                },
+                "condition": {
+                    "$ref": "#/$defs/condition"
+                },
+                "damage_type": {
+                    "$ref": "#/$defs/damage_type"
+                },
+                "sense": {
+                    "$ref": "#/$defs/sense_type"
+                },
+                "distance": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "movement_type": {
+                    "$ref": "#/$defs/movement_type"
+                },
+                "description": {
+                    "type": "string",
+                    "input": "textarea"
+                }
+            },
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "type": {
+                                "enum": [
+                                    "resistance",
+                                    "vulnerability",
+                                    "immunity"
+                                ]
+                            }
+                        }
+                    },
+                    "then": {
+                        "required": [
+                            "damage_type"
+                        ]
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "type": {
+                                "const": "sense"
+                            }
+                        }
+                    },
+                    "then": {
+                        "required": [
+                            "sense",
+                            "distance"
+                        ]
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "type": {
+                                "const": "movement"
+                            }
+                        }
+                    },
+                    "then": {
+                        "required": [
+                            "movement_type",
+                            "distance"
+                        ]
+                    }
+                }
+            ],
+            "additionalProperties": false
+        },
+        "skill": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/skill.schema.json",
+            "title": "D&D 5e Skill",
+            "description": "A skill.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "acrobatics",
+                        "animal_handling",
+                        "arcana",
+                        "athletics",
+                        "deception",
+                        "history",
+                        "insight",
+                        "intimidation",
+                        "investigation",
+                        "medicine",
+                        "nature",
+                        "perception",
+                        "performance",
+                        "persuasion",
+                        "religion",
+                        "sleight_of_hand",
+                        "stealth",
+                        "survival"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "sense_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/sense_type.schema.json",
+            "title": "D&D 5e Sense Type",
+            "description": "A type of special sense.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "blindsight",
+                        "darkvision",
+                        "devil_sight",
+                        "tremorsense",
+                        "truesight"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "movement_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/movement_type.schema.json",
+            "title": "D&D 5e Movement Type",
+            "description": "A type of movement. Hover is a flag on fly speed, not its own type.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "walk",
+                        "fly",
+                        "swim",
+                        "climb",
+                        "burrow"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "weapon_property": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/weapon_property.schema.json",
+            "title": "D&D 5e Weapon Property",
+            "description": "A property applied to a weapon.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "ammunition",
+                        "finesse",
+                        "heavy",
+                        "light",
+                        "loading",
+                        "monk",
+                        "reach",
+                        "special",
+                        "thrown",
+                        "two_handed",
+                        "versatile"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "range": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/range.schema.json",
+            "title": "D&D 5e Range",
+            "description": "The normal and long range of an attack or weapon, in feet.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "normal"
+            ],
+            "properties": {
+                "normal": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "long": {
+                    "type": "integer",
+                    "minimum": 0
+                }
+            },
+            "additionalProperties": false
+        },
+        "armor": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/armor.schema.json",
+            "title": "D&D 5e Armor",
+            "description": "Armor or a shield in the catalog. Extends Item.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "category",
+                "armor_class"
+            ],
+            "properties": {
+                "category": {
+                    "$ref": "#/$defs/armor_category"
+                },
+                "type": {
+                    "$ref": "#/$defs/armor_type"
+                },
+                "armor_class": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "add_dexterity": {
+                    "description": "Whether Dexterity modifier is added to armor class, and the optional cap.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "maximum": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "required": [
+                        "enabled"
+                    ],
+                    "additionalProperties": false
+                },
+                "stealth_disadvantage": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "strength_requirement": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "armor_category": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/armor_category.schema.json",
+            "title": "D&D 5e Armor Category",
+            "description": "A D&D 5e armor category.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "light",
+                        "medium",
+                        "heavy",
+                        "shield"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "armor_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/armor_type.schema.json",
+            "title": "D&D 5e Armor Type",
+            "description": "A type of D&D 5e armor, including shields.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "padded",
+                        "leather",
+                        "studded_leather",
+                        "hide",
+                        "chain_shirt",
+                        "scale_mail",
+                        "breastplate",
+                        "half_plate",
+                        "ring_mail",
+                        "chain_mail",
+                        "splint",
+                        "plate",
+                        "shield"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "magic_item": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/magic_item.schema.json",
+            "title": "D&D 5e Magic Item",
+            "description": "Magical properties granted by an item.",
+            "$comment": "version 0.1.0",
+            "type": "object",
+            "properties": {
+                "attunement": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "bonuses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/bonus"
+                    }
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    }
+                },
+                "rarity": {
+                    "$ref": "#/$defs/rarity"
+                },
+                "charges": {
+                    "$ref": "#/$defs/magic_item_charges"
+                },
+                "spells": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/spell_charge"
+                    }
+                },
+                "roll_table": {
+                    "$ref": "#/$defs/roll_table"
+                },
+                "grants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/grant"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "bonus": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/bonus.schema.json",
+            "title": "D&D 5e Magic Item Bonus",
+            "description": "A numerical bonus granted by a magic item.",
+            "$comment": "version 0.2.0",
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "attack",
+                        "damage",
+                        "armor_class",
+                        "ability_score",
+                        "maximum_hit_points",
+                        "saving_throw"
+                    ]
+                },
+                "value": {
+                    "type": "integer"
+                },
+                "ability": {
+                    "$ref": "#/$defs/ability_score"
+                }
+            },
+            "if": {
+                "properties": {
+                    "type": {
+                        "const": "ability_score"
+                    }
+                },
+                "required": [
+                    "type"
+                ]
+            },
+            "then": {
+                "required": [
+                    "ability"
+                ]
+            },
+            "additionalProperties": false
+        },
+        "rarity": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/rarity.schema.json",
+            "title": "D&D 5e Item Rarity",
+            "description": "The rarity of a magic item.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "common",
+                        "uncommon",
+                        "rare",
+                        "very_rare",
+                        "legendary",
+                        "artifact"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "magic_item_charges": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/magic_item_charges.schema.json",
+            "title": "D&D 5e Magic Item Charges",
+            "description": "Charges and recharge behavior for a magic item.",
+            "$comment": "version 0.1.0",
+            "type": "object",
+            "required": [
+                "maximum"
+            ],
+            "properties": {
+                "maximum": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "recharge": {
+                    "oneOf": [
+                        {
+                            "$ref": "#/$defs/roll"
+                        },
+                        {
+                            "type": "string",
+                            "const": "all"
+                        }
+                    ]
+                },
+                "recharge_duration": {
+                    "$ref": "#/$defs/duration_amount"
+                },
+                "depletion": {
+                    "type": "string",
+                    "minLength": 1
+                }
+            },
+            "if": {
+                "required": [
+                    "recharge"
+                ]
+            },
+            "then": {
+                "required": [
+                    "recharge_duration"
+                ]
+            },
+            "additionalProperties": false
+        },
+        "duration_amount": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/duration_amount.schema.json",
+            "title": "D&D 5e Duration Amount",
+            "description": "A duration with an optional numeric amount, such as 8 hours or instantaneous.",
+            "$comment": "version 0.5.0",
+            "type": "object",
+            "required": [
+                "duration"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "duration": {
+                    "$ref": "#/$defs/duration"
+                }
+            },
+            "if": {
+                "properties": {
+                    "duration": {
+                        "enum": [
+                            "round",
+                            "minute",
+                            "hour",
+                            "day",
+                            "week",
+                            "month",
+                            "year"
+                        ]
+                    }
+                },
+                "required": [
+                    "duration"
+                ]
+            },
+            "then": {
+                "required": [
+                    "amount"
+                ]
+            },
+            "else": {
+                "if": {
+                    "properties": {
+                        "duration": {
+                            "const": "instantaneous"
+                        }
+                    },
+                    "required": [
+                        "duration"
+                    ]
+                },
+                "then": {
+                    "not": {
+                        "required": [
+                            "amount"
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "duration": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/duration.schema.json",
+            "title": "D&D 5e Duration Unit",
+            "description": "How long an effect lasts. Use recharge.schema.json for recovery timing.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "instantaneous",
+                        "until_dispelled",
+                        "until_saved",
+                        "round",
+                        "next_round",
+                        "minute",
+                        "hour",
+                        "day",
+                        "week",
+                        "month",
+                        "year"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "spell_charge": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/spell_charge.schema.json",
+            "title": "D&D 5e Spell Charge",
+            "description": "A spell that can be cast by expending charges from a magic item.",
+            "$comment": "version 0.1.0",
+            "type": "object",
+            "required": [
+                "spell"
+            ],
+            "properties": {
+                "spell": {
+                    "$ref": "#/$defs/spell"
+                },
+                "charges": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "spell": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/spell.schema.json",
+            "title": "D&D 5e Spell",
+            "description": "A reference to a spell.",
+            "$comment": "version 0.1.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "minLength": 1
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "roll_table": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/roll_table.schema.json",
+            "title": "D&D 5e Roll Table",
+            "description": "A table of outcomes determined by a dice roll.",
+            "$comment": "version 0.3.0",
+            "type": "object",
+            "required": [
+                "dice",
+                "entries"
+            ],
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "dice": {
+                    "$ref": "#/$defs/dice"
+                },
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/roll_table_entry"
+                    },
+                    "minItems": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "roll_table_entry": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/roll_table_entry.schema.json",
+            "title": "D&D 5e Roll Table Entry",
+            "description": "An outcome corresponding to a roll result.",
+            "$comment": "version 0.3.0",
+            "type": "object",
+            "required": [
+                "roll",
+                "result"
+            ],
+            "properties": {
+                "roll": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "result": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    },
+                    "minItems": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "cost": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/cost.schema.json",
+            "title": "D&D 5e Cost",
+            "description": "A cost for an item.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "amount",
+                "currency"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "currency": {
+                    "$ref": "#/$defs/currency"
+                }
+            },
+            "additionalProperties": false
+        },
+        "currency": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/currency.schema.json",
+            "title": "D&D 5e Currency",
+            "description": "A type of currency.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "cp",
+                        "sp",
+                        "ep",
+                        "gp",
+                        "pp"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "feature": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/feature.schema.json",
+            "title": "D&D 5e Feature",
+            "description": "A feature or trait granted by a class, subclass, race, background, feat, or other game element.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "name",
+                "description"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "type": "string",
+                    "input": "textarea"
+                },
+                "level": {
+                    "description": "Class or subclass level at which this feature is gained.",
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 20
+                },
+                "source": {
+                    "$ref": "#/$defs/source"
+                }
+            },
+            "additionalProperties": false
+        },
+        "source": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/source.schema.json",
+            "title": "Data Source",
+            "description": "The source from which the data was obtained.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Human-readable reference to the source.",
+                    "examples": [
+                        "PHB p41",
+                        "Unearthed Arcana: The Artificer Revisited"
+                    ]
+                },
+                "note": {
+                    "type": "string",
+                    "description": "Additional information about the source.",
+                    "input": "textarea"
+                },
+                "href": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "A URI linking to the source.",
+                    "examples": [
+                        "https://media.wizards.com/2019/dnd/downloads/UA-Artificer-2019.pdf"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "text"
+                    ]
+                },
+                {
+                    "required": [
+                        "href"
+                    ]
+                }
+            ],
+            "additionalProperties": false
+        },
+        "image": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/image.schema.json",
+            "title": "Image",
+            "description": "An image asset.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "uri",
+                "alt"
+            ],
+            "properties": {
+                "uri": {
+                    "type": "string",
+                    "format": "uri"
+                },
+                "alt": {
+                    "type": "string",
+                    "description": "Text to display if the image cannot load."
+                },
+                "caption": {
+                    "type": "string",
+                    "description": "Text to display below the image."
+                },
+                "source": {
+                    "$ref": "#/$defs/source"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}

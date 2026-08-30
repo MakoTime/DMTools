@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/movement.schema.json",
+    "title": "D&D 5e Movement",
+    "description": "A creature's speed for one movement type. Hover is a flag on fly speed.",
+    "$comment": "version 0.4.0",
+    "type": "object",
+    "required": [
+        "movement_type",
+        "speed"
+    ],
+    "properties": {
+        "movement_type": {
+            "$ref": "#/$defs/movement_type"
+        },
+        "speed": {
+            "$ref": "#/$defs/speed"
+        },
+        "hover": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "additionalProperties": false,
+    "$defs": {
+        "movement_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/movement_type.schema.json",
+            "title": "D&D 5e Movement Type",
+            "description": "A type of movement. Hover is a flag on fly speed, not its own type.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "walk",
+                        "fly",
+                        "swim",
+                        "climb",
+                        "burrow"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "custom_value": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/custom_value.schema.json",
+            "title": "Custom Value",
+            "description": "A homebrew or otherwise non-canonical string value.",
+            "$comment": "version 0.4.0",
+            "type": "string",
+            "minLength": 1
+        },
+        "speed": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/speed.schema.json",
+            "title": "D&D 5e Speed",
+            "description": "A distance and unit of movement.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "distance",
+                "unit"
+            ],
+            "properties": {
+                "distance": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "unit": {
+                    "$ref": "#/$defs/distance_type"
+                }
+            },
+            "additionalProperties": false
+        },
+        "distance_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/distance_type.schema.json",
+            "title": "D&D 5e Distance Unit",
+            "description": "A unit used to describe a distance.",
+            "$comment": "version 0.4.0",
+            "type": "string",
+            "enum": [
+                "feet",
+                "miles"
+            ]
+        }
+    }
+}

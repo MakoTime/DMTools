@@ -1,32 +1,75 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import IO
 from xml.etree import ElementTree as ET
 
 
-def parse_xml(source):
+XmlSource = str | Path | IO[str]
+
+
+def parse_xml(source: XmlSource) -> dict:
     """
-    Parse XML content from a file or string into a generic tree structure.
-    Handles both file paths and in-memory XML strings.
+    Parse XML content into a normalized dictionary representation.
+
+    `source` may be:
+        - an XML string
+        - a filesystem path
+        - an open text file
     """
-    if isinstance(source, str):
-        root = ET.fromstring(source)
+    if isinstance(source, Path):
+        root = ET.parse(source).getroot()
+    elif isinstance(source, str):
+        if "<" in source:
+            root = ET.fromstring(source)
+        else:
+            root = ET.parse(source).getroot()
     else:
         root = ET.parse(source).getroot()
 
-    def parse_element(element):
-        text = element.text.strip() if element.text else None
+    return _parse_element(root)
 
-        return {
-            "tag": element.tag,
-            "attributes": element.attrib.copy(),
-            "text": text,
-            "children": [
-                parse_element(child)
-                for child in element
-            ],
-        }
 
-    return parse_element(root)
+def _parse_element(element: ET.Element) -> dict:
+    """
+    Convert an XML element into the normalized intermediate representation.
+    """
+    return {
+        "tag": element.tag,
+        "attributes": dict(element.attrib),
+        "text": _clean_text(element.text),
+        "children": [_parse_element(child) for child in element],
+    }
 
-def find_children(element, tag):
+
+def _clean_text(text: str | None) -> str | None:
+    """
+    Remove insignificant XML formatting whitespace.
+
+    Empty or whitespace-only elements are represented as None.
+    """
+    if text is None:
+        return None
+
+    text = text.strip()
+
+    return text or None
+
+
+def find_child(element: dict, tag: str) -> dict | None:
+    """
+    Return the first direct child with the given tag.
+
+    Returns None if no matching child exists.
+    """
+    for child in element["children"]:
+        if child["tag"] == tag:
+            return child
+
+    return None
+
+
+def find_children(element: dict, tag: str) -> list[dict]:
     """
     Return all direct children with the given tag.
     """
@@ -37,20 +80,11 @@ def find_children(element, tag):
     ]
 
 
-def find_child(element, tag):
-    """
-    Return the first direct child with the given tag.
-    """
-    for child in element["children"]:
-        if child["tag"] == tag:
-            return child
-
-    return None
-
-
-def get_text(element, tag):
+def get_text(element: dict, tag: str) -> str | None:
     """
     Return the text of the first direct child with the given tag.
+
+    Returns None if the child does not exist or has no text.
     """
     child = find_child(element, tag)
 

@@ -29,6 +29,9 @@
             "items": {
                 "$ref": "effect.schema.json"
             }
+        },
+        "roll_table": {
+            "$ref": "roll_table.schema.json"
         }
     },
     "additionalProperties": false
