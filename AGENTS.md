@@ -717,3 +717,46 @@ When a test fails:
 
 If an import failure occurs, inspect the repository's package structure and existing test configuration before changing imports or project configuration.
 
+## Multi-Agent Handoff
+
+This repository may be worked on by GitHub Copilot and a local Cline agent using Ollama. Agents share the working tree, but they do not share conversation history or task state.
+
+Use `agent-handoff.md` as the task boundary when work is delegated between agents.
+
+### Task Sender Responsibilities
+
+The agent assigning work MUST record:
+
+* A single, narrowly scoped task.
+* The files or directories the worker may modify.
+* Relevant acceptance criteria.
+* Required tests or validation commands.
+* Constraints, known issues, and decisions already made.
+
+Do not assign overlapping tasks to multiple agents. Do not ask the worker to modify files currently being edited by another agent.
+
+### Cline Worker Responsibilities
+
+Before editing, Cline MUST:
+
+1. Read `AGENTS.md`, `Ai-Tasks.md`, and `agent-handoff.md`.
+2. Inspect the assigned code and nearby tests.
+3. State the implementation approach in the handoff file.
+4. Keep changes within the assigned scope.
+5. Run the required focused tests after editing.
+6. Record changed files, test results, blockers, and any follow-up recommendations.
+
+Cline MUST NOT mark a task complete when tests fail, source information was discarded, or a schema was weakened to accept invalid data.
+
+### Review Responsibilities
+
+The reviewing agent MUST inspect the actual working-tree diff and test output. Review findings take priority over summary:
+
+* Identify correctness, schema, source-preservation, regression, and test-coverage problems.
+* Refer to concrete files and symbols.
+* Reject changes that exceed the assigned scope.
+* Record required corrections in `agent-handoff.md`.
+* Mark the task approved only after the focused checks pass and no blocking findings remain.
+
+Until a task is approved, the worker must treat the handoff status as `changes requested` rather than complete.
+

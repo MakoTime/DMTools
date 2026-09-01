@@ -98,15 +98,15 @@ class TestXMLParser(unittest.TestCase):
         self.assertEqual(get_text(parsed, "size"), "M")
 
     def test_parse_xml_file(self):
-        xml_path = next(DATA_ROOT.glob("*.xml"))
+        for xml_path in DATA_ROOT.glob("*.xml"):
 
-        parsed = parse_xml(xml_path)
+            parsed = parse_xml(xml_path)
 
-        self.assertIsInstance(parsed, dict)
-        self.assertIn("tag", parsed)
-        self.assertIn("attributes", parsed)
-        self.assertIn("text", parsed)
-        self.assertIn("children", parsed)
+            self.assertIsInstance(parsed, dict)
+            self.assertIn("tag", parsed)
+            self.assertIn("attributes", parsed)
+            self.assertIn("text", parsed)
+            self.assertIn("children", parsed)
 
 
 if __name__ == "__main__":
