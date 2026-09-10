@@ -315,8 +315,10 @@ TARGET_COUNT = re.compile(
 )
 
 DAMAGE_ROLL = re.compile(
-    r"\b(\d+)\s*\((\d+d\d+)\)\s+"
-    r"(acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|"
+    r"(?:(?P<average>\d+)\s*\(\s*)?"
+    r"(?P<count>\d+)?d(?P<dice>\d+)"
+    r"(?P<modifier>[+-]\d+)?\s*\)?\s*"
+    r"(?P<type>acid|bludgeoning|cold|fire|force|lightning|necrotic|piercing|"
     r"poison|psychic|radiant|slashing|thunder)\s+damage\b",
     re.IGNORECASE,
 )

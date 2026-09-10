@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import re
 
-from pydantic import BaseModel, Field, model_validator
+from typing import Literal
+
+from pydantic import BaseModel, Field, RootModel, model_validator
 
 from .common import (
     AbilityScore,
@@ -22,6 +24,7 @@ from .common import (
 from .search_strings import (
     BECOMES_CONDITION,
     DAMAGE,
+    DAMAGE_ROLL,
     MELEE_OR_RANGED_ATTACK,
     NUMBERED_ENTRY,
     RANGE,
@@ -33,12 +36,24 @@ from .search_strings import (
 )
 
 class AbilityScores(BaseModel):
-    strength: int = Field(ge=1)
-    dexterity: int = Field(ge=1)
-    constitution: int = Field(ge=1)
-    intelligence: int = Field(ge=1)
-    wisdom: int = Field(ge=1)
-    charisma: int = Field(ge=1)
+    strength: int = Field(ge=0)
+    dexterity: int = Field(ge=0)
+    constitution: int = Field(ge=0)
+    intelligence: int = Field(ge=0)
+    wisdom: int = Field(ge=0)
+    charisma: int = Field(ge=0)
+
+
+class AbilityScoreChoice(BaseModel):
+    abilities: list[AbilityScore] = Field(min_length=1)
+    choice_count: int = Field(default=1, ge=1)
+    amount: int | None = Field(default=None, ge=1)
+
+
+class ClassProgression(BaseModel):
+    name: str = Field(min_length=1)
+    subclass: str | None = Field(default=None, min_length=1)
+    level: int = Field(ge=1, le=20)
 
 
 class HitPoints(BaseModel):
@@ -83,6 +98,7 @@ class Feature(BaseModel):
     name: str = Field(min_length=1)
     description: str
     level: int | None = Field(default=None, ge=1, le=20)
+    effects: list[Effect] | None = None
     source: Source | None = None
 
 
@@ -214,7 +230,7 @@ class Damage(BaseModel):
 
     @classmethod
     def from_description(cls, description: str) -> Damage | None:
-        match = DAMAGE.search(description)
+        match = DAMAGE.search(description) or DAMAGE_ROLL.search(description)
 
         if match is None:
             return None
@@ -229,6 +245,18 @@ class Damage(BaseModel):
                 modifier=int(modifier) if modifier else None,
             ),
         )
+
+
+class EffectResult(BaseModel):
+    damage: Damage | None = None
+    condition: Condition | None = None
+    description: str | None = None
+
+    @model_validator(mode="after")
+    def validate_result(self):
+        if self.damage is None and self.condition is None and self.description is None:
+            raise ValueError("EffectResult requires damage, condition, or description")
+        return self
 
 
 class AttackHit(BaseModel):
@@ -443,6 +471,52 @@ class SpellsKnown(BaseModel):
     level_8: SpellsKnown | None = None
     level_9: SpellsKnown | None = None
     at_will: list[str] | None = None
+
+
+
+class SpellFilter(BaseModel):
+    classes: list[str] | None = Field(default=None, min_length=1)
+    schools: list[str] | None = Field(default=None, min_length=1)
+    levels: list[int] | None = Field(default=None, min_length=1)
+
+    @model_validator(mode="after")
+    def validate_filter(self):
+        if self.classes is None and self.schools is None and self.levels is None:
+            raise ValueError("SpellFilter requires at least one criterion")
+        return self
+
+
+class SpellChoice(BaseModel):
+    filter: SpellFilter
+    choice_count: int = Field(default=1, ge=1)
+    casting_ability: AbilityScore | Literal["ability_score_choice"] | None = None
+    uses: int | None = Field(default=None, ge=1)
+    recharge: str | None = None
+
+
+class SpellGrant(BaseModel):
+    spells: list[str] | None = Field(default=None, min_length=1)
+    choices: list[SpellChoice] | None = Field(default=None, min_length=1)
+    casting_ability: AbilityScore | Literal["ability_score_choice"] | None = None
+    uses: int | None = Field(default=None, ge=1)
+    recharge: str | None = None
+
+    @model_validator(mode="after")
+    def validate_grant(self):
+        if self.spells is None and self.choices is None:
+            raise ValueError("SpellGrant requires spells or choices")
+        return self
+
+
+class SpellSlot(BaseModel):
+    level: int = Field(ge=0, le=9)
+    maximum: int = Field(ge=0)
+    current: int | None = Field(default=None, ge=0)
+    recharge: str | None = None
+
+
+class WeaponProficiency(RootModel[str]):
+    root: str = Field(min_length=1)
 
 
 class RollTableEntry(BaseModel):

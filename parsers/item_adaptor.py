@@ -7,6 +7,44 @@ from typing import Any
 class ItemAdaptor:
     """Adapt parsed item source data into the Item schema."""
 
+    CATEGORY_BY_TYPE = {
+        "$": "adventuring_gear",
+        "A": "adventuring_gear",
+        "G": "adventuring_gear",
+        "HA": "armor",
+        "LA": "armor",
+        "MA": "armor",
+        "M": "weapon",
+        "P": "potion",
+        "R": "weapon",
+        "RD": "rod",
+        "RG": "ring",
+        "S": "armor",
+        "SC": "scroll",
+        "ST": "staff",
+        "W": "wonderous_item",
+        "WD": "wand",
+    }
+
+    PROPERTY_BY_CODE = {
+        "A": "ammunition",
+        "F": "finesse",
+        "H": "heavy",
+        "L": "light",
+        "LD": "loading",
+        "R": "reach",
+        "SP": "special",
+        "T": "thrown",
+        "2H": "two_handed",
+        "V": "versatile",
+    }
+
+    DAMAGE_TYPE_BY_CODE = {
+        "B": "bludgeoning",
+        "P": "piercing",
+        "S": "slashing",
+    }
+
     def adapt(self, source: dict[str, Any]) -> dict[str, Any]:
         text = [value for value in source.get("text", []) if value]
         description = self.description(text)
@@ -15,9 +53,11 @@ class ItemAdaptor:
             "name": source.get("name"),
             "category": self.category(source),
             "weight": self.weight(source.get("weight")),
+            "cost": self.cost(source.get("value")),
             "description": description,
             "features": features,
-            "weapon": self.weapon(text),
+            "weapon": self.weapon(source, text),
+            "armor": self.armor(source),
             "magic_item": self.magic_item(source, text),
             "source": self.source(text),
         }
@@ -29,21 +69,33 @@ class ItemAdaptor:
         }
 
     def category(self, source: dict[str, Any]) -> str | None:
-        item_type = source.get("type")
-
-        if item_type == "WD":
-            return "wand"
-
-        return None
+        return self.CATEGORY_BY_TYPE.get(source.get("type"))
 
     def weight(self, value: Any) -> float | None:
         if value is None:
             return None
 
-        return float(value)
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return None
+
+    def cost(self, value: Any) -> dict[str, Any] | None:
+        if value is None:
+            return None
+
+        try:
+            amount = float(value)
+        except (TypeError, ValueError):
+            return None
+
+        if amount < 1 or not amount.is_integer():
+            return None
+
+        return {"amount": int(amount), "currency": "gp"}
 
     def description(self, text: list[str]) -> str | None:
-        paragraphs = text[:2]
+        paragraphs = [value for value in text if not value.startswith("Source:")]
         return "\n\n".join(paragraphs) or None
 
     def features(self, text: list[str]) -> list[dict[str, str]] | None:
@@ -51,8 +103,11 @@ class ItemAdaptor:
             "Attunement",
             "Random Properties",
             "Protection",
+            "Power Strike",
             "Spells",
             "Call Undead",
+            "Retributive Strike",
+            "Proficiency",
             "Sentience",
             "Personality",
             "Destroying the Wand",
@@ -83,40 +138,146 @@ class ItemAdaptor:
             "description": " ".join(part for part in text if part),
         }
 
-    def weapon(self, text: list[str]) -> dict[str, Any] | None:
+    def weapon(
+        self,
+        source: dict[str, Any],
+        text: list[str],
+    ) -> dict[str, Any] | None:
+        if source.get("type") not in {"M", "R", "WD"}:
+            return None
+
+        properties = [
+            self.PROPERTY_BY_CODE[code]
+            for code in self.source_codes(source.get("property"))
+            if code in self.PROPERTY_BY_CODE
+        ]
+        weapon: dict[str, Any] = {
+            "type": self.weapon_type(source.get("name")),
+            "properties": properties or None,
+            "range": self.weapon_range(source.get("range")),
+        }
+
         weapon_text = next(
             (value for value in text if "magic mace" in value.lower()),
             None,
         )
 
-        if weapon_text is None:
-            return None
+        if source.get("dmg1"):
+            damage = self.damage(source)
+            if damage is not None:
+                weapon["effects"] = [{"damage": damage}]
 
-        damage_match = re.search(
-            r"extra (?P<count>\d+)d(?P<dice>\d+) (?P<type>[a-z]+) damage",
-            weapon_text,
-            re.IGNORECASE,
-        )
-        if damage_match is None:
-            return {"type": "mace"}
+        versatile_damage = self.damage(source, "dmg2")
+        if versatile_damage is not None:
+            weapon.setdefault("effects", []).append({"damage": versatile_damage})
+
+        if weapon_text is not None:
+            damage_match = re.search(
+                r"extra (?P<count>\d+)d(?P<dice>\d+) (?P<type>[a-z]+) damage",
+                weapon_text,
+                re.IGNORECASE,
+            )
+            if damage_match is not None:
+                weapon["effects"] = [{
+                    "damage": {
+                        "type": damage_match.group("type").lower(),
+                        "roll": {
+                            "dice": int(damage_match.group("dice")),
+                            "count": int(damage_match.group("count")),
+                        },
+                    },
+                }]
 
         return {
-            "type": "mace",
-            "effects": [{
-                "attack_hit": {
-                    "type": "melee_weapon",
-                    "effects": [{
-                        "damage": {
-                            "type": damage_match.group("type").lower(),
-                            "roll": {
-                                "dice": int(damage_match.group("dice")),
-                                "count": int(damage_match.group("count")),
-                            },
-                        },
-                    }],
-                },
-            }],
+            key: value
+            for key, value in weapon.items()
+            if value is not None
         }
+
+    def weapon_type(self, name: Any) -> str | None:
+        if not name:
+            return None
+
+        return re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
+
+    def source_codes(self, value: Any) -> list[str]:
+        if not value:
+            return []
+
+        values = value if isinstance(value, list) else [value]
+        return [
+            code.strip().upper()
+            for item in values
+            for code in str(item).split(",")
+            if code.strip()
+        ]
+
+    def weapon_range(self, value: Any) -> dict[str, int] | None:
+        if not value:
+            return None
+
+        values = re.fullmatch(r"\s*(\d+)\s*/\s*(\d+)\s*", str(value))
+        if values is None:
+            return None
+
+        return {"normal": int(values.group(1)), "long": int(values.group(2))}
+
+    def damage(
+        self,
+        source: dict[str, Any],
+        field: str = "dmg1",
+    ) -> dict[str, Any] | None:
+        match = re.fullmatch(r"\s*(\d+)d(\d+)\s*", str(source.get(field)))
+        damage_type = self.DAMAGE_TYPE_BY_CODE.get(
+            str(source.get("dmgType", "")).strip().upper()
+        )
+        if match is None or damage_type is None:
+            return None
+
+        return {
+            "type": damage_type,
+            "roll": {
+                "count": int(match.group(1)),
+                "dice": int(match.group(2)),
+            },
+        }
+
+    def armor(self, source: dict[str, Any]) -> dict[str, Any] | None:
+        category_by_type = {
+            "HA": "heavy",
+            "LA": "light",
+            "MA": "medium",
+            "S": "shield",
+        }
+        category = category_by_type.get(source.get("type"))
+        if category is None or not source.get("ac"):
+            return None
+
+        try:
+            armor_class = int(source["ac"])
+        except (TypeError, ValueError):
+            return None
+
+        armor: dict[str, Any] = {
+            "category": category,
+            "type": self.armor_type(source.get("name")),
+            "armor_class": armor_class,
+            "stealth_disadvantage": str(source.get("stealth", "")).strip() == "1",
+        }
+        strength = source.get("strength")
+        if strength:
+            try:
+                armor["strength_requirement"] = int(strength)
+            except (TypeError, ValueError):
+                pass
+
+        return armor
+
+    def armor_type(self, name: Any) -> str | None:
+        if not name:
+            return None
+
+        return re.sub(r"[^a-z0-9]+", "_", str(name).lower()).strip("_")
 
     def magic_item(
         self,
@@ -124,7 +285,10 @@ class ItemAdaptor:
         text: list[str],
     ) -> dict[str, Any] | None:
         detail = (source.get("detail") or "").lower()
+        full_text = " ".join(text)
         modifiers = source.get("modifiers") or []
+        if not source.get("magic") and not detail and not modifiers:
+            return None
         bonuses = [
             {
                 "type": self.bonus_type(modifier.get("text", "")),
@@ -132,11 +296,12 @@ class ItemAdaptor:
             }
             for modifier in modifiers
             if modifier.get("category") == "bonus"
+            and re.search(r"\+\d+", modifier.get("text", ""))
         ]
         spells = self.spells(next((value for value in text if value.startswith("Spells:")), ""))
-        charges = self.charges(next((value for value in text if value.startswith("Spells:")), ""))
+        charges = self.charges(full_text)
         result = {
-            "rarity": detail.split(" ", 1)[0] if detail else None,
+            "rarity": self.rarity(detail),
             "attunement": "requires attunement" in detail,
             "bonuses": bonuses or None,
             "charges": charges,
@@ -148,6 +313,12 @@ class ItemAdaptor:
             for key, value in result.items()
             if value is not None
         }
+
+    def rarity(self, detail: str) -> str | None:
+        if not detail:
+            return None
+
+        return re.split(r"[,(]", detail, maxsplit=1)[0].strip() or None
 
     def bonus_type(self, text: str) -> str:
         if "attack" in text:
@@ -161,19 +332,24 @@ class ItemAdaptor:
 
     def charges(self, text: str) -> dict[str, Any] | None:
         maximum = re.search(r"has (\d+) charges", text)
-        recharge = re.search(r"regains (\d+)d(\d+) expended charges daily", text)
+        recharge = re.search(
+            r"regains (\d+)(?:d(\d+))?(?:\+(\d+))? expended charges daily",
+            text,
+        )
 
         if maximum is None:
             return None
 
         result: dict[str, Any] = {"maximum": int(maximum.group(1))}
         if recharge:
+            recharge_roll = {
+                "count": int(recharge.group(1)),
+                "dice": int(recharge.group(2) or 0),
+            }
+            if recharge.group(3) is not None:
+                recharge_roll["modifier"] = int(recharge.group(3))
             result.update({
-                "recharge": {
-                    "dice": int(recharge.group(2)),
-                    "count": int(recharge.group(1)),
-                    "modifier": 3,
-                },
+                "recharge": recharge_roll,
                 "recharge_duration": {"amount": 1, "duration": "day"},
             })
         return result

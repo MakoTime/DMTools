@@ -4,7 +4,7 @@
     "title": "D&D 5e Alignment",
     "description": "A creature's alignment.",
     "$comment": "version 0.5.0",
-    "oneOf": [
+    "anyOf": [
         {
             "type": "object",
             "properties": {
@@ -46,6 +46,9 @@
                 "unaligned",
                 "any"
             ]
+        },
+        {
+            "type": "string"
         }
     ]
 }

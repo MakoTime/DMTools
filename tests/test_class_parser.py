@@ -1,0 +1,106 @@
+from pathlib import Path
+import unittest
+
+from models.class_model import Class
+from parsers.class_adaptor import ClassAdaptor
+from parsers.class_parser import parse_class
+from parsers.xml_parser import parse_xml
+from schemas.validator import validate
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+class TestClassParser(unittest.TestCase):
+    def source_class(self, name: str):
+        root = parse_xml(PROJECT_ROOT / "5eFile.xml")
+        element = next(
+            element for element in root["children"]
+            if element["tag"] == "class"
+            and next(child["text"] for child in element["children"] if child["tag"] == "name") == name
+        )
+        return parse_class(element)
+
+    def test_parse_preserves_base_fields(self):
+        source = self.source_class("Barbarian")
+        self.assertEqual(source["hd"], "12")
+        self.assertEqual(source["numSkills"], "2")
+        self.assertEqual(source["armor"], "light armor, medium armor, shields")
+        self.assertTrue(source["autolevels"])
+        self.assertEqual(source["autolevels"][0]["attributes"]["level"], "1")
+
+    def test_adapt_barbarian_and_cleric(self):
+        barbarian = ClassAdaptor().adapt(self.source_class("Barbarian"))
+        cleric = ClassAdaptor().adapt(self.source_class("Cleric"))
+
+        self.assertEqual(barbarian["name"], "barbarian")
+        self.assertEqual(barbarian["hit_dice"], 12)
+        self.assertEqual(barbarian["skill_choices"], {
+            "choose": 2,
+            "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"],
+        })
+        self.assertEqual(cleric["spellcasting"], {"ability": "wisdom", "progression": "full"})
+        for class_data in (barbarian, cleric):
+            Class.model_validate(class_data)
+            self.assertTrue(validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Class.schema.json",
+                class_data,
+                PROJECT_ROOT / "schemas",
+            ))
+
+            self.assertIn("Starting Barbarian", barbarian.get("description", ""))
+            self.assertNotIn("Path of the Berserker", barbarian.get("description", ""))
+
+    def test_parse_preserves_progression_metadata(self):
+        source = self.source_class("Wizard")
+        score_levels = [
+            level for level in source["autolevels"]
+            if level["attributes"].get("scoreImprovement") == "YES"
+        ]
+        self.assertTrue(score_levels)
+        self.assertTrue(any(
+            child["tag"] == "slots"
+            for level in source["autolevels"]
+            for child in level["children"]
+        ))
+
+    def test_extracts_bard_subclasses_from_optional_features(self):
+        subclasses = ClassAdaptor().subclasses(self.source_class("Bard"))
+        by_name = {value["name"]: value for value in subclasses}
+
+        self.assertIn("College of Lore", by_name)
+        self.assertTrue(any(
+            feature["name"] == "Cutting Words (College of Lore)"
+            for feature in by_name["College of Lore"]["features"]
+        ))
+        bard = ClassAdaptor().adapt(self.source_class("Bard"))
+        self.assertIn("Starting Bard", bard.get("description", ""))
+        self.assertNotIn("Cutting Words (College of Lore)", bard.get("description", ""))
+
+    def test_does_not_cross_assign_similarly_named_subclasses(self):
+        subclasses = ClassAdaptor().subclasses(self.source_class("Rogue"))
+        by_name = {value["name"]: value for value in subclasses}
+
+        self.assertNotIn("Spell Thief (Arcane Trickster)", {
+            feature["name"]
+            for feature in by_name["Thief"]["features"]
+        })
+
+    def test_class_features_preserve_structured_effects_when_supported(self):
+        source = {
+            "name": "Test Class",
+            "autolevels": [{
+                "attributes": {"level": "3"},
+                "children": [{
+                    "tag": "feature",
+                    "attributes": {"optional": "YES"},
+                    "children": [
+                        {"tag": "name", "text": "Arcane Strike"},
+                        {"tag": "text", "text": "The target takes 2d6 fire damage."},
+                    ],
+                }],
+            }],
+        }
+
+        feature = ClassAdaptor().feature(source["autolevels"][0]["children"][0], 3)
+        self.assertEqual(feature["effects"][0]["damage"]["type"], "fire")

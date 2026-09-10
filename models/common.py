@@ -37,6 +37,8 @@ class AbilityScore(str, Enum):
 
 
 class Dice(int, Enum):
+    D3 = 3
+    D7 = 7
     D4 = 4
     D6 = 6
     D8 = 8

@@ -137,6 +137,88 @@ class TestModel(unittest.TestCase):
         #     modifier: int = 0
         #     ability: AbilityScore | None = None
 
+    def test_reactions_are_preserved_and_schema_valid(self):
+        root = parse_xml(PROJECT_ROOT / "5eFile.xml")
+        element = next(
+            element for element in root["children"]
+            if element["tag"] == "monster"
+            and next(child["text"] for child in element["children"] if child["tag"] == "name") == "Bandit Captain"
+        )
+        adapted = MonsterAdaptor().adapt(parse_monster(element))
+
+        self.assertTrue(adapted["reactions"])
+        self.assertEqual(adapted["reactions"][0]["name"], "Parry")
+        monster = Monster.model_validate(adapted)
+        validate(
+            PROJECT_ROOT / "schemas" / "entities" / "Creature.schema.json",
+            monster.model_dump(mode="json", exclude_none=True),
+            PROJECT_ROOT / "schemas",
+        )
+
+    def test_fractional_challenge_rating_is_numeric(self):
+        root = parse_xml(PROJECT_ROOT / "5eFile.xml")
+        element = next(
+            element for element in root["children"]
+            if element["tag"] == "monster"
+            and next(child["text"] for child in element["children"] if child["tag"] == "name") == "Bandit"
+        )
+        adapted = MonsterAdaptor().adapt(parse_monster(element))
+
+        self.assertEqual(adapted["challenge_rating"], 0.125)
+        Monster.model_validate(adapted)
+
+    def test_swarm_creature_type_extracts_underlying_beast(self):
+        adapted = MonsterAdaptor().adapt(
+            {
+                "name": "Swarm of Tiny Beasts",
+                "type": "swarm of tiny beasts",
+                "cr": "1/4",
+            }
+        )
+
+        self.assertEqual(adapted["creature_type"], "beast")
+        monster = Monster.model_validate(adapted)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Monster.schema.json",
+                monster.model_dump(mode="json", exclude_none=True),
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
+    def test_source_edge_values_are_supported(self):
+        adapted = MonsterAdaptor().adapt(
+            {
+                "name": "Source Edge Cases",
+                "type": "infernal vehicle",
+                "alignment": "neutral good (50%) or neutral evil (50%)",
+                "ability_scores": {
+                    "str": "0",
+                    "dex": "0",
+                    "con": "0",
+                    "int": "0",
+                    "wis": "0",
+                    "cha": "0",
+                },
+            }
+        )
+
+        self.assertEqual(adapted["challenge_rating"], 0)
+        self.assertEqual(adapted["creature_type"], "construct")
+        self.assertEqual(
+            adapted["alignment"],
+            "neutral good (50%) or neutral evil (50%)",
+        )
+        self.assertEqual(adapted["ability_scores"]["intelligence"], 0)
+        monster = Monster.model_validate(adapted)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Monster.schema.json",
+                monster.model_dump(mode="json", exclude_none=True),
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -78,3 +78,282 @@ class TestItemParser(unittest.TestCase):
                     item.model_dump(mode="json", exclude_none=True),
                     PROJECT_ROOT / "schemas",
                 )
+
+    def test_parse_preserves_category_fields_and_attributes(self):
+        parsed_xml = parse_xml(
+            """
+            <item source="fixture">
+                <name>Longsword</name>
+                <type>W</type>
+                <magic>1</magic>
+                <detail>rare</detail>
+                <weight>3</weight>
+                <value>15</value>
+                <ac>18</ac>
+                <dmg1>1d8</dmg1>
+                <dmg2>1d10</dmg2>
+                <dmgType>slashing</dmgType>
+                <range>5/20</range>
+                <property>versatile</property>
+                <property>heavy</property>
+                <stealth>disadvantage</stealth>
+                <strength>15</strength>
+                <text>Description</text>
+                <text />
+                <roll>1d8</roll>
+                <modifier category="bonus" source="test">attack +1</modifier>
+            </item>
+            """
+        )
+
+        item = parse_item(parsed_xml)
+
+        self.assertEqual(item["attributes"], {"source": "fixture"})
+        self.assertEqual(item["value"], "15")
+        self.assertEqual(item["ac"], "18")
+        self.assertEqual(item["dmg1"], "1d8")
+        self.assertEqual(item["dmg2"], "1d10")
+        self.assertEqual(item["dmgType"], "slashing")
+        self.assertEqual(item["range"], "5/20")
+        self.assertEqual(item["property"], ["versatile", "heavy"])
+        self.assertEqual(item["stealth"], "disadvantage")
+        self.assertEqual(item["strength"], "15")
+        self.assertEqual(item["text"], ["Description", None])
+        self.assertEqual(item["roll"], ["1d8"])
+        self.assertEqual(item["modifiers"][0]["attributes"], {"category": "bonus", "source": "test"})
+
+    def test_adapt_basic_item(self):
+        parsed_xml = parse_xml(
+            """
+            <item>
+                <name>Backpack</name>
+                <type>G</type>
+                <weight>5</weight>
+                <value>2</value>
+                <text>A backpack can hold one cubic foot of gear.</text>
+                <text>Source: Player's Handbook p. 153</text>
+            </item>
+            """
+        )
+
+        adapted_item = ItemAdaptor().adapt(parse_item(parsed_xml))
+
+        self.assertEqual(adapted_item["category"], "adventuring_gear")
+        self.assertEqual(adapted_item["weight"], 5.0)
+        self.assertEqual(adapted_item["cost"], {"amount": 2, "currency": "gp"})
+        self.assertEqual(
+            adapted_item["description"],
+            "A backpack can hold one cubic foot of gear.",
+        )
+        self.assertEqual(
+            adapted_item["source"],
+            {"text": "Player's Handbook p. 153"},
+        )
+        Item.model_validate(adapted_item)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Item.schema.json",
+                adapted_item,
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
+    def test_adapt_d3_charge_recharge(self):
+        adapted_item = ItemAdaptor().adapt(
+            {
+                "name": "D3 Charge Item",
+                "type": "W",
+                "magic": "1",
+                "detail": "rare",
+                "text": [
+                    "This item has 3 charges and regains 1d3 expended charges daily.",
+                    "Source: Test",
+                ],
+            }
+        )
+
+        self.assertEqual(
+            adapted_item["magic_item"]["charges"]["recharge"],
+            {"count": 1, "dice": 3},
+        )
+        item = Item.model_validate(adapted_item)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Item.schema.json",
+                item.model_dump(mode="json", exclude_none=True),
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
+    def test_adapt_weapon_and_armor(self):
+        dagger = ItemAdaptor().adapt(parse_item(parse_xml(
+            """
+            <item>
+                <name>Dagger</name>
+                <type>M</type>
+                <weight>1</weight>
+                <value>2</value>
+                <text>Finesse: A dagger is a finesse weapon.</text>
+                <text>Source: Player's Handbook p. 149</text>
+                <dmg1>1d4</dmg1>
+                <dmgType>P</dmgType>
+                <property>F,L,T</property>
+                <range>20/60</range>
+            </item>
+            """
+        )))
+        chain_mail = ItemAdaptor().adapt(parse_item(parse_xml(
+            """
+            <item>
+                <name>Chain Mail</name>
+                <type>HA</type>
+                <weight>55</weight>
+                <value>75</value>
+                <text>Made of interlocking metal rings.</text>
+                <text>Source: Player's Handbook p. 145</text>
+                <ac>16</ac>
+                <strength>13</strength>
+                <stealth>1</stealth>
+            </item>
+            """
+        )))
+
+        self.assertEqual(dagger["category"], "weapon")
+        self.assertEqual(dagger["weapon"]["type"], "dagger")
+        self.assertEqual(
+            dagger["weapon"]["properties"],
+            ["finesse", "light", "thrown"],
+        )
+        self.assertEqual(dagger["weapon"]["range"], {"normal": 20, "long": 60})
+        self.assertEqual(
+            dagger["weapon"]["effects"][0]["damage"],
+            {"type": "piercing", "roll": {"count": 1, "dice": 4}},
+        )
+        self.assertEqual(
+            chain_mail["armor"],
+            {
+                "category": "heavy",
+                "type": "chain_mail",
+                "armor_class": 16,
+                "stealth_disadvantage": True,
+                "strength_requirement": 13,
+            },
+        )
+        self.assertNotIn("magic_item", dagger)
+        self.assertNotIn("magic_item", chain_mail)
+        for item in (dagger, chain_mail):
+            Item.model_validate(item)
+            self.assertTrue(
+                validate(
+                    PROJECT_ROOT / "schemas" / "entities" / "Item.schema.json",
+                    item,
+                    PROJECT_ROOT / "schemas",
+                )
+            )
+
+    def test_adapt_source_weapon_and_armor_representatives(self):
+        source_items = {}
+        for element in parse_xml(PROJECT_ROOT / "5eFile.xml")["children"]:
+            if element["tag"] != "item":
+                continue
+            name = next(
+                child["text"]
+                for child in element["children"]
+                if child["tag"] == "name"
+            )
+            if name in {"Shield", "Longbow", "Longsword"}:
+                source_items[name] = parse_item(element)
+
+        adapted_items = {
+            name: ItemAdaptor().adapt(source)
+            for name, source in source_items.items()
+        }
+
+        self.assertEqual(adapted_items["Shield"]["armor"]["category"], "shield")
+        self.assertEqual(adapted_items["Shield"]["armor"]["armor_class"], 2)
+        self.assertEqual(
+            adapted_items["Longbow"]["weapon"]["properties"],
+            ["ammunition", "heavy", "two_handed"],
+        )
+        self.assertEqual(
+            adapted_items["Longbow"]["weapon"]["range"],
+            {"normal": 150, "long": 600},
+        )
+        self.assertEqual(
+            adapted_items["Longsword"]["weapon"]["properties"],
+            ["versatile"],
+        )
+        self.assertEqual(
+            adapted_items["Longsword"]["weapon"]["effects"][1]["damage"],
+            {"type": "slashing", "roll": {"count": 1, "dice": 10}},
+        )
+        for item in adapted_items.values():
+            Item.model_validate(item)
+            self.assertTrue(
+                validate(
+                    PROJECT_ROOT / "schemas" / "entities" / "Item.schema.json",
+                    item,
+                    PROJECT_ROOT / "schemas",
+                )
+            )
+
+    def test_adapt_source_magic_item_representatives(self):
+        source_items = {}
+        for element in parse_xml(PROJECT_ROOT / "5eFile.xml")["children"]:
+            if element["tag"] != "item":
+                continue
+            name = next(
+                child["text"]
+                for child in element["children"]
+                if child["tag"] == "name"
+            )
+            if name in {
+                "Arrows +1",
+                "Armor of Vulnerability (Bludgeoning)",
+                "Staff of Power",
+            }:
+                source_items[name] = parse_item(element)
+
+        adapted_items = {
+            name: ItemAdaptor().adapt(source)
+            for name, source in source_items.items()
+        }
+
+        self.assertEqual(
+            adapted_items["Arrows +1"]["magic_item"],
+            {
+                "rarity": "uncommon",
+                "attunement": False,
+                "bonuses": [
+                    {"type": "attack", "value": 1},
+                    {"type": "damage", "value": 1},
+                ],
+            },
+        )
+        self.assertEqual(
+            adapted_items["Armor of Vulnerability (Bludgeoning)"]["magic_item"]["rarity"],
+            "rare",
+        )
+        self.assertTrue(
+            adapted_items["Armor of Vulnerability (Bludgeoning)"]["magic_item"]["attunement"]
+        )
+        staff_magic = adapted_items["Staff of Power"]["magic_item"]
+        self.assertEqual(staff_magic["charges"]["maximum"], 20)
+        self.assertEqual(staff_magic["charges"]["recharge"]["modifier"], 4)
+        self.assertIn(
+            {"spell": "cone of cold", "charges": 5},
+            staff_magic["spells"],
+        )
+        self.assertIn(
+            "Power Strike",
+            {feature["name"] for feature in adapted_items["Staff of Power"]["features"]},
+        )
+        for item in adapted_items.values():
+            Item.model_validate(item)
+            self.assertTrue(
+                validate(
+                    PROJECT_ROOT / "schemas" / "entities" / "Item.schema.json",
+                    item,
+                    PROJECT_ROOT / "schemas",
+                )
+            )

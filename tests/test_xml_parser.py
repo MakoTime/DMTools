@@ -97,6 +97,55 @@ class TestXMLParser(unittest.TestCase):
         self.assertEqual(get_text(parsed, "name"), "Lich")
         self.assertEqual(get_text(parsed, "size"), "M")
 
+    def test_parse_preserves_attributes_and_empty_elements(self):
+        parsed = parse_xml(
+            """
+            <root type="creature" source="test">
+                <empty />
+                <value>Content</value>
+            </root>
+            """
+        )
+
+        self.assertEqual(parsed["attributes"], {"type": "creature", "source": "test"})
+        self.assertIsNone(parsed["children"][0]["text"])
+        self.assertEqual(parsed["children"][1]["text"], "Content")
+
+    def test_parse_preserves_child_order_and_repeated_elements(self):
+        parsed = parse_xml(
+            """
+            <root>
+                <value>10</value>
+                <value>20</value>
+                <other>30</other>
+            </root>
+            """
+        )
+
+        self.assertEqual(
+            [child["tag"] for child in parsed["children"]],
+            ["value", "value", "other"],
+        )
+        self.assertEqual(
+            [child["text"] for child in find_children(parsed, "value")],
+            ["10", "20"],
+        )
+
+    def test_parse_preserves_nested_children_and_mixed_text(self):
+        parsed = parse_xml(
+            """
+            <root>Text before <parent>Parent <child>Content</child> after</parent> Text after</root>
+            """
+        )
+
+        parent = find_child(parsed, "parent")
+        self.assertIsNotNone(parent)
+        self.assertEqual(parsed["text"], "Text before")
+        self.assertEqual(parsed["children"][-1]["tail"], "Text after")
+        self.assertEqual(parent["text"], "Parent")
+        self.assertEqual(parent["children"][0]["text"], "Content")
+        self.assertEqual(parent["children"][0]["tail"], "after")
+
     def test_parse_xml_file(self):
         for xml_path in DATA_ROOT.glob("*.xml"):
 

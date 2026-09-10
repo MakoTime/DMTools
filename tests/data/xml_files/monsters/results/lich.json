@@ -105,6 +105,7 @@
             ]
         }
     ],
+    "reactions": [],
     "legendary_actions": [
         {
             "name": "Legendary Actions (3/Turn)",
@@ -149,6 +150,7 @@
                     "tag": "attack",
                     "attributes": {},
                     "text": "Disrupt Life|0|6d6",
+                    "tail": null,
                     "children": []
                 }
             ]

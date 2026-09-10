@@ -38,6 +38,7 @@ def _parse_element(element: ET.Element) -> dict:
         "tag": element.tag,
         "attributes": dict(element.attrib),
         "text": _clean_text(element.text),
+        "tail": _clean_text(element.tail),
         "children": [_parse_element(child) for child in element],
     }
 

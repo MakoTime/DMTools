@@ -14,7 +14,10 @@
             "enum": [
                 "self",
                 "touch",
-                "range"
+                "range",
+                "special",
+                "sight",
+                "unlimited"
             ]
         },
         "range": {

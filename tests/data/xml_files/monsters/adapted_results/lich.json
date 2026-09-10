@@ -2,7 +2,7 @@
     "name": "Lich",
     "size": "medium",
     "creature_type": "undead",
-    "alignment": "any evil alignment",
+    "alignment": "any",
     "ability_scores": {
         "strength": 11,
         "dexterity": 16,

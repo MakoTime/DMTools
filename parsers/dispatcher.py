@@ -1,0 +1,155 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Callable, Type
+
+from pydantic import BaseModel
+
+from models.ability import Ability
+from models.background import Background
+from models.class_model import Class
+from models.feat import Feat
+from models.item import Item
+from models.monster import Monster
+from models.race import Race
+from models.spell import Spell
+from models.subclass import Subclass
+from schemas.validator import validate
+
+from .background_adaptor import BackgroundAdaptor
+from .background_parser import parse_background
+from .class_adaptor import ClassAdaptor
+from .class_parser import parse_class
+from .ability_adaptor import AbilityAdaptor
+from .ability_parser import parse_ability
+from .feat_adaptor import FeatAdaptor
+from .feat_parser import parse_feat
+from .item_adaptor import ItemAdaptor
+from .item_parser import parse_item
+from .monster_adaptor import MonsterAdaptor
+from .monster_parser import parse_monster
+from .race_adaptor import RaceAdaptor
+from .race_parser import parse_race
+from .spell_adaptor import SpellAdaptor
+from .spell_parser import parse_spell
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+
+@dataclass(frozen=True)
+class EntityHandler:
+    parser: Callable[[dict[str, Any]], dict[str, Any]]
+    adaptor: Any
+    model: Type[BaseModel]
+    schema: str
+
+
+ABILITY_HANDLER = EntityHandler(
+    parse_ability,
+    AbilityAdaptor(),
+    Ability,
+    "Ability.schema.json",
+)
+
+
+HANDLERS = {
+    "item": EntityHandler(parse_item, ItemAdaptor(), Item, "Item.schema.json"),
+    "monster": EntityHandler(parse_monster, MonsterAdaptor(), Monster, "Monster.schema.json"),
+    "spell": EntityHandler(parse_spell, SpellAdaptor(), Spell, "Spell.schema.json"),
+    "race": EntityHandler(parse_race, RaceAdaptor(), Race, "Race.schema.json"),
+    "feat": EntityHandler(parse_feat, FeatAdaptor(), Feat, "Feat.schema.json"),
+    "background": EntityHandler(parse_background, BackgroundAdaptor(), Background, "Background.schema.json"),
+    "class": EntityHandler(parse_class, ClassAdaptor(), Class, "Class.schema.json"),
+}
+
+
+def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
+    tag = element.get("tag")
+    handler = HANDLERS.get(tag)
+    if handler is None:
+        return {
+            "tag": tag,
+            "name": get_name(element),
+            "status": "unsupported",
+            "error": f"Unsupported entity tag: {tag}",
+        }
+
+    raw = handler.parser(element)
+    result_tag = tag
+    if tag == "spell" and AbilityAdaptor.is_custom_ability(raw):
+        handler = ABILITY_HANDLER
+        result_tag = "ability"
+    adapted = handler.adaptor.adapt(raw)
+    model = handler.model.model_validate(adapted)
+    serialized = model.model_dump(
+        mode="json",
+        by_alias=True,
+        exclude_none=True,
+    )
+    validate(
+        PROJECT_ROOT / "schemas" / "entities" / handler.schema,
+        serialized,
+        PROJECT_ROOT / "schemas",
+    )
+    return {
+        "tag": result_tag,
+        "name": get_name(element),
+        "status": "success",
+        "raw": raw,
+        "data": serialized,
+    }
+
+
+def dispatch_root(root: dict[str, Any]) -> list[dict[str, Any]]:
+    results = []
+    for element in root.get("children", []):
+        try:
+            result = dispatch_element(element)
+            results.append(result)
+            if element.get("tag") == "class":
+                results.extend(dispatch_subclasses(element))
+        except Exception as error:
+            results.append({
+                "tag": element.get("tag"),
+                "name": get_name(element),
+                "status": "failed",
+                "error": str(error),
+            })
+    return results
+
+
+def dispatch_subclasses(element: dict[str, Any]) -> list[dict[str, Any]]:
+    source = parse_class(element)
+    records = []
+    for data in ClassAdaptor().subclasses(source):
+        try:
+            model = Subclass.model_validate(data)
+            serialized = model.model_dump(mode="json", by_alias=True, exclude_none=True)
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Subclass.schema.json",
+                serialized,
+                PROJECT_ROOT / "schemas",
+            )
+            records.append({
+                "tag": "subclass",
+                "name": data["name"],
+                "status": "success",
+                "data": serialized,
+            })
+        except Exception as error:
+            records.append({
+                "tag": "subclass",
+                "name": data.get("name"),
+                "status": "failed",
+                "error": str(error),
+            })
+    return records
+
+
+def get_name(element: dict[str, Any]) -> str | None:
+    for child in element.get("children", []):
+        if child.get("tag") == "name":
+            return child.get("text")
+    return None

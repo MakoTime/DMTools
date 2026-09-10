@@ -4,46 +4,62 @@
     "title": "D&D 5e Casting Time",
     "description": "How long it takes to cast a spell.",
     "$comment": "version 0.4.0",
-    "type": "object",
-    "required": [
-        "unit"
-    ],
-    "properties": {
-        "amount": {
-            "type": "integer",
-            "minimum": 1,
-            "default": 1
+    "anyOf": [
+        {
+            "$ref": "#/definitions/casting_time_entry"
         },
-        "unit": {
-            "type": "string",
-            "enum": [
-                "action",
-                "bonus_action",
-                "reaction",
-                "round",
-                "minute",
-                "hour"
-            ]
+        {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/casting_time_entry"
+            },
+            "minItems": 2
         }
-    },
-    "if": {
-        "properties": {
-            "unit": {
-                "enum": [
-                    "round",
-                    "minute",
-                    "hour"
+    ],
+    "definitions": {
+        "casting_time_entry": {
+            "type": "object",
+            "required": [
+                "unit"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1
+                },
+                "unit": {
+                    "type": "string",
+                    "enum": [
+                        "action",
+                        "bonus_action",
+                        "reaction",
+                        "round",
+                        "minute",
+                        "hour"
+                    ]
+                }
+            },
+            "if": {
+                "properties": {
+                    "unit": {
+                        "enum": [
+                            "round",
+                            "minute",
+                            "hour"
+                        ]
+                    }
+                },
+                "required": [
+                    "unit"
                 ]
-            }
-        },
-        "required": [
-            "unit"
-        ]
-    },
-    "then": {
-        "required": [
-            "amount"
-        ]
-    },
-    "additionalProperties": false
+            },
+            "then": {
+                "required": [
+                    "amount"
+                ]
+            },
+            "additionalProperties": false
+        }
+    }
 }

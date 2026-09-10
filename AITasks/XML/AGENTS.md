@@ -234,6 +234,147 @@ The agent operates incrementally.
 * The current user request defines the task scope.
 * If no specific task is specified, use `Ai-Tasks.md` to determine the first incomplete task.
 * Never claim a task is complete without running the relevant tests.
+* Do NOT attempt to process every entity type unless explicitly instructed.
+
+## Autonomous Task Discovery and Task Management
+
+The agent is responsible for maintaining the project's `Ai-Tasks.md` file.
+
+`Ai-Tasks.md` is a living implementation plan, not merely a list of tasks supplied by the user.
+
+### Initial Task Discovery
+
+If `Ai-Tasks.md` does not accurately describe the current state of the project, inspect the repository and XML source and update it before beginning substantial implementation work.
+
+Determine the remaining work by inspecting:
+
+* existing schemas;
+* referenced schemas and components;
+* Pydantic models;
+* existing parsers;
+* existing fixtures;
+* existing tests;
+* XML entity types;
+* representative XML structures;
+* incomplete or partially implemented conversions;
+* validation failures;
+* unsupported or unrepresented XML structures.
+
+Do not create speculative tasks for functionality that has not been demonstrated to exist in the source XML or required by the existing schemas.
+
+### Task Breakdown
+
+Break the discovered work into concrete, meaningful tasks.
+
+Prefer tasks representing:
+
+* an entity type;
+* a parser capability;
+* a shared XML structure;
+* a semantic conversion capability;
+* a Pydantic model;
+* a schema gap;
+* representative fixtures;
+* test coverage;
+* a specific validation problem.
+
+Do not create a separate task for every individual XML record unless there is a specific reason to do so.
+
+Tasks should be small enough to complete and validate independently where practical, but large enough to represent meaningful progress.
+
+### Prioritisation
+
+Order tasks according to dependency and usefulness.
+
+Prioritise:
+
+1. Broken existing functionality.
+2. Missing shared functionality.
+3. Existing schemas/models that lack XML conversion.
+4. Shared structures used by multiple entity types.
+5. Complex recurring structures.
+6. Remaining entity types.
+7. Edge cases and additional coverage.
+8. Refactoring or cleanup.
+
+When one task depends on another, record the dependency in `Ai-Tasks.md`.
+
+### Task Selection
+
+When no specific task has been assigned by the user, select the highest-priority incomplete task from `Ai-Tasks.md`.
+
+Do not ask the user to manually identify the next task when the repository and task list contain enough information to proceed.
+
+Before starting the selected task:
+
+1. Read the relevant schema.
+2. Read the relevant existing parser/model implementation.
+3. Inspect representative XML.
+4. Inspect relevant tests and fixtures.
+5. Define the concrete acceptance criteria for the task.
+
+### Dynamic Task Discovery
+
+The task list must be updated whenever implementation reveals additional work.
+
+If implementation reveals:
+
+* a missing parser capability;
+* an incomplete existing parser;
+* a missing Pydantic model;
+* a genuine schema gap;
+* a reusable shared structure;
+* an uncovered XML variation;
+* missing test coverage;
+* a validation issue;
+
+add the appropriate task to `Ai-Tasks.md`.
+
+Do not silently expand the scope of the current task to include unrelated newly discovered work.
+
+Instead, finish the current coherent task where possible and record the additional work separately.
+
+### Task Completion
+
+Do not mark a task complete merely because code has been written.
+
+A task may only be marked `[x]` when its stated acceptance criteria have been satisfied and the relevant tests and validation pass.
+
+Where appropriate, record a short completion note containing:
+
+* files changed;
+* relevant tests;
+* validation performed;
+* important implementation decisions;
+* remaining limitations.
+
+### Keeping the Task List Accurate
+
+After every meaningful implementation pass:
+
+1. Update `Ai-Tasks.md`.
+2. Mark completed tasks.
+3. Add newly discovered tasks.
+4. Remove tasks that inspection proves are unnecessary.
+5. Update dependencies where necessary.
+6. Ensure the next recommended task is clear.
+
+`Ai-Tasks.md` must reflect the actual state of the repository rather than the agent's original assumptions.
+
+### Autonomous Progress
+
+After completing a task, automatically select the next appropriate incomplete task and continue working.
+
+Do not stop merely because the original task has been completed if additional work remains within the current user-authorised scope.
+
+Stop and request human input only when:
+
+* a genuine ambiguity cannot be resolved from the repository, schemas, tests, or XML;
+* a destructive or architectural decision requires user approval;
+* required information is unavailable;
+* the requested scope has been completed.
+
+Do not invent requirements in order to keep working.
 
 ## Non-Negotiable Rules
 

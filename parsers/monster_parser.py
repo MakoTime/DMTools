@@ -31,6 +31,7 @@ def parse_monster(element: dict[str, Any]) -> dict[str, Any]:
         "cr": get_text(element, "cr"),
         "traits": parse_named_entries(element, "trait"),
         "actions": parse_actions(element),
+        "reactions": parse_named_entries(element, "reaction"),
         "legendary_actions": parse_named_entries(element, "legendary"),
         "spells": parse_csv_text(element, "spells"),
         "slots": parse_slots(element),
@@ -136,7 +137,11 @@ def parse_slots(element: dict[str, Any]) -> list[int]:
     if not text:
         return []
 
-    return [int(value.strip()) for value in text.split(",")]
+    return [
+        int(value.strip())
+        for value in text.split(",")
+        if value.strip()
+    ]
 
 
 def parse_csv_text(

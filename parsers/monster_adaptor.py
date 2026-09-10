@@ -4,6 +4,8 @@ import re
 
 from typing import Any
 
+from models.components import Effect
+
 
 SIZE_MAP = {
     "T": "tiny",
@@ -66,6 +68,7 @@ class MonsterAdaptor:
             "languages": self.adapt_languages(source.get("languages")),
             "features": self.adapt_features(source.get("traits")),
             "actions": self.adapt_actions(source.get("actions")),
+            "reactions": self.adapt_actions(source.get("reactions")),
             "legendary_actions": self.adapt_actions(
                 source.get("legendary_actions")
             ),
@@ -98,7 +101,14 @@ class MonsterAdaptor:
         if value is None:
             return None
 
-        return str(value).strip().lower()
+        creature_type = str(value).strip().lower()
+        creature_type = re.split(r"\s*\(", creature_type, maxsplit=1)[0].strip()
+        if creature_type.startswith("swarm of "):
+            if creature_type.endswith(" beasts"):
+                return "beast"
+        if creature_type == "infernal vehicle":
+            return "construct"
+        return creature_type
 
     def adapt_alignment(self, value: Any) -> Any:
         if value is None:
@@ -106,8 +116,8 @@ class MonsterAdaptor:
 
         value = str(value).strip().lower()
 
-        if value in {"unaligned", "any"}:
-            return value
+        if value in {"unaligned", "any"} or value.startswith("any "):
+            return "unaligned" if value == "unaligned" else "any"
 
         parts = value.split()
 
@@ -143,7 +153,10 @@ class MonsterAdaptor:
             value = values.get(source_name)
 
             if value is not None:
-                result[schema_name] = int(value)
+                try:
+                    result[schema_name] = int(str(value).strip())
+                except (TypeError, ValueError):
+                    continue
 
         return result or None
 
@@ -331,12 +344,12 @@ class MonsterAdaptor:
         result = []
 
         for sense, distance, unit in re.findall(
-            r"([a-z_ ]+?)\s+(\d+)\s*(ft\.?|miles?)",
+            r"(blindsight|darkvision|devil(?:'s)? sight|tremorsense|truesight)\s+(\d+)\s*(ft\.?|miles?)",
             str(value),
             re.IGNORECASE,
         ):
             result.append({
-                "type": sense.strip().lower().replace(" ", "_"),
+                "type": sense.strip().lower().replace("'s", "").replace(" ", "_"),
                 "distance": int(distance),
                 "distance_type": self.adapt_distance_type(unit),
             })
@@ -347,7 +360,10 @@ class MonsterAdaptor:
         if value is None:
             return None
 
-        return int(value)
+        try:
+            return int(str(value).strip())
+        except (TypeError, ValueError):
+            return None
 
     def adapt_languages(
         self,
@@ -392,10 +408,14 @@ class MonsterAdaptor:
         if name == "Source":
             return None
 
-        return {
+        result = {
             "name": name,
             "description": text,
         }
+        effect = Effect.from_description(text)
+        if effect is not None and effect.description is None:
+            result["effects"] = [effect.model_dump(mode="json", exclude_none=True)]
+        return result
 
     def adapt_actions(
         self,
@@ -443,11 +463,15 @@ class MonsterAdaptor:
     def adapt_challenge_rating(
         self,
         value: Any,
-    ) -> float | None:
+    ) -> float:
         if value is None:
-            return None
+            return 0
 
-        return float(value)
+        text = str(value).strip()
+        if "/" in text:
+            numerator, denominator = text.split("/", 1)
+            return int(numerator) / int(denominator)
+        return float(text)
 
     def adapt_environments(
         self,

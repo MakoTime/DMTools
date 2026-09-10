@@ -19,7 +19,18 @@ def parse_item(element: dict[str, Any]) -> dict[str, Any]:
         "magic": get_text(element, "magic"),
         "detail": get_text(element, "detail"),
         "weight": get_text(element, "weight"),
+        "value": get_text(element, "value"),
+        "ac": get_text(element, "ac"),
+        "dmg1": get_text(element, "dmg1"),
+        "dmg2": get_text(element, "dmg2"),
+        "dmgType": get_text(element, "dmgType"),
+        "range": get_text(element, "range"),
+        "stealth": get_text(element, "stealth"),
+        "strength": get_text(element, "strength"),
         "text": get_text_elements(element, "text"),
+        "property": get_text_elements(element, "property"),
+        "roll": get_text_elements(element, "roll"),
+        "attributes": dict(element.get("attributes", {})),
         "modifiers": parse_modifiers(element),
     }
 
@@ -29,6 +40,7 @@ def parse_modifiers(element: dict[str, Any]) -> list[dict[str, Any]]:
     return [
         {
             "category": modifier.get("attributes", {}).get("category"),
+            "attributes": dict(modifier.get("attributes", {})),
             "text": modifier.get("text"),
         }
         for modifier in find_children(element, "modifier")

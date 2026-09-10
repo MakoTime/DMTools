@@ -1,0 +1,58 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "entities/Ability.schema.json",
+    "title": "D&D 5e Custom Ability",
+    "description": "A selectable or customizable character ability.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": [
+        "name",
+        "kind",
+        "description"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "kind": {
+            "type": "string",
+            "enum": [
+                "maneuver",
+                "eldritch_invocation",
+                "infusion",
+                "monk_technique",
+                "other"
+            ]
+        },
+        "description": {
+            "type": "string",
+            "minLength": 1,
+            "input": "textarea"
+        },
+        "level": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 20
+        },
+        "classes": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            },
+            "uniqueItems": true
+        },
+        "prerequisites": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1
+            }
+        },
+        "source": {
+            "$ref": "../values/source.schema.json"
+        }
+    },
+    "additionalProperties": false
+}
