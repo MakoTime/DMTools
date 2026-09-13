@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Callable
 
 from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 
@@ -99,15 +100,32 @@ class MultiTableLookup:
 class DatabaseWorkspaceModel(EditorModel):
     """State edited and displayed by the database workspace view."""
 
-    database_object: object
+    database_object: object | None = None
+    database_uid: str | None = None
+    database_loader: Callable[[str], object] | None = field(
+        default=None, repr=False, compare=False
+    )
     filters: list[FilterCondition] = field(default_factory=list)
     lookup: MultiTableLookup = field(default_factory=MultiTableLookup)
     result_frame: object = None
     original_frame: object = None
 
-    def validate(self):
+    def resolve_database(self):
+        """Resolve the database payload only when the workspace needs it."""
         if self.database_object is None:
-            raise ValueError("A database is required")
+            if self.database_uid is None or self.database_loader is None:
+                raise ValueError("A database UID and loader are required")
+            self.database_object = self.database_loader(self.database_uid)
+        if self.database_object is None:
+            raise ValueError(f"Unknown database UID: {self.database_uid}")
+        return self.database_object
+
+    def release_database(self):
+        """Release the resolved database payload when the editor closes."""
+        self.database_object = None
+
+    def validate(self):
+        self.resolve_database()
 
     def apply(self):
         self.validate()

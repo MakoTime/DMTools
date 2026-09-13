@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Any
 
 from jsonschema import Draft7Validator
 from referencing import Registry, Resource
@@ -63,7 +62,7 @@ def validate(
 
         print(f"  {location}: {error.message}")
         msgs.append(f"  {location}: {error.message}")
-        
+
     if msgs:
         raise ValueError("Validation errors:\n" + "\n".join(msgs))
 

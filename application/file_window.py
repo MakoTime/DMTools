@@ -21,6 +21,27 @@ class ProjectEntry:
         return project_name(self.path)
 
 
+@dataclass(frozen=True)
+class ProjectPackageAdapter:
+    """Application-owned adapter for ProjectFoundry-compatible project packages."""
+
+    project_file: Path
+
+    @classmethod
+    def from_selection(cls, selection: str | Path) -> "ProjectPackageAdapter":
+        path = Path(selection)
+        if path.is_dir():
+            path = path / "project.json"
+        elif path.suffix.lower() != ".json":
+            path = path / "project.json"
+        return cls(path)
+
+    def read_document(self):
+        return upgrade_project_data(
+            json.loads(self.project_file.read_text(encoding="utf-8"))
+        )
+
+
 def project_name(path: Path) -> str:
     """Use the project directory name for project.json files."""
     if path.name.lower() == "project.json":
@@ -30,10 +51,25 @@ def project_name(path: Path) -> str:
 
 def new_project_file(selection: str | Path) -> Path:
     """Convert a selected project directory/name into project.json."""
-    project_directory = Path(selection)
-    if project_directory.suffix.lower() == ".json":
-        project_directory = project_directory.with_suffix("")
-    return project_directory / "project.json"
+    path = Path(selection)
+    if path.suffix.lower() == ".json":
+        path = path.with_suffix("")
+    return ProjectPackageAdapter.from_selection(path).project_file
+
+
+def framework_project_counts(data):
+    """Read launcher counts from block metadata without opening artifacts."""
+    counts = {"compendium": 0, "homebrew": 0, "collections": 0}
+    for block in data.get("framework", {}).get("blocks", []):
+        block_type = block.get("type")
+        block_data = block.get("data", {})
+        if block_type == "entity_database":
+            namespace = block_data.get("namespace")
+            if namespace in {"compendium", "homebrew"}:
+                counts[namespace] += int(block_data.get("row_count", 0))
+        elif block_type == "collection":
+            counts["collections"] += 1
+    return counts
 
 
 class RecentProjectStore:
@@ -204,9 +240,7 @@ class FileWindow:
 
     def _show_project(self, path: Path, last_opened: str = ""):
         try:
-            data = upgrade_project_data(
-                json.loads(path.read_text(encoding="utf-8"))
-            )
+            data = ProjectPackageAdapter.from_selection(path).read_document()
         except (OSError, ValueError, TypeError) as error:
             self._clear_preview()
             self.window.previewTitle.setText("Unable to preview project")
@@ -223,6 +257,14 @@ class FileWindow:
             ("Root folders", str(len(roots))),
             ("Objects", str(object_count)),
         ]
+        counts = framework_project_counts(data)
+        rows.extend(
+            (
+                ("Compendium entities", str(counts["compendium"])),
+                ("Homebrew entities", str(counts["homebrew"])),
+                ("Collections", str(counts["collections"])),
+            )
+        )
         self.metadata_model.set_metadata(rows)
         self.window.projectPreview.set_project_summary(path, len(roots))
 

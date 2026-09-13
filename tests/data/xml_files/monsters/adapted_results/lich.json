@@ -117,5 +117,82 @@
             "description": "Each living creature within 20 feet of the lich must make a DC 18 Constitution saving throw against this magic, taking 21 (6d6) necrotic damage on a failed save, or half as much damage on a successful one."
         }
     ],
+    "spell_casting": {
+        "spells_known": {
+            "cantrips": [
+                "mage hand",
+                "prestidigitation",
+                "ray of frost"
+            ],
+            "level_1": {
+                "slots": 4,
+                "spells": [
+                    "detect magic",
+                    "magic missile",
+                    "shield",
+                    "thunderwave"
+                ]
+            },
+            "level_2": {
+                "slots": 3,
+                "spells": [
+                    "detect thoughts",
+                    "invisibility",
+                    "Melf's acid arrow",
+                    "mirror image"
+                ]
+            },
+            "level_3": {
+                "slots": 3,
+                "spells": [
+                    "animate dead",
+                    "counterspell",
+                    "dispel magic",
+                    "fireball"
+                ]
+            },
+            "level_4": {
+                "slots": 3,
+                "spells": [
+                    "blight",
+                    "dimension door"
+                ]
+            },
+            "level_5": {
+                "slots": 3,
+                "spells": [
+                    "cloudkill",
+                    "scrying"
+                ]
+            },
+            "level_6": {
+                "slots": 1,
+                "spells": [
+                    "disintegrate",
+                    "globe of invulnerability"
+                ]
+            },
+            "level_7": {
+                "slots": 1,
+                "spells": [
+                    "finger of death",
+                    "plane shift"
+                ]
+            },
+            "level_8": {
+                "slots": 1,
+                "spells": [
+                    "dominate monster",
+                    "power word stun"
+                ]
+            },
+            "level_9": {
+                "slots": 1,
+                "spells": [
+                    "power word kill"
+                ]
+            }
+        }
+    },
     "challenge_rating": 21.0
 }

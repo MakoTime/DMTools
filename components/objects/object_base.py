@@ -9,7 +9,7 @@ from components.tree.model import TreeNode
 from components.tree.roots.root_objects import root_objects
 
 
-class ObjectBase:
+class ProjectObject:
     """Base class for project objects that live directly in the tree."""
     def __init__(
         self,
@@ -132,11 +132,3 @@ class ObjectBase:
             self.icon = icon if icon is not None else QIcon()
             if self.node is not None:
                 self.node.icon = self.icon
-                
-from objects.object_base import ObjectData
-        
-
-    
-
-    
-

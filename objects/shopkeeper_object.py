@@ -1,7 +1,57 @@
-from .object_base import ObjectBase, ObjectData
+from projectfoundry import BlockData, BlockObject
+from pydantic import Field
+
+from .object_base import PayloadStore, ProjectObject
 
 
-class ShopkeeperObject(ObjectBase):
+class ShopkeeperBlockData(BlockData):
+    """Persistent Shopkeeper configuration using UID-only relationships."""
+
+    database_uid: str | None = None
+    query_uids: list[str] = Field(default_factory=list)
+    filters: dict = Field(default_factory=dict)
+    stock_count: int = 10
+    random_seed: int | None = None
+
+
+class ShopkeeperBlock(BlockObject):
+    type_name = "shopkeeper"
+
+    def __init__(
+        self,
+        name,
+        *,
+        database_uid=None,
+        query_uids=None,
+        filters=None,
+        stock_count=10,
+        random_seed=None,
+        guid=None,
+    ):
+        super().__init__(
+            name=name,
+            guid=guid,
+            block_data=ShopkeeperBlockData(
+                database_uid=database_uid,
+                query_uids=list(query_uids or []),
+                filters=dict(filters or {}),
+                stock_count=stock_count,
+                random_seed=random_seed,
+            ),
+        )
+
+    def prepare(self):
+        return self.block_data
+
+    def process(self, prepared, progress_callback=None):
+        del progress_callback
+        return prepared
+
+    def serialise(self, path):
+        del path
+
+
+class ShopkeeperObject(ProjectObject):
     """A configured consumer of one database and its saved queries."""
 
     type_name = "shopkeeper"
@@ -24,7 +74,16 @@ class ShopkeeperObject(ObjectBase):
         self.random_seed = random_seed
         self.last_database_revision = None
         self.inventory_stale = True
-        self.object_data = ObjectData()
+        self.object_data = PayloadStore()
+        self.block_object = ShopkeeperBlock(
+            self.name,
+            database_uid=self.database_guid,
+            query_uids=self.query_guids,
+            filters=self.filters,
+            stock_count=self.stock_count,
+            random_seed=self.random_seed,
+            guid=self.guid,
+        )
 
     def bind_database(self, database_object):
         """Mark inventory stale whenever its source database changes."""
@@ -32,10 +91,22 @@ class ShopkeeperObject(ObjectBase):
         self.last_database_revision = database_object.revision
         database_object.add_change_callback(self._on_database_changed)
         self.inventory_stale = True
+        self._sync_block()
 
     def _on_database_changed(self, database_object):
         self.last_database_revision = database_object.revision
         self.inventory_stale = True
+
+    def _sync_block(self):
+        self.block_object.name = self.name
+        self.block_object.block_data = ShopkeeperBlockData(
+            database_uid=self.database_guid,
+            query_uids=self.query_guids,
+            filters=self.filters,
+            stock_count=self.stock_count,
+            random_seed=self.random_seed,
+        )
+        self.block_object.mark_changed()
 
     def to_json(self, project_directory):
         item = super().to_json(project_directory)

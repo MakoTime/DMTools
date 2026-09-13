@@ -459,17 +459,22 @@ class SpellCasting(BaseModel):
     spells_known: SpellsKnown | None = None
 
 
+class SpellLevel(BaseModel):
+    slots: int = Field(ge=0)
+    spells: list[str]
+
+
 class SpellsKnown(BaseModel):
     cantrips: list[str] | None = None
-    level_1: SpellsKnown | None = None
-    level_2: SpellsKnown | None = None
-    level_3: SpellsKnown | None = None
-    level_4: SpellsKnown | None = None
-    level_5: SpellsKnown | None = None
-    level_6: SpellsKnown | None = None
-    level_7: SpellsKnown | None = None
-    level_8: SpellsKnown | None = None
-    level_9: SpellsKnown | None = None
+    level_1: SpellLevel | None = None
+    level_2: SpellLevel | None = None
+    level_3: SpellLevel | None = None
+    level_4: SpellLevel | None = None
+    level_5: SpellLevel | None = None
+    level_6: SpellLevel | None = None
+    level_7: SpellLevel | None = None
+    level_8: SpellLevel | None = None
+    level_9: SpellLevel | None = None
     at_will: list[str] | None = None
 
 

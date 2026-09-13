@@ -51,7 +51,8 @@ class ClassAdaptor:
             "weapon_proficiencies": self.weapons(source.get("weapons")),
             "tool_proficiencies": self.tools(source.get("tools")),
             "skill_choices": self.skill_choices(source),
-            "spellcasting": self.spellcasting(name, source.get("spellAbility")),
+            "spellcasting": self.spellcasting(name, source),
+            "features": self.class_features(source),
         }
         return {key: value for key, value in result.items() if value is not None}
 
@@ -102,12 +103,54 @@ class ClassAdaptor:
             return None
         return {"choose": choose, "from": skills} if choose > 0 and skills else None
 
-    def spellcasting(self, name: str | None, value: Any) -> dict[str, str] | None:
-        ability = self.normalize(value)
+    def spellcasting(self, name: str | None, source: dict[str, Any]) -> dict[str, Any] | None:
+        ability = self.normalize(source.get("spellAbility"))
         progression = self.PROGRESSION.get(name or "")
         if ability not in self.ABILITIES or progression is None:
             return None
         return {"ability": ability, "progression": progression}
+
+    def cantrips_known(self, source: dict[str, Any]) -> dict[str, int] | None:
+        initial: dict[int, int] = {}
+        increments: dict[int, int] = {}
+        for level in source.get("autolevels", []):
+            level_number = self.level(level.get("attributes", {}).get("level"))
+            if level_number is None:
+                continue
+            for child in level.get("children", []):
+                if child.get("tag") != "feature" or self.text(child, "name") != "Spellcasting":
+                    continue
+                text = " ".join(
+                    str(child_text["text"])
+                    for child_text in child.get("children", [])
+                    if child_text.get("tag") == "text" and child_text.get("text")
+                )
+                self._extract_initial_cantrips(text, initial)
+                self._extract_cantrip_increments(text, increments)
+        if not initial and not increments:
+            return None
+        running = 0
+        result = {}
+        for level in range(1, 21):
+            if level in initial:
+                running = initial[level]
+            running += increments.get(level, 0)
+            if running:
+                result[str(level)] = running
+        return result or None
+
+    @staticmethod
+    def _extract_initial_cantrips(text: str, values: dict[int, int]):
+        pattern = r"At\s+(\d+)(?:st|nd|rd|th)\s+level,\s+you\s+know\s+([\w-]+)\s+cantrips?"
+        for level, amount in re.findall(pattern, text, re.IGNORECASE):
+            values[int(level)] = _number_word(amount)
+
+    @staticmethod
+    def _extract_cantrip_increments(text: str, values: dict[int, int]):
+        pattern = r"(?:(?:learn|know)\s+an\s+additional|another)\s+[^.]*?at\s+(\d+)(?:st|nd|rd|th)\s+level"
+        for level in re.findall(pattern, text, re.IGNORECASE):
+            level_number = int(level)
+            values[level_number] = values.get(level_number, 0) + 1
 
     def base_description(self, source: dict[str, Any]) -> str | None:
         class_name = self.normalize(source.get("name"))
@@ -122,6 +165,25 @@ class ClassAdaptor:
                 if not self.feature_owners(feature["name"], marker, known):
                     descriptions.append(f"{feature['name']}: {feature['description']}")
         return "\n\n".join(descriptions) or None
+
+    def class_features(self, source: dict[str, Any]) -> list[dict[str, Any]] | None:
+        class_name = self.normalize(source.get("name"))
+        marker = self.SUBCLASS_MARKERS.get(class_name or "")
+        known = self.subclass_names(source, marker)
+        features = []
+        for level in source.get("autolevels", []):
+            level_number = self.level(level.get("attributes", {}).get("level"))
+            for child in level.get("children", []):
+                if child.get("tag") != "feature":
+                    continue
+                feature = self.feature(child, level_number)
+                if (
+                    child.get("attributes", {}).get("optional") == "YES"
+                    and self.feature_owners(feature["name"], marker, known)
+                ):
+                    continue
+                features.append(feature)
+        return features or None
 
     def subclass_names(self, source: dict[str, Any], marker: str | None) -> dict[str, dict[str, Any]]:
         if marker is None:
@@ -163,6 +225,19 @@ class ClassAdaptor:
 
         return list(grouped.values())
 
+    def subclass_progression(self, source: dict[str, Any]) -> list[dict[str, Any]]:
+        """Return level/name summaries for class presentation metadata."""
+        return [
+            {
+                "subclass": subclass["name"],
+                "level": feature["level"],
+                "feature": feature["name"],
+            }
+            for subclass in self.subclasses(source)
+            for feature in subclass.get("features", ())
+            if isinstance(feature.get("level"), int)
+        ]
+
     def level(self, value: Any) -> int | None:
         try:
             return int(value)
@@ -191,6 +266,8 @@ class ClassAdaptor:
         return None
 
     def feature_owners(self, name: str, marker: str, known: dict[str, dict[str, Any]]) -> list[str]:
+        if re.search(r"\(\s*replaces\s+the\b[^()]*\)\s*$", name, re.IGNORECASE):
+            return []
         owners: list[str] = []
         prefix = f"{marker}: "
         if name.startswith(prefix):
@@ -204,3 +281,11 @@ class ClassAdaptor:
             if name.startswith(f"{owner}: ") and owner not in owners:
                 owners.append(owner)
         return owners
+
+
+def _number_word(value: str) -> int:
+    words = {
+        "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+        "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10,
+    }
+    return int(value) if value.isdigit() else words.get(value.casefold(), 0)

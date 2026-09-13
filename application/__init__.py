@@ -1,4 +1,4 @@
-__all__ = ["ProjectController"]
+__all__ = ["ApplicationLauncher", "ProjectController"]
 
 
 def __getattr__(name):
@@ -6,4 +6,8 @@ def __getattr__(name):
 		from .project_controller import ProjectController
 
 		return ProjectController
+	if name == "ApplicationLauncher":
+		from .startup import ApplicationLauncher
+
+		return ApplicationLauncher
 	raise AttributeError(name)

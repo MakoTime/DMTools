@@ -1,14 +1,37 @@
 import sqlite3
 
 import pandas as pd
-from PySide6.QtWidgets import QApplication, QGroupBox, QMenu
+from PySide6.QtWidgets import QApplication, QDialog, QGroupBox, QMenu
 from PySide6.QtCore import Qt
 
-from dialog.database.model import DataFrameModel
+from application.project_controller import ProjectController
+from dialog.base.popup_editor import PopupEditorView
+from dialog.base.mdi_contracts import (
+    DatabaseWorkspaceMdiContract,
+    EditableDraftMdiContract,
+    EntityInspectionMdiContract,
+    EntityQueryResultsMdiContract,
+    ObjectInspectionMdiContract,
+    TableEditorMdiContract,
+)
+from dialog.entity_detail.mdi_view import EntityDetailMdiView
+from dialog.entity_query_results.view import EntityQueryResultsView
+from dialog.homebrew.mdi_view import HomebrewEditorMdiView
+from dialog.database.model import (
+    DatabaseWorkspaceModel,
+    DataFrameModel,
+    FilterCondition,
+)
 from dialog.database.view import DatabaseWorkspaceView
 from dialog.base.widget_editor import WidgetEditorView
 from dialog.database.factory import create_database_workspace
+from dialog.db_base.factory import create_database_dialog
+from dialog.db_base.model import DatabaseModel
+from dialog.db_base.view import DatabaseView
+from dialog.query.factory import create_query_dialog
+from dialog.query.model import QueryEditorModel
 from objects.database_object import DatabaseObject
+from objects.query_object import QueryObject
 from tools.widgets import SplitButton
 
 
@@ -34,6 +57,183 @@ def test_database_workspace_uses_widget_editor_factory(tmp_path):
 
     assert isinstance(workspace, WidgetEditorView)
     assert workspace.model.database_object.name == "Rules"
+
+
+def test_database_workspace_resolves_by_uid_and_releases_payload(tmp_path):
+    qt_app()
+    database = DatabaseObject("Rules", tmp_path / "rules.sqlite")
+    loaded_uids = []
+
+    def load_database(uid):
+        loaded_uids.append(uid)
+        return database
+
+    model = DatabaseWorkspaceModel(
+        database_uid=database.guid,
+        database_loader=load_database,
+    )
+    workspace = create_database_workspace(model)
+
+    assert loaded_uids == [database.guid]
+    assert workspace.model.database_object is database
+
+    workspace.close_editor("test")
+
+    assert workspace.model.database_object is None
+    assert workspace.database_object is None
+
+
+def test_database_definition_uses_model_view_factory():
+    qt_app()
+
+    dialog = create_database_dialog(DatabaseModel(name="Rules"))
+
+    assert isinstance(dialog, DatabaseView)
+    assert dialog.model.name == "Rules"
+
+
+def test_mdi_views_follow_separate_structural_contracts():
+    contracts = {
+        EntityInspectionMdiContract: ("refresh_entity", "close_editor"),
+        EditableDraftMdiContract: ("apply_changes", "close_editor"),
+        DatabaseWorkspaceMdiContract: ("refresh_schema", "run_query"),
+        EntityQueryResultsMdiContract: (
+            "selected_entity_uid",
+            "open_selected_entity",
+            "navigate_back",
+        ),
+        TableEditorMdiContract: (
+            "refresh_table",
+            "commit_changes",
+            "close_editor",
+        ),
+        ObjectInspectionMdiContract: ("refresh_object", "close_editor"),
+    }
+    for contract, methods in contracts.items():
+        assert contract.__name__.endswith("MdiContract")
+        assert all(hasattr(contract, method) for method in methods)
+    assert all(
+        isinstance(view, type)
+        for view in (
+            EntityDetailMdiView,
+            HomebrewEditorMdiView,
+            DatabaseWorkspaceView,
+            EntityQueryResultsView,
+        )
+    )
+
+
+def test_query_editor_model_keeps_persistent_query_unchanged_until_apply():
+    query = QueryObject(
+        "Spells",
+        sql="SELECT * FROM spells",
+        filters=[],
+    )
+
+    draft = QueryEditorModel.from_query(query)
+    draft.name = "Cantrips"
+    draft.sql = "SELECT * FROM spells WHERE level = 0"
+    draft.filters.append(FilterCondition("level", "Equals", "0"))
+
+    assert query.name == "Spells"
+    assert query.sql == "SELECT * FROM spells"
+    assert query.filters == []
+    assert draft.apply() is draft
+
+
+def test_query_editor_model_rejects_empty_name_and_sql():
+    draft = QueryEditorModel(name=" ", sql="SELECT 1")
+
+    try:
+        draft.apply()
+    except ValueError as error:
+        assert str(error) == "Enter a query name."
+    else:
+        raise AssertionError("Expected an empty query name to be rejected")
+
+    draft.name = "Query"
+    draft.sql = " "
+    try:
+        draft.apply()
+    except ValueError as error:
+        assert str(error) == "Enter a SQL query."
+    else:
+        raise AssertionError("Expected empty SQL to be rejected")
+
+
+def test_query_editor_factory_uses_popup_editor_base():
+    qt_app()
+
+    dialog = create_query_dialog(QueryEditorModel(name="Spells", sql="SELECT 1"))
+
+    assert isinstance(dialog, PopupEditorView)
+    assert dialog.model.name == "Spells"
+
+
+def test_query_editor_cancel_does_not_mutate_saved_query(tmp_path, monkeypatch):
+    qt_app()
+    path = tmp_path / "rules.sqlite"
+    with sqlite3.connect(path) as connection:
+        connection.execute("CREATE TABLE spells (level INTEGER)")
+    database = DatabaseObject("Rules", path)
+    query = QueryObject("Spells", sql="SELECT * FROM spells")
+    database.add_query_object(query)
+    workspace = DatabaseWorkspaceView(database)
+    workspace.query_list.setCurrentIndex(0)
+    workspace.sql_edit.setPlainText("SELECT * FROM spells WHERE level = 0")
+
+    class RejectedDialog:
+        def __init__(self, model):
+            self.model = model
+
+        def exec(self):
+            self.model.name = "Cantrips"
+            return QDialog.DialogCode.Rejected
+
+    monkeypatch.setattr(
+        "dialog.database.view.create_query_dialog",
+        lambda model, parent=None: RejectedDialog(model),
+    )
+
+    assert workspace.save_query() is None
+    assert query.name == "Spells"
+    assert query.sql == "SELECT * FROM spells"
+
+
+def test_query_editor_accept_routes_update_through_project(tmp_path, monkeypatch):
+    qt_app()
+    path = tmp_path / "rules.sqlite"
+    with sqlite3.connect(path) as connection:
+        connection.execute("CREATE TABLE spells (level INTEGER)")
+    controller = ProjectController()
+    database = DatabaseObject("Rules", path)
+    database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
+    controller.register_database(database)
+    query = QueryObject("Spells", sql="SELECT * FROM spells")
+    controller.register_query(database, query)
+    workspace = DatabaseWorkspaceView(database)
+    workspace.query_list.setCurrentIndex(0)
+    workspace.sql_edit.setPlainText("SELECT * FROM spells WHERE level = 0")
+
+    class AcceptedDialog:
+        def __init__(self, model):
+            self.model = model
+
+        def exec(self):
+            self.model.name = "Cantrips"
+            self.model.apply()
+            return QDialog.DialogCode.Accepted
+
+    monkeypatch.setattr(
+        "dialog.database.view.create_query_dialog",
+        lambda model, parent=None: AcceptedDialog(model),
+    )
+
+    assert workspace.save_query() is query
+    assert query.name == "Cantrips"
+    assert query.sql == "SELECT * FROM spells WHERE level = 0"
+    assert query.block_object.name == "Cantrips"
+    assert query.block_object.block_data.sql == query.sql
 
 
 def test_split_button_displays_primary_action_and_dropdown_menu():

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from .components import WeaponProficiency
+from .components import Feature, WeaponProficiency
 
 
 class SkillChoice(BaseModel):
@@ -28,5 +28,6 @@ class Class(BaseModel):
     tool_proficiencies: list[str] | None = None
     skill_choices: SkillChoice | None = None
     spellcasting: Spellcasting | None = None
+    features: list[Feature] | None = None
 
     model_config = {"extra": "forbid"}

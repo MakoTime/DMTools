@@ -93,18 +93,37 @@ def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
         serialized,
         PROJECT_ROOT / "schemas",
     )
-    return {
+    result = {
         "tag": result_tag,
         "name": get_name(element),
         "status": "success",
         "raw": raw,
         "data": serialized,
     }
+    if tag == "class":
+        result["source_metadata"] = {
+            "subclass_progression": ClassAdaptor().subclass_progression(raw),
+            "presentation_progression": {
+                "cantrips_known": ClassAdaptor().cantrips_known(raw),
+            },
+        }
+    return result
 
 
-def dispatch_root(root: dict[str, Any]) -> list[dict[str, Any]]:
+def dispatch_root(
+    root: dict[str, Any],
+    *,
+    is_cancelled: Callable[[], bool] | None = None,
+    progress_callback: Callable[[int, int], None] | None = None,
+) -> list[dict[str, Any]]:
     results = []
-    for element in root.get("children", []):
+    elements = root.get("children", [])
+    total = len(elements)
+    for index, element in enumerate(elements):
+        if is_cancelled is not None and is_cancelled():
+            break
+        if progress_callback is not None:
+            progress_callback(index, total)
         try:
             result = dispatch_element(element)
             results.append(result)
@@ -117,6 +136,8 @@ def dispatch_root(root: dict[str, Any]) -> list[dict[str, Any]]:
                 "status": "failed",
                 "error": str(error),
             })
+    if progress_callback is not None:
+        progress_callback(total, total)
     return results
 
 

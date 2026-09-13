@@ -3,12 +3,13 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 from uuid import uuid4
 
+from projectfoundry import EditedObject
 from PySide6.QtGui import QIcon
 
 from components.tree.model import TreeNode
 
 
-class ObjectData:
+class PayloadStore:
     """Persist an object's inline JSON data or an external project payload."""
 
     DATA_DIRECTORY = "data"
@@ -39,7 +40,7 @@ class ObjectData:
         item: dict[str, Any],
         project_directory,
         loader: Callable[[Path], Any] | None = None,
-    ) -> "ObjectData":
+    ) -> "PayloadStore":
         data_file = item.get("data_file")
         if data_file is None:
             return cls(item.get("data"))
@@ -52,7 +53,7 @@ class ObjectData:
         return cls(value)
 
 
-class ObjectBase:
+class ProjectObject(EditedObject):
     """Base class for project objects that live directly in the tree.
 
     Subclasses represent a single kind of project data (JSON, a pandas
@@ -70,12 +71,10 @@ class ObjectBase:
         metadata: Optional[dict[str, Any]] = None,
         guid: Optional[str] = None,
     ):
-        self.name = name
-        self.guid = guid or str(uuid4())
+        super().__init__(name, guid=guid or str(uuid4()), metadata=metadata)
         self.icon = icon if icon is not None else QIcon()
         self.visible = visible
-        self.metadata = metadata if metadata is not None else {}
-        self.object_data = ObjectData()
+        self.object_data = PayloadStore()
         self.node = TreeNode(name=self.name, icon=self.icon, node_object=self)
 
     def add_to_tree(self, tree_manager, parent=None):

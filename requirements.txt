@@ -5,4 +5,4 @@ pysqlite3
 jsonschema
 pydantic
 referencing
-projectfoundry @ git+https://github.com/MakoTime/ProjectFoundry.git
+projectfoundry @ git+https://github.com/MakoTime/ProjectFoundry.git@8f75666c855be598fd5ac6bea3d4b435dfca49e4

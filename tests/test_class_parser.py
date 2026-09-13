@@ -40,6 +40,8 @@ class TestClassParser(unittest.TestCase):
             "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"],
         })
         self.assertEqual(cleric["spellcasting"], {"ability": "wisdom", "progression": "full"})
+        self.assertTrue(barbarian["features"])
+        self.assertTrue(all("level" in feature for feature in barbarian["features"]))
         for class_data in (barbarian, cleric):
             Class.model_validate(class_data)
             self.assertTrue(validate(
@@ -76,6 +78,45 @@ class TestClassParser(unittest.TestCase):
         bard = ClassAdaptor().adapt(self.source_class("Bard"))
         self.assertIn("Starting Bard", bard.get("description", ""))
         self.assertNotIn("Cutting Words (College of Lore)", bard.get("description", ""))
+        self.assertNotIn("Cutting Words (College of Lore)", {
+            feature["name"] for feature in bard["features"]
+        })
+
+    def test_registers_subclass_feature_levels_for_class_presentation(self):
+        progression = ClassAdaptor().subclass_progression(self.source_class("Bard"))
+
+        self.assertIn(
+            {
+                "subclass": "College of Lore",
+                "level": 3,
+                "feature": "Cutting Words (College of Lore)",
+            },
+            progression,
+        )
+
+    def test_cantrip_progression_ignores_empty_text_nodes(self):
+        source = {
+            "autolevels": [{
+                "attributes": {"level": 1},
+                "children": [{
+                    "tag": "feature",
+                    "children": [
+                        {"tag": "name", "text": "Spellcasting"},
+                        {"tag": "text", "text": None},
+                        {
+                            "tag": "text",
+                            "text": "At 1st level, you know three cantrips. "
+                            "You learn an additional cantrip at 4th level.",
+                        },
+                    ],
+                }],
+            }],
+        }
+
+        result = ClassAdaptor().cantrips_known(source)
+
+        self.assertEqual(result["1"], 3)
+        self.assertEqual(result["4"], 4)
 
     def test_does_not_cross_assign_similarly_named_subclasses(self):
         subclasses = ClassAdaptor().subclasses(self.source_class("Rogue"))
@@ -85,6 +126,26 @@ class TestClassParser(unittest.TestCase):
             feature["name"]
             for feature in by_name["Thief"]["features"]
         })
+
+    def test_replacement_features_remain_class_features(self):
+        source = self.source_class("Cleric")
+        adaptor = ClassAdaptor()
+
+        class_features = adaptor.adapt(source)["features"]
+        subclasses = adaptor.subclasses(source)
+
+        self.assertIn(
+            "Blessed Strikes (replaces the Divine Strike or Potent Spellcasting feature)",
+            {feature["name"] for feature in class_features},
+        )
+        self.assertNotIn(
+            "Blessed Strikes (replaces the Divine Strike or Potent Spellcasting feature)",
+            {
+                feature["name"]
+                for subclass in subclasses
+                for feature in subclass["features"]
+            },
+        )
 
     def test_class_features_preserve_structured_effects_when_supported(self):
         source = {

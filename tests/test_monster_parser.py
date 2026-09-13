@@ -43,6 +43,27 @@ class TestMonsterParser(unittest.TestCase):
                     encoding="utf-8",
                 )
 
+        def test_spellcasting_ignores_empty_trait_text_nodes(self):
+            source = {
+                "traits": [{
+                    "name": "Spellcasting",
+                    "text": [
+                        None,
+                        "Cantrips (at will): light, guidance",
+                        "1st level (3 slots): bless",
+                    ],
+                }],
+                "slots": [3],
+            }
+
+            adapted = MonsterAdaptor().adapt_spell_casting(source)
+
+            self.assertEqual(adapted["spells_known"]["cantrips"], ["light", "guidance"])
+            self.assertEqual(
+                adapted["spells_known"]["level_1"],
+                {"slots": 3, "spells": ["bless"]},
+            )
+
 
 class TestModel(unittest.TestCase):
     def load_beholder(self):

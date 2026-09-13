@@ -15,6 +15,7 @@ class PopupEditorView(QDialog, EditorButtonBoxImplementation, EditorView):
             on_apply=on_apply,
             on_close=on_close,
         )
+        self.setModal(False)
         self._close_reason = None
 
     def create_button_box(self, buttons=None):

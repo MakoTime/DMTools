@@ -1,19 +1,21 @@
 from copy import deepcopy
+from typing import ClassVar
 
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtGui import QActionGroup
 from PySide6.QtWidgets import (
-    QComboBox,
     QCheckBox,
-    QGroupBox,
+    QComboBox,
+    QDialog,
     QGridLayout,
+    QGroupBox,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
     QListWidgetItem,
-    QLineEdit,
-    QMessageBox,
     QMenu,
+    QMessageBox,
     QPushButton,
     QSplitter,
     QTableView,
@@ -25,12 +27,14 @@ from PySide6.QtWidgets import (
 
 from dialog.base.widget_editor import WidgetEditorView
 from dialog.database.model import (
-    DataFrameModel,
     DatabaseWorkspaceModel,
+    DataFrameModel,
     FilterCondition,
     LookupStep,
 )
 from objects.query_object import QueryObject
+from dialog.query.factory import create_query_dialog
+from dialog.query.model import QueryEditorModel
 from tools.widgets import SplitButton
 
 
@@ -53,7 +57,7 @@ class DatabaseWorkspaceView(WidgetEditorView):
     )
     LOGICAL_OPERATORS = ("AND", "OR", "NOT", "XOR", "NAND", "NOR")
     FILTER_ROW_ROLE = Qt.ItemDataRole.UserRole
-    FILTER_SQL_TEMPLATES = {
+    FILTER_SQL_TEMPLATES: ClassVar[dict[str, str]] = {
         "Equals": "{identifier} = {value}",
         "Not equals": "{identifier} != {value}",
         "Greater than": "{identifier} > {value}",
@@ -77,7 +81,7 @@ class DatabaseWorkspaceView(WidgetEditorView):
             else DatabaseWorkspaceModel(database_object=database_object)
         )
         super().__init__(editor_model, parent=parent)
-        self.database_object = editor_model.database_object
+        self.database_object = editor_model.resolve_database()
         self.result_model = None
         self._original_frame = None
 
@@ -260,11 +264,16 @@ class DatabaseWorkspaceView(WidgetEditorView):
 
         self.refresh_schema()
 
+    def closeEvent(self, event):
+        self.database_object = None
+        self.model.release_database()
+        super().closeEvent(event)
+
     def refresh_schema(self):
         self.table_list.clear()
         try:
             tables = self.database_object.service.list_tables()
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001 - surface service errors in the UI
             self.status.setText(f"Unable to open database: {error}")
             return
         self.table_list.addItems(tables)
@@ -421,7 +430,7 @@ class DatabaseWorkspaceView(WidgetEditorView):
             self.filter_column.clear()
             try:
                 columns = [row[1] for row in self.database_object.service.table_schema(table_name)]
-            except Exception as error:
+            except Exception as error:  # noqa: BLE001 - surface service errors in the UI
                 self.status.setText(f"Unable to read table columns: {error}")
                 return
             self.filter_column.addItems(columns)
@@ -826,7 +835,7 @@ class DatabaseWorkspaceView(WidgetEditorView):
     def run_query(self):
         try:
             frame = self.database_object.service.query(self.sql_edit.toPlainText())
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001 - surface query errors in the UI
             self.status.setText(str(error))
             return False
         self._original_frame = frame.copy()
@@ -844,18 +853,66 @@ class DatabaseWorkspaceView(WidgetEditorView):
         table_name = self.lookup.output_table if self.lookup.enabled else (
             table_item.text() if table_item is not None else ""
         )
-        name = f"Query {len(self.database_object.query_objects) + 1:03d}"
+        selected_query = self.query_list.currentData()
+        project_controller = getattr(self.database_object, "_project_controller", None)
+        if isinstance(selected_query, QueryObject):
+            draft = QueryEditorModel.from_query(selected_query)
+        else:
+            draft = QueryEditorModel(
+                name=f"Query {len(self.database_object.query_objects) + 1:03d}"
+            )
+        draft.sql = sql
+        draft.table_name = table_name
+        draft.filters = deepcopy(self._filters)
+        draft.lookup = deepcopy(self.lookup)
+        dialog = create_query_dialog(draft, parent=self)
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return None
+        draft = dialog.model
+        if isinstance(selected_query, QueryObject):
+            if project_controller is None:
+                selected_query._on_name_changed(draft.name)
+                selected_query.block_object.name = draft.name
+                selected_query.sql = sql
+                selected_query.table_name = table_name
+                selected_query.filters = deepcopy(draft.filters)
+                selected_query.lookup = deepcopy(draft.lookup)
+                selected_query.block_object.block_data.sql = draft.sql
+                selected_query.block_object.block_data.table_name = draft.table_name
+                selected_query.block_object.block_data.filters = [
+                    condition.__dict__ for condition in selected_query.filters
+                ]
+                selected_query.block_object.block_data.lookup = (
+                    selected_query.lookup.__dict__
+                )
+                selected_query.block_object.mark_changed()
+            else:
+                project_controller.update_query(
+                    self.database_object,
+                    selected_query,
+                    name=draft.name,
+                    sql=draft.sql,
+                    table_name=draft.table_name,
+                    filters=deepcopy(draft.filters),
+                    lookup=deepcopy(draft.lookup),
+                )
+            self.refresh_schema()
+            return selected_query
         query = QueryObject(
-            name=name,
+            name=draft.name,
             database_guid=self.database_object.guid,
-            sql=sql,
-            table_name=table_name,
-            filters=deepcopy(self._filters),
-            lookup=deepcopy(self.lookup),
+            sql=draft.sql,
+            table_name=draft.table_name,
+            filters=deepcopy(draft.filters),
+            lookup=deepcopy(draft.lookup),
         )
-        self.database_object.add_query_object(query)
+        if project_controller is None:
+            self.database_object.add_query_object(query)
+        else:
+            project_controller.register_query(self.database_object, query)
         self.refresh_schema()
         self.query_list.setCurrentIndex(self.query_list.count() - 1)
+        return query
 
     def add_row(self):
         if self.result_model is None:

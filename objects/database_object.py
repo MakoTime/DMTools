@@ -1,14 +1,48 @@
 import shutil
-import sqlite3
 from pathlib import Path
 
 import pandas as pd
+from projectfoundry import BlockData, BlockObject
+from pydantic import Field
 
 from application.database_service import DatabaseService
-from .object_base import ObjectBase, ObjectData
+
+from .object_base import PayloadStore, ProjectObject
 
 
-class DatabaseObject(ObjectBase):
+class DatabaseBlockData(BlockData):
+    """ProjectFoundry metadata for a DMTools SQLite database."""
+
+    database_path: str | None = None
+    queries: list[dict] = Field(default_factory=list)
+
+
+class DatabaseBlock(BlockObject):
+    """Registration block for a database during the migration."""
+
+    type_name = "database"
+
+    def __init__(self, name, database_path=None, queries=None, guid=None):
+        super().__init__(
+            name=name,
+            guid=guid,
+            block_data=DatabaseBlockData(
+                database_path=str(database_path) if database_path else None,
+                queries=list(queries or []),
+            ),
+        )
+
+    def prepare(self):
+        return None
+
+    def process(self, prepared, progress_callback=None):
+        del prepared, progress_callback
+
+    def serialise(self, path):
+        del path
+
+
+class DatabaseObject(ProjectObject):
     """A project object wrapping a SQLite database and its saved queries."""
 
     type_name = "database"
@@ -16,11 +50,17 @@ class DatabaseObject(ObjectBase):
     def __init__(self, name, database_path=None, queries=None, **kwargs):
         super().__init__(name, **kwargs)
         self.database_path = Path(database_path) if database_path else None
-        self.object_data = ObjectData(self.database_path)
+        self.object_data = PayloadStore(self.database_path)
         self.queries = list(queries) if queries is not None else []
         self.query_objects = []
         self.revision = 0
         self._change_callbacks = []
+        self.block_object = DatabaseBlock(
+            self.name,
+            database_path=self.database_path,
+            queries=self.queries,
+            guid=self.guid,
+        )
 
     @property
     def service(self):
@@ -33,6 +73,12 @@ class DatabaseObject(ObjectBase):
 
     def _changed(self):
         self.revision += 1
+        self.block_object.name = self.name
+        self.block_object.block_data = DatabaseBlockData(
+            database_path=str(self.database_path) if self.database_path else None,
+            queries=list(self.queries),
+        )
+        self.block_object.mark_changed()
         for callback in tuple(self._change_callbacks):
             callback(self)
 
@@ -44,6 +90,8 @@ class DatabaseObject(ObjectBase):
     def add_query_object(self, query_object):
         """Attach a saved query object as a child of this database."""
         query_object.database_guid = self.guid
+        query_object.block_object.block_data.database_guid = self.guid
+        self.block_object.add_child_block_object(query_object.block_object)
         if query_object not in self.query_objects:
             self.query_objects.append(query_object)
         if query_object.node.parent is not self.node:
@@ -65,13 +113,13 @@ class DatabaseObject(ObjectBase):
         if self.database_path is None:
             item["data_file"] = None
             return item
-        stored_path = Path(project_directory) / ObjectData.DATA_DIRECTORY / f"{self.guid}.sqlite"
+        stored_path = Path(project_directory) / PayloadStore.DATA_DIRECTORY / f"{self.guid}.sqlite"
         if self.database_path.resolve() != stored_path.resolve():
             stored_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(self.database_path, stored_path)
             self.database_path = stored_path
         self.object_data.value = self.database_path
-        item.update({"data_file": f"{ObjectData.DATA_DIRECTORY}/{stored_path.name}"})
+        item.update({"data_file": f"{PayloadStore.DATA_DIRECTORY}/{stored_path.name}"})
         return item
 
     @classmethod

@@ -72,6 +72,7 @@ class MonsterAdaptor:
             "legendary_actions": self.adapt_actions(
                 source.get("legendary_actions")
             ),
+            "spell_casting": self.adapt_spell_casting(source),
             "challenge_rating": self.adapt_challenge_rating(source.get("cr")),
             "environments": self.adapt_environments(
                 source.get("environment")
@@ -83,6 +84,45 @@ class MonsterAdaptor:
             for key, value in result.items()
             if value is not None
         }
+
+    def adapt_spell_casting(self, source: dict[str, Any]) -> dict[str, Any] | None:
+        known: dict[str, Any] = {}
+        slots = source.get("slots", [])
+        for trait in source.get("traits", []):
+            if str(trait.get("name", "")).casefold() != "spellcasting":
+                continue
+            text = " ".join(
+                str(value) for value in trait.get("text", []) if value
+            )
+            for label, spells in re.findall(
+                r"(?:^|\s)(Cantrips|At will|[1-9](?:st|nd|rd|th) level)(?:\s*\([^)]*\))?\s*:\s*([^•]+)",
+                text,
+                re.IGNORECASE,
+            ):
+                names = []
+                for spell in spells.split(","):
+                    cleaned_spell = re.sub(r"\s*\*.*$", "", spell).strip()
+                    if cleaned_spell:
+                        names.append(cleaned_spell)
+                folded_label = label.casefold()
+                if folded_label.startswith("cantrip"):
+                    key = "cantrips"
+                elif folded_label == "at will":
+                    key = "at_will"
+                else:
+                    key = f"level_{label[0]}"
+                if names:
+                    if key.startswith("level_"):
+                        level = int(key.rsplit("_", 1)[1])
+                        known[key] = {
+                            "slots": slots[level - 1] if len(slots) >= level else 0,
+                            "spells": names,
+                        }
+                    else:
+                        known[key] = names
+        if not known:
+            return None
+        return {"spells_known": known}
 
     def adapt_name(self, value: Any) -> str | None:
         if value is None:

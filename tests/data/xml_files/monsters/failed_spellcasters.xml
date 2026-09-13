@@ -1,0 +1,96 @@
+<compendium>
+  <monster>
+    <name>Acolyte</name>
+    <size>M</size>
+    <type>humanoid (any race)</type>
+    <alignment>any alignment</alignment>
+    <ac>10</ac>
+    <hp>9 (2d8)</hp>
+    <speed>30 ft.</speed>
+    <str>10</str><dex>10</dex><con>10</con><int>10</int><wis>14</wis><cha>11</cha>
+    <save/>
+    <skill>Medicine +4, Religion +2</skill>
+    <resist/><vulnerable/><immune/><conditionImmune/><senses/>
+    <passive>12</passive>
+    <languages>any one language (usually Common)</languages>
+    <cr>1/4</cr>
+    <trait>
+      <name>Source</name>
+      <text>Monster Manual p. 342</text>
+    </trait>
+    <trait>
+      <name>Spellcasting</name>
+      <text>The acolyte is a 1st-level spellcaster. Its spellcasting ability is Wisdom (spell save DC 12, +4 to hit with spell attacks). The acolyte has following cleric spells prepared: </text>
+      <text/>
+      <text>Cantrips (at will): light, sacred flame, thaumaturgy</text>
+      <text/>
+      <text>• 1st level (3 slots): bless, cure wounds, sanctuary</text>
+    </trait>
+    <action>
+      <name>Club</name>
+      <text>Melee Weapon Attack: +2 to hit, reach 5 ft., one target. Hit: 2 (1d4) bludgeoning damage.</text>
+      <attack>|2|1d4</attack>
+    </action>
+    <spells>light, sacred flame, thaumaturgy, bless, cure wounds, sanctuary</spells>
+    <slots>3</slots>
+    <environment>urban</environment>
+  </monster>
+  <monster>
+    <name>Archmage</name>
+    <size>M</size>
+    <type>humanoid (any race)</type>
+    <alignment>any alignment</alignment>
+    <ac>12 (15 with mage armor)</ac>
+    <hp>99 (18d8+18)</hp>
+    <speed>30 ft.</speed>
+    <str>10</str><dex>14</dex><con>12</con><int>20</int><wis>15</wis><cha>16</cha>
+    <save>Int +9, Wis +6</save>
+    <skill>Arcana +13, History +13</skill>
+    <resist>damage from spells; non magical bludgeoning, piercing, and slashing (from stoneskin)</resist>
+    <vulnerable/><immune/><conditionImmune/><senses/>
+    <passive>12</passive>
+    <languages>any six languages</languages>
+    <cr>12</cr>
+    <trait>
+      <name>Source</name>
+      <text>Monster Manual p. 342</text>
+    </trait>
+    <trait>
+      <name>Magic Resistance</name>
+      <text>The archmage has advantage on saving throws against spells and other magical effects.</text>
+    </trait>
+    <trait>
+      <name>Spellcasting</name>
+      <text>The archmage is an 18th-level spellcaster. Its spellcasting ability is Intelligence (spell save DC 17, +9 to hit with spell attacks). The archmage can cast disguise self and invisibility at will and has the following wizard spells prepared: </text>
+      <text/>
+      <text>Cantrips (at will): fire bolt, light, mage hand, prestidigitation, shocking grasp</text>
+      <text/>
+      <text>• 1st level (4 slots): detect magic, identify, mage armor*, magic missile</text>
+      <text/>
+      <text>• 2nd level (3 slots): detect thoughts, mirror image, misty step</text>
+      <text/>
+      <text>• 3rd level (3 slots): counterspell, fly, lightning bolt</text>
+      <text/>
+      <text>• 4th level (3 slots): banishment, fire shield, stoneskin*</text>
+      <text/>
+      <text>• 5th level (3 slots): cone of cold, scrying, wall of force</text>
+      <text/>
+      <text>• 6th level (1 slot): globe of invulnerability</text>
+      <text/>
+      <text>• 7th level (1 slot): teleport</text>
+      <text/>
+      <text>• 8th level (1 slot): mind blank*</text>
+      <text/>
+      <text>• 9th level (1 slot): time stop</text>
+      <text>  * The archmage casts these spells on itself before combat.</text>
+    </trait>
+    <action>
+      <name>Dagger</name>
+      <text>Melee or Ranged Weapon Attack: +6 to hit, reach 5 ft. or range 20/60 ft., one target. Hit: 4 (1d4+2) piercing damage.</text>
+      <attack>Dagger|6|1d4+2</attack>
+    </action>
+    <spells>fire bolt, light, mage hand, prestidigitation, shocking grasp, detect magic, identify, mage armor, magic missile, detect thoughts, mirror image, misty step, counterspell, fly, lightning bolt, banishment, fire shield, stoneskin, cone of cold, scrying, wall of force, globe of invulnerability, teleport, mind blank, time stop</spells>
+    <slots>4, 3, 3, 3, 3, 1, 1, 1, 1</slots>
+    <environment>urban</environment>
+  </monster>
+</compendium>

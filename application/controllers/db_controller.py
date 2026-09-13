@@ -1,40 +1,41 @@
-from typing import Optional
-
 from PySide6.QtWidgets import QDialog, QTreeView, QWidget
 
 from common.icons import get_icon
-from components.tree.model import TreeNode, TreeModel
+from components.tree.model import TreeModel, TreeNode
 from components.tree.roots.db_root import database_root
 from components.tree.roots.root_objects import root_objects
+from dialog.database.factory import create_database_workspace
 from dialog.db_base.factory import create_database_dialog
 from dialog.db_base.model import DatabaseModel
-from dialog.database.factory import create_database_workspace
 from objects.database_object import DatabaseObject
 from objects.query_object import QueryObject
 from tools.dropdown.factory import create_dropdown_menu
 
+
 class DataBaseController:
     """Create, edit and remove database entries in a QTreeView dialog."""
-    
-    def __init__(self, tree_view: QTreeView, parent: Optional[QWidget] = None):
+
+    def __init__(self, tree_view: QTreeView, parent: QWidget | None = None):
         self.tree_view = tree_view
         self.parent = parent
         tree_model = tree_view.model()
         if isinstance(tree_model, TreeModel):
             tree_model.root_data = root_objects.get_nodes()
             tree_model.refresh()
-        
+
         if hasattr(tree_view, "add_context_menu_factory"):
             tree_view.add_context_menu_factory(self._create_context_menu_for_index)
         elif hasattr(tree_view, "set_context_menu_factory"):
             tree_view.set_context_menu_factory(self._create_context_menu_for_index)
-            
+
     def _create_context_menu_for_index(self, index, parent):
         return self.create_context_menu(index.internalPointer(), parent)
-    
+
     def create_context_menu(self, node: TreeNode, parent=None):
         options = []
-        if node is database_root:
+        if node is database_root or (
+            node.node_object is None and node.name == database_root.name
+        ):
             options.append(("New Database", self.create_database))
         elif isinstance(node.node_object, DatabaseObject):
             options.extend(
@@ -76,7 +77,7 @@ class DataBaseController:
                 workspace.query_list.setCurrentIndex(index)
                 break
         return subwindow
-    
+
     def create_database(self):
         """Open the editor and register the confirmed database definition."""
         project_file = getattr(
@@ -91,7 +92,7 @@ class DataBaseController:
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return None
         return self._register(dialog.update_model().to_object())
-    
+
     def edit(self, database_object):
         dialog = create_database_dialog(
             model=DatabaseModel.from_object(database_object),
@@ -106,10 +107,17 @@ class DataBaseController:
                 for query in updated.queries
                 if query.sql.strip()
             ]
+            database_object._changed()
+            project_controller = getattr(self.parent, "project_controller", None)
+            if project_controller is not None:
+                project_controller.register_database(database_object)
             self._refresh_and_select(database_object)
-            
+
     def delete(self, database_object):
         database_object.remove_from_tree()
+        project_controller = getattr(self.parent, "project_controller", None)
+        if project_controller is not None:
+            project_controller.unregister_database(database_object)
         self.tree_view.model().refresh()
 
     def delete_query(self, query_object):
@@ -117,14 +125,20 @@ class DataBaseController:
         if database_node is None or not isinstance(database_node.node_object, DatabaseObject):
             return
         database = database_node.node_object
+        project_controller = getattr(self.parent, "project_controller", None)
+        if project_controller is not None:
+            project_controller.unregister_query(database, query_object)
+            self.tree_view.model().refresh()
+            return
         database.query_objects = [query for query in database.query_objects if query is not query_object]
         query_object.remove_from_tree()
         database._changed()
         self.tree_view.model().refresh()
-    
+
     def _refresh_and_select(self, database):
         tree_model = self.tree_view.model()
         if not isinstance(tree_model, TreeModel):
+            tree_model.refresh()
             return
         tree_model.refresh()
         if database is None:
@@ -144,9 +158,12 @@ class DataBaseController:
 
     def _register(self, database_object):
         database_object.add_to_tree(None, database_root)
+        project_controller = getattr(self.parent, "project_controller", None)
+        if project_controller is not None:
+            project_controller.register_database(database_object)
         self._refresh_and_select(database_object)
         return database_object
-        
+
     def _tree_search(self):
         from components.tree import TreeSearch
 

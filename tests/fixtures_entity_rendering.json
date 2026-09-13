@@ -1,0 +1,11 @@
+{
+  "item": {"field": "weight"},
+  "spell": {"field": "level"},
+  "race": {"field": "size"},
+  "class": {"field": "hit_die"},
+  "subclass": {"field": "class_name"},
+  "monster": {"field": "size"},
+  "feat": {"field": "prerequisite"},
+  "background": {"field": "languages"},
+  "ability": {"field": "category"}
+}

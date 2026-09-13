@@ -1,0 +1,431 @@
+from types import SimpleNamespace
+
+import pytest
+
+from application.entity_rendering import (
+    presentation_contract,
+    render_entity_html,
+    render_entity_markdown,
+)
+
+
+def entity(entity_type="item", payload=None, metadata=None):
+    return SimpleNamespace(
+        uid="entity-1",
+        name="<Unsafe> Pack",
+        entity_type=entity_type,
+        source_namespace="homebrew",
+        payload=payload or {"weight": 5, "features": ["Useful"]},
+        source_metadata=metadata or {},
+    )
+
+
+def test_renderer_supports_all_canonical_entity_types():
+    for entity_type in (
+        "item", "spell", "race", "class", "subclass", "monster",
+        "feat", "background", "ability",
+    ):
+        markdown = render_entity_markdown(entity(entity_type))
+        assert "# <Unsafe> Pack" in markdown
+        assert "dmtools-entity-uid: entity-1" in markdown
+
+
+def test_markdown_supports_empty_entities_and_homebrewery_style_tables():
+    for entity_type in (
+        "item", "spell", "race", "class", "subclass", "monster",
+        "feat", "background", "ability",
+    ):
+        rendered = render_entity_markdown(entity(entity_type, payload={}))
+        assert "# <Unsafe> Pack" in rendered
+        assert "None" not in rendered
+
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Pack",
+                "table": [
+                    {"property": "Weight", "value": "5 lb"},
+                    {"property": "Value", "value": "2 gp"},
+                ],
+                "callout": {"title": "At a Glance", "text": "Useful gear."},
+            }
+        )
+    )
+    assert "### Table" in rendered
+    assert "| property | value |" in rendered
+    assert "| Weight | 5 lb |" in rendered
+    assert "> **At a Glance:** Useful gear." in rendered
+
+
+def test_presentation_contract_defines_stable_type_specific_field_order():
+    entity_types = (
+        "item", "spell", "race", "class", "subclass", "monster",
+        "feat", "background", "ability",
+    )
+
+    for entity_type in entity_types:
+        fields = presentation_contract(entity_type)
+        assert fields[0] == "name"
+        assert len(fields) == len(set(fields))
+
+    with pytest.raises(ValueError, match="Unsupported entity type"):
+        presentation_contract("unknown")
+
+
+def test_html_escapes_untrusted_text_and_emits_uid_reference_links():
+    html = render_entity_html(
+        entity(
+            metadata={
+                "entity_references": [{
+                    "target_uid": "spell-1",
+                    "entity_type": "spell",
+                    "source_namespace": "compendium",
+                    "display_fallback": "Fireball",
+                }],
+                "reference_diagnostics": [{
+                    "display_fallback": "Missing Spell",
+                    "status": "missing",
+                    "path": "classes[0]",
+                }],
+            }
+        )
+    )
+
+    assert "&lt;Unsafe&gt; Pack" in html
+    assert 'data-template-version="1"' in html
+    assert 'data-css-version="1"' in html
+    assert "dmtools://entity/spell-1" in html
+    assert "Missing Spell" in html
+    assert "<script>" not in html
+
+
+def test_monster_spell_references_render_as_selectable_spell_links():
+    rendered = render_entity_html(
+        entity(
+            entity_type="monster",
+            metadata={
+                "entity_references": [
+                    {
+                        "target_uid": "spell-fireball",
+                        "entity_type": "spell",
+                        "source_namespace": "compendium",
+                        "display_fallback": "Fireball",
+                    }
+                ]
+            },
+        )
+    )
+
+    assert "<h2>Spells</h2>" in rendered
+    assert 'href="dmtools://entity/spell-fireball"' in rendered
+    assert "Fireball" in rendered
+
+
+def test_any_spell_bearing_entity_renders_spell_links_section():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="item",
+            metadata={
+                "entity_references": [{
+                    "target_uid": "spell-shield",
+                    "entity_type": "spell",
+                    "source_namespace": "compendium",
+                    "display_fallback": "Shield",
+                }]
+            },
+        )
+    )
+
+    assert "## Spells" in rendered
+    assert "[Shield](dmtools://entity/spell-shield)" in rendered
+
+
+def test_renderers_follow_type_specific_field_order():
+    item = entity(
+        payload={"description": "Details", "weight": 5, "name": "Pack"}
+    )
+
+    markdown = render_entity_markdown(item)
+    assert markdown.index("**weight:**") < markdown.index("**description:**")
+
+
+def test_renderers_follow_stat_block_and_spell_block_order():
+    monster = entity(
+        entity_type="monster",
+        payload={
+            "description": "Lore",
+            "actions": [],
+            "challenge_rating": 2,
+            "armor_class": {"value": 13},
+            "name": "Wolf",
+        },
+    )
+    spell = entity(
+        entity_type="spell",
+        payload={
+            "description": "Effect",
+            "duration": {"amount": 1},
+            "components": ["verbal"],
+            "level": 1,
+            "name": "Shield",
+        },
+    )
+
+    monster_markdown = render_entity_markdown(monster)
+    spell_markdown = render_entity_markdown(spell)
+    assert monster_markdown.index("### Armor Class") < monster_markdown.index(
+        "### Actions"
+    )
+    assert monster_markdown.index("**challenge_rating:**") < monster_markdown.index(
+        "**description:**"
+    )
+    assert spell_markdown.index("- **level:**") < spell_markdown.index(
+        "### Components"
+    )
+    assert spell_markdown.index("- **duration:**") < spell_markdown.index(
+        "**description:**"
+    )
+
+
+def test_named_display_objects_use_bold_name_and_description_line():
+    markdown = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Pack",
+                "features": [{"name": "Useful Gear", "description": "A handy pack."}],
+            }
+        )
+    )
+    html = render_entity_html(
+        entity(
+            payload={
+                "name": "Pack",
+                "features": [{"name": "Useful Gear", "description": "A handy pack."}],
+            }
+        )
+    )
+
+    assert "- **Useful Gear**  \n  A handy pack." in markdown
+    assert "**name:** Useful Gear" not in markdown
+    assert "**description:** A handy pack." not in markdown
+    assert "<li><strong>Useful Gear</strong><br>A handy pack.</li>" in html
+
+
+def test_same_entity_feature_source_is_not_repeated():
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Pack",
+                "features": [{
+                    "name": "Useful Gear",
+                    "description": "A handy pack.",
+                    "source": {"text": "homebrew"},
+                }],
+            }
+        )
+    )
+
+    assert "**source:** homebrew" not in rendered
+
+
+def test_class_progression_precedes_feature_details():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="class",
+            payload={
+                "name": "Wizard",
+                "features": [{"name": "Spellcasting", "level": 1, "description": "Details"}],
+                "description": "Class details",
+            },
+        )
+    )
+
+    assert rendered.index("## Level Progression") < rendered.index("### Features")
+
+
+def test_class_progression_renders_available_levels_without_fabricating_slots():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="class",
+            payload={
+                "name": "Wizard",
+                "features": [
+                    {"name": "Spellcasting", "level": 1, "description": ""},
+                    {"name": "Arcane Recovery", "level": 2, "description": ""},
+                ],
+                "spellcasting": {"ability": "intelligence", "progression": "full"},
+            },
+        )
+    )
+
+    assert "## Level Progression" in rendered
+    assert "| 1st | +2 | Spellcasting | - | 2 | - | - | - | - | - | - | - |" in rendered
+    assert "| 2nd | +2 | Arcane Recovery | - | 3 | - | - | - | - | - | - | - |" in rendered
+    assert "| 20th | +6 | - | - | 4 | 3 | 3 | 3 | 2 | 1 | 1 | 1 | 1 |" in rendered
+
+
+def test_class_progression_projection_renders_cantrips_and_spell_slots():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="class",
+            payload={
+                "name": "Druid",
+                "features": [{"name": "Druidic", "level": 1}],
+                "presentation_progression": {
+                    "cantrips_known": {1: 2, 2: 2, 3: 2},
+                    "spell_slots": {
+                        "1": {1: 2, 2: 3, 3: 4},
+                        "2": {3: 2},
+                    },
+                },
+            },
+        )
+    )
+
+    assert "| Level | Proficiency Bonus | Features | Cantrips Known | 1st | 2nd |" in rendered
+    assert "| 1st | +2 | Druidic | 2 | 2 | - |" in rendered
+    assert "| 3rd | +2 | - | 2 | 4 | 2 |" in rendered
+
+
+def test_class_progression_mentions_one_generic_subclass_feature_per_level():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="class",
+            payload={
+                "name": "Bard",
+                "features": [{"name": "Bardic Inspiration", "level": 1}],
+            },
+            metadata={
+                "subclass_progression": [
+                    {"subclass": "College of Lore", "level": 3, "feature": "Cutting Words"},
+                    {"subclass": "College of Valor", "level": 3, "feature": "Combat Inspiration"},
+                ],
+            },
+        )
+    )
+
+    assert "| 3rd | +2 | Bard College Feature |" in rendered
+    assert "Cutting Words" not in rendered
+    assert "Combat Inspiration" not in rendered
+
+
+def test_html_renders_progression_as_a_table():
+    html = render_entity_html(
+        entity(
+            entity_type="class",
+            payload={
+                "name": "Wizard",
+                "features": [{"name": "Spellcasting", "level": 1}],
+                "spellcasting": {"ability": "intelligence", "progression": "full"},
+            },
+        )
+    )
+
+    assert "<table><thead><tr>" in html
+    assert "<th>Level</th>" in html
+    assert "<td>1st</td>" in html
+    assert "<p>| Level |" not in html
+
+
+def test_subclass_progression_renders_feature_levels():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="subclass",
+            payload={
+                "name": "Champion",
+                "class": "fighter",
+                "features": [
+                    {"name": "Improved Critical", "level": 3, "description": ""},
+                ],
+            },
+        )
+    )
+
+    assert "## Level Progression" in rendered
+    assert "| Level | Features |" in rendered
+    assert "| 1 |  |" in rendered
+    assert "| 3 | Improved Critical |" in rendered
+
+
+def test_structured_fields_use_reader_facing_units():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="monster",
+            payload={
+                "name": "Owl",
+                "senses": [{"type": "darkvision", "distance": 60, "distance_type": "feet"}],
+                "movement": [{"movement_type": "walk", "speed": {"distance": 30, "unit": "feet"}}],
+            },
+        )
+    )
+
+    assert "- Darkvision: 60 ft" in rendered
+    assert "- Walk: 30 ft" in rendered
+    assert "distance_type" not in rendered
+
+
+def test_structured_field_formatting_preserves_zero_and_missing_values():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="monster",
+            payload={
+                "name": "Test Creature",
+                "senses": [
+                    {"type": "blindsight", "distance": 0, "distance_type": "feet"},
+                    {"type": "tremorsense", "distance": None},
+                ],
+            },
+        )
+    )
+
+    assert "- Blindsight: 0 ft" in rendered
+    assert "- Tremorsense: Unavailable" in rendered
+
+
+def test_structured_fields_normalize_lists_ranges_durations_costs_and_html():
+    payload = {
+        "name": "Wand",
+        "cost": {"amount": 50, "currency": "gold"},
+        "range": {"normal": 30, "long": 120},
+        "duration": {"duration": "hour", "amount": 1},
+        "damage_resistances": ["fire", "unknown_damage"],
+        "proficiencies": [{"type": "martial"}],
+    }
+    entity_record = entity(entity_type="item", payload=payload)
+    rendered = render_entity_markdown(entity_record)
+    html = render_entity_html(entity_record)
+
+    assert "- **cost:** 50 gold" in rendered
+    assert "- **range:** 30 ft (long 120 ft)" in rendered
+    assert "- **duration:** 1 hour" in rendered
+    assert "- Fire" in rendered
+    assert "- Unknown Damage" in rendered
+    assert "- Martial" in rendered
+    assert "50 gold" in html
+    assert "distance_type" not in rendered
+
+
+def test_markdown_handles_nested_lists_long_text_and_unresolved_references():
+    long_text = "A detailed description. " * 20
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Pack",
+                "description": long_text,
+                "features": [{"name": "Utility", "entries": ["One", "Two"]}],
+                "optional": None,
+            },
+            metadata={
+                "reference_diagnostics": [{
+                    "display_fallback": "Missing Spell",
+                    "status": "missing",
+                    "path": "features[0].spell",
+                }]
+            },
+        )
+    )
+
+    assert long_text in rendered
+    assert "### Features" in rendered
+    assert "- One" in rendered
+    assert "- Missing Spell (missing; features[0].spell)" in rendered

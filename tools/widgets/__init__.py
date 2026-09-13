@@ -7,6 +7,7 @@ from .visible import VisibleWidget
 from .bezier_graph import BezierCurveGraph
 from .name import NameField
 from .split_button import SplitButton
+from .multi_select_combo import MultiSelectComboBox
 
 __all__ = [
 	"FastForwardWidget",
@@ -20,4 +21,5 @@ __all__ = [
 	"BezierCurveGraph",
 	"NameField",
 	"SplitButton",
+	"MultiSelectComboBox",
 ]

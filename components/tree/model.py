@@ -1,4 +1,5 @@
 import re
+from uuid import uuid4
 
 from PySide6.QtCore import QAbstractItemModel, QModelIndex, Qt
 from PySide6.QtGui import QIcon
@@ -7,24 +8,39 @@ from PySide6.QtGui import QIcon
 class TreeNode:
     """Represents a node in the tree structure."""
 
-    def __init__(self, name, icon=None, parent=None, node_object=None):
+    def __init__(self, name, icon=None, parent=None, node_object=None, uid=None):
+        self.guid = uid or str(uuid4())
+        self.uid = self.guid
+        self._project = None
         self.node_object = node_object
         self.name = name
         self.icon = icon if icon else QIcon()
         self.parent = parent
         self.children = []
+        self.parent_uid = None
+        self.object_uid = None
+        self.child_uids = []
         self._block_child_nodes = []
         self.expanded = False
 
     def add_child(self, child_node):
         child_node.parent = self
-        self.children.append(child_node)
+        child_node.parent_uid = self.guid
+        if child_node not in self.children:
+            self.children.append(child_node)
+        if child_node.guid not in self.child_uids:
+            self.child_uids.append(child_node.guid)
 
     def remove_child(self, child_node):
+        if getattr(child_node, "protected", False):
+            return False
         if child_node not in self.children:
             return False
         self.children.remove(child_node)
         child_node.parent = None
+        child_node.parent_uid = None
+        if child_node.guid in self.child_uids:
+            self.child_uids.remove(child_node.guid)
         return True
 
     def remove_object_nodes(self, node_object):
@@ -86,17 +102,20 @@ class TreeManager:
 class TreeModel(QAbstractItemModel):
     """Custom model for managing hierarchical data."""
 
-    def __init__(self, root_data, duplicate_name_handler=None):
+    def __init__(self, root_data, duplicate_name_handler=None, rename_handler=None):
         super().__init__()
         self.root_data = root_data
         self.duplicate_name_handler = duplicate_name_handler
+        self.rename_handler = rename_handler
 
-    def rowCount(self, parent=QModelIndex()):
+    def rowCount(self, parent=None):
+        parent = QModelIndex() if parent is None else parent
         if not parent.isValid():
             return len(self.root_data)
         return len(parent.internalPointer().children)
 
-    def columnCount(self, parent=QModelIndex()):
+    def columnCount(self, parent=None):
+        del parent
         return 1
 
     def data(self, index, role=Qt.DisplayRole):
@@ -131,10 +150,14 @@ class TreeModel(QAbstractItemModel):
             name = self.duplicate_name_handler(name, object_base)
             if name is None:
                 return False
-        object_base._on_name_changed(name)
-        block_object = getattr(object_base, "block_object", None)
-        if block_object is not None:
-            block_object.name = name
+        if self.rename_handler is not None:
+            if not self.rename_handler(object_base, name):
+                return False
+        else:
+            object_base._on_name_changed(name)
+            block_object = getattr(object_base, "block_object", None)
+            if block_object is not None:
+                block_object.name = name
         self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole])
         return True
 
@@ -173,7 +196,8 @@ class TreeModel(QAbstractItemModel):
             number += 1
         return f"{prefix} {number:03d}"
 
-    def index(self, row, column, parent=QModelIndex()):
+    def index(self, row, column, parent=None):
+        parent = QModelIndex() if parent is None else parent
         if not self.hasIndex(row, column, parent):
             return QModelIndex()
         if not parent.isValid():
