@@ -89,6 +89,51 @@ def test_class_and_subclass_spell_grants_are_normalized():
     assert len(normalized[2].source_metadata["entity_references"]) == 1
 
 
+def test_textual_spell_mentions_are_normalized_to_uids():
+    spell = record("spell", "spell-fireball", "Fireball", {"name": "Fireball"})
+    monster = record(
+        "monster",
+        "monster-wizard",
+        "Wizard",
+        {"name": "Wizard", "features": [{"name": "Spellcasting", "description": "The wizard casts Fireball."}]},
+    )
+
+    normalized = normalize_entity_references((spell, monster))[-1]
+
+    assert normalized.source_metadata["entity_references"] == [{
+        "path": "payload.features[0].description:text",
+        "target_uid": "spell-fireball",
+        "entity_type": "spell",
+        "source_namespace": "compendium",
+        "display_fallback": "Fireball",
+    }]
+
+
+def test_option_prefixed_spell_reference_resolves_to_canonical_spell():
+    spell = record("spell", "spell-hold-person", "Hold Person", {"name": "Hold Person"})
+    item = record(
+        "item",
+        "item-wand",
+        "Wand of Binding",
+        {
+            "name": "Wand of Binding",
+            "description": "Cast hold monster or hold person.",
+            "magic_item": {"spells": [{"spell": "or hold person"}]},
+        },
+    )
+
+    normalized = normalize_entity_references((spell, item))[-1]
+
+    assert normalized.source_metadata["entity_references"] == [{
+        "path": "magic_item.spells[0].spell",
+        "target_uid": "spell-hold-person",
+        "entity_type": "spell",
+        "source_namespace": "compendium",
+        "display_fallback": "hold person",
+    }]
+    assert "reference_diagnostics" not in normalized.source_metadata
+
+
 def test_reference_resolution_validates_namespace_and_type(tmp_path):
     controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
     imported = EntityImportService().preview_xml(ITEM_XML).records[0]

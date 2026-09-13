@@ -24,24 +24,36 @@ class TestMonsterParser(unittest.TestCase):
         for xml_path in DATA_ROOT.glob("*.xml"):
             with self.subTest(xml=xml_path.name):
                 parsed_xml = parse_xml(xml_path)
-                monster = parse_monster(parsed_xml)
-
-                self.assertIsInstance(monster, dict)
-
-                result_path = RESULTS_ROOT / f"{xml_path.stem}.json"
-                result_path.write_text(
-                    json.dumps(monster, indent=4, ensure_ascii=False),
-                    encoding="utf-8",
+                elements = (
+                    [parsed_xml]
+                    if parsed_xml.get("tag") == "monster"
+                    else [
+                        child
+                        for child in parsed_xml.get("children", [])
+                        if child.get("tag") == "monster"
+                    ]
                 )
+                self.assertTrue(elements)
 
-                adapted_monster = MonsterAdaptor().adapt(monster)
-                self.assertIsInstance(adapted_monster, dict)
+                for element in elements:
+                    monster = parse_monster(element)
+                    self.assertIsInstance(monster, dict)
 
-                result_path = ADAPTED_RESULTS_ROOT / f"{xml_path.stem}.json"
-                result_path.write_text(
-                    json.dumps(adapted_monster, indent=4, ensure_ascii=False),
-                    encoding="utf-8",
-                )
+                    suffix = "" if len(elements) == 1 else f"_{monster['name']}"
+                    result_path = RESULTS_ROOT / f"{xml_path.stem}{suffix}.json"
+                    result_path.write_text(
+                        json.dumps(monster, indent=4, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
+
+                    adapted_monster = MonsterAdaptor().adapt(monster)
+                    self.assertIsInstance(adapted_monster, dict)
+
+                    result_path = ADAPTED_RESULTS_ROOT / f"{xml_path.stem}{suffix}.json"
+                    result_path.write_text(
+                        json.dumps(adapted_monster, indent=4, ensure_ascii=False),
+                        encoding="utf-8",
+                    )
 
         def test_spellcasting_ignores_empty_trait_text_nodes(self):
             source = {

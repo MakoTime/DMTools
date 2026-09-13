@@ -74,6 +74,169 @@ Do not stop merely because tests pass for the current task or because the curren
 Work through the following domain sections in order. Completed items have been
 removed from this part of the document and are recorded below.
 
+### Review generated entity presentation
+
+- [x] Add an automated inspection review that renders representative canonical
+	entities and reports presentation-contract violations, including missing
+	progression values, raw mapping representations, adjacent metadata, and
+	storage-oriented labels. Acceptance: the review produces actionable issue
+	records without mutating SQLite data.
+
+	> `tools/inspection_report.py` now writes `review.json`, `review.md`, and
+	`review.html` alongside representative entity artifacts. Focused review,
+	rendering, and parser tests pass.
+- [x] Fix class cantrip progression extraction for source text that states the
+	initial cantrip count in a general sentence and introduces later increases
+	with ordinal counts. Acceptance: the real Bard source produces 2 cantrips at
+	levels 1-3, 3 at levels 4-9, and 4 at levels 10-20, with focused regression
+	tests.
+
+	> `ClassAdaptor.cantrips_known()` now handles the actual Bard wording,
+	including the abbreviated `and a 4th` phrase. The real-source regression and
+	all class-parser tests pass.
+- [x] Improve feature and source rendering for generated entity inspections.
+	Acceptance: feature name, description, level, and source are visually
+	separated; source mappings render as readable text; and reader-facing labels
+	do not expose underscore-separated storage identifiers.
+
+	> Feature metadata now renders as a separate block, source mappings use their
+	readable text value, and generic list/scalar values humanize storage labels.
+	Focused rendering and inspection-review tests pass.
+- [x] Run the representative inspection report and focused presentation tests
+	after the fixes, record remaining discrepancies, and add follow-up tasks for
+	any unresolved source-shape issues.
+
+	> Full `5eFile.xml` review examined 4,630 records: 4,605 valid and 25
+	duplicate-identity diagnostics. The report produced 12 representative
+	presentation findings, which became the follow-up tasks below.
+
+- [x] Normalize nested mapping values in entity rendering for representative
+	monster and spell records. Acceptance: Acolyte and Fireball inspection output
+	does not expose Python dictionary syntax, while structured values remain
+	readable and deterministic.
+
+	> Reader-facing labels and table cells now use the shared scalar formatter,
+	which removes Python mapping representations while preserving deterministic
+	structured output. Focused rendering and review tests pass.
+- [x] Separate feature metadata for all named feature shapes, including
+	features whose description or entries are nested rather than a single string.
+	Acceptance: the representative class, subclass, race, item, background, and
+	feat outputs contain no feature-text/metadata adjacency findings.
+
+	> Named features now separate descriptions, nested entries, levels, and
+	sources. The complete-source representative report is clean with 0
+	presentation issues, and the focused presentation suite passes.
+- [x] Define and test duplicate source-identity handling for the full XML
+	import. Acceptance: the 25 duplicate records are either intentionally
+	deduplicated with documented policy or retained with distinct source
+	identities; valid import counts and diagnostics are explicit.
+
+	> The application import workflow uses `duplicate_policy="replace"` for
+	full-source imports. With that explicit policy, `5eFile.xml` produces 4,605
+	valid records, 0 issues, and `can_commit=True`; strict preview rejection
+	remains available as the low-level default. Existing duplicate-policy tests
+	cover reject, skip, and replace behavior; the final focused regression suite
+	passes 48 tests and Ruff reports no issues.
+
+### Define entity presentation contracts
+
+Each task in this section defines the expected reader-facing, statblock-style
+layout before implementation. Contracts must describe section order, optional
+sections, field transformations, omission rules, and one representative source
+record. Canonical SQLite/JSON payloads remain unchanged.
+
+- [x] Define the expected monster stat-block layout using Frog as the reference
+	record and Acolyte as a populated comparison record. Acceptance: document
+	identity, defenses, movement, ability table, proficiencies, senses,
+	challenge, traits, actions, reactions, legendary actions, and omission rules.
+- [x] Define the expected spell-block layout using Fireball as the reference
+	record. Acceptance: document level/school, casting time, range/target,
+	components, duration, effects, description, higher-level text, classes,
+	ritual, concentration, and source ordering.
+- [x] Define the expected item-block layout using Backpack and a weapon or
+	magic item as references. Acceptance: document category, armor/weapon
+	statistics, weight, cost, properties, features, granted content, description,
+	charges, and source ordering.
+- [x] Define the expected class-block layout using Bard as the reference
+	record. Acceptance: document proficiencies, spellcasting, level progression,
+	subclass markers, class features, optional features, description, and source
+	ordering.
+- [x] Define the expected subclass-block layout using College of Lore as the
+	reference record. Acceptance: document parent class, subclass features by
+	level, granted spells or proficiencies, description, and source ordering.
+- [x] Define the expected race-block layout using Human as the reference
+	record. Acceptance: document size, speed, ability increases, proficiencies,
+	languages, traits, granted content, description, and source ordering.
+- [x] Define the expected feat-block layout using Alert or Lucky as the
+	reference record. Acceptance: document prerequisites, ability increases,
+	proficiencies, features, actions, description, and source ordering.
+- [x] Define the expected background-block layout using Acolyte as the
+	reference record. Acceptance: document skill/tool proficiencies, languages,
+	equipment, features, description, and source ordering.
+- [x] Define the expected ability-block layout using Action Surge or Arcane
+	Recovery as the reference record. Acceptance: document category, class,
+	level, prerequisites, effects, granted content, description, and source
+	ordering.
+- [x] Review all nine presentation contracts together and resolve shared
+	conventions. Acceptance: labels, source handling, feature treatment, links,
+	missing-value policy, and section-heading rules are consistent without
+	flattening entity-specific layouts.
+
+	> All nine contracts and their shared conventions are defined in
+	`docs/entity-presentation-contracts.md`.
+
+### Generate entity presentation templates
+
+- [x] Add the shared presentation-model and template-rendering boundary.
+	Acceptance: canonical records are converted into read-only presentation
+	models before rendering; templates cannot mutate payloads; the generic
+	renderer remains a fallback for unsupported fields and types.
+- [x] Generate and test the monster stat-block template from the approved
+	monster contract. Acceptance: Frog and Acolyte render in PHB-style order with
+	ability modifiers, grouped stat lines, and conditional Traits/Actions/
+	Reactions/Legendary Actions sections.
+- [ ] Generate and test the spell-block template from the approved spell
+	contract. Acceptance: Fireball renders its spell metadata and effects in the
+	agreed order without raw mapping or storage-field output.
+- [ ] Generate and test the item-block template from the approved item
+	contract. Acceptance: Backpack, a weapon, and a magic item use the correct
+	item-specific sections and omit irrelevant sections.
+- [x] Generate and test the class-block template from the approved class
+	contract. Acceptance: Bard renders its PHB progression table before Class
+	Features, with the detailed feature blocks in PHB order.
+
+	> Dedicated class rendering now keeps the Bard table before the feature
+	sequence and preserves the existing derived progression behavior for sparse
+	fixtures.
+- [x] Generate and test the subclass-block template from the approved subclass
+	contract. Acceptance: College of Lore renders its parent class and overview
+	followed by leveled features without a fabricated progression table; source-
+	backed table-bearing features such as Eldritch Knight Spellcasting remain in
+	their source position.
+
+	> Dedicated subclass rendering now distinguishes overview-led subclasses from
+	legacy sparse fixtures and covers College of Lore and Eldritch Knight ordering.
+- [ ] Generate and test the race-block template from the approved race
+	contract. Acceptance: Human renders identity, movement, ability changes,
+	proficiencies, traits, and languages in the agreed order.
+- [ ] Generate and test the feat-block template from the approved feat
+	contract. Acceptance: the selected feat renders prerequisites and effects in
+	the agreed order with optional sections omitted cleanly.
+- [ ] Generate and test the background-block template from the approved
+	background contract. Acceptance: Acolyte renders proficiencies, equipment,
+	features, and description without generic Details output.
+- [ ] Generate and test the ability-block template from the approved ability
+	contract. Acceptance: the selected ability renders category, class/level,
+	prerequisites, effects, and description in the agreed order.
+- [ ] Route the viewer to the dedicated template for each supported entity type
+	and retain the generic renderer as a deliberate fallback. Acceptance: all
+	nine representative records render through their dedicated templates and
+	unknown fields remain visible without corrupting the primary layout.
+- [ ] Run a cross-entity snapshot and HTML validation pass against the approved
+	templates. Acceptance: no representative output exposes raw Python mappings,
+	storage-oriented labels, incorrect section order, or fabricated data; the
+	canonical payloads and SQLite records remain byte-for-byte unchanged.
+
 ### Move project ownership to ProjectFoundry
 
 - [x] Replace the DMTools-owned project controller/serializer orchestration

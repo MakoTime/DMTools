@@ -6,6 +6,7 @@ from collections.abc import Mapping
 from typing import Any
 
 from application.class_presentation import class_progression_rows
+from application.entity_templates import render_entity_template, render_monster_template
 
 
 RENDERER_VERSION = "3"
@@ -73,28 +74,40 @@ def render_entity_markdown(entity) -> str:
         "",
     ]
     metadata = getattr(entity, "source_metadata", {}) or {}
-    presentation_payload = _ordered_payload(
-        entity.entity_type, entity.payload, metadata
+    dedicated_monster = entity.entity_type == "monster" and (
+        "ability_scores" in entity.payload or "hit_points" in entity.payload
     )
-    _remove_redundant_feature_sources(presentation_payload, entity, metadata)
-    _append_markdown_value(
-        lines,
-        "Details",
-        presentation_payload,
-    )
+    if dedicated_monster:
+        lines = [
+            f"<!-- dmtools-entity-uid: {entity.uid}; renderer: {RENDERER_VERSION} -->",
+            *render_monster_template(
+                entity.payload, fallback_name=entity.name
+            ).splitlines(),
+        ]
+    else:
+        dedicated_payload = _with_progression_sections(
+            entity.entity_type, entity.payload, metadata
+        )
+        dedicated_template = render_entity_template(
+            entity.entity_type, dedicated_payload, fallback_name=entity.name
+        )
+        if dedicated_template is not None and _has_template_shape(entity.entity_type, entity.payload):
+            lines = [
+                f"<!-- dmtools-entity-uid: {entity.uid}; renderer: {RENDERER_VERSION} -->",
+                *dedicated_template.splitlines(),
+            ]
+        else:
+            presentation_payload = _ordered_payload(
+                entity.entity_type, entity.payload, metadata
+            )
+            _remove_redundant_feature_sources(presentation_payload, entity, metadata)
+            _append_markdown_value(lines, "Details", presentation_payload)
     references = metadata.get("entity_references", ())
     diagnostics = metadata.get("reference_diagnostics", ())
-    spell_references = [
-        reference for reference in references if reference["entity_type"] == "spell"
-    ]
+    lines = _replace_inline_spell_links(lines, references)
     other_references = [
-        reference for reference in references if reference not in spell_references
+        reference for reference in references if reference.get("entity_type") != "spell"
     ]
-    if spell_references:
-        lines.extend(("", "## Spells"))
-        for reference in spell_references:
-            label = reference.get("display_fallback", reference["target_uid"])
-            lines.append(f"- [{label}](dmtools://entity/{reference['target_uid']})")
     if other_references:
         lines.extend(("", "## References"))
         for reference in other_references:
@@ -111,6 +124,52 @@ def render_entity_markdown(entity) -> str:
                 f"({diagnostic['status']}; {diagnostic['path']})"
             )
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _replace_inline_spell_links(lines: list[str], references) -> list[str]:
+    spell_references = [
+        reference for reference in references
+        if reference.get("entity_type") == "spell" and reference.get("display_fallback")
+    ]
+    if not spell_references:
+        return lines
+    replacements = sorted(
+        ((reference["display_fallback"], reference["target_uid"]) for reference in spell_references),
+        key=lambda item: len(item[0]),
+        reverse=True,
+    )
+    result = []
+    for line in lines:
+        for label, target_uid in replacements:
+            link = f"[{label}](dmtools://entity/{target_uid})"
+            line = re.sub(
+                rf"(?<![\w\]]){re.escape(label)}(?!\w)",
+                link,
+                line,
+                flags=re.IGNORECASE,
+            )
+        result.append(line)
+    return result
+
+
+def _has_template_shape(entity_type: str, payload: Any) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    required = {
+        "spell": {"level", "school", "casting_time"},
+        "item": {"category", "weight"},
+        "class": {"hit_dice", "features"},
+        "subclass": {"features"},
+        "race": {"size", "movement"},
+        "feat": {"prerequisite", "features"},
+        "background": {"skill_proficiencies", "features"},
+        "ability": {"category", "effects"},
+    }.get(entity_type)
+    if not required or not required.issubset(payload):
+        return False
+    if entity_type == "subclass":
+        return "class" in payload or "class_name" in payload
+    return True
 
 
 def render_entity_html(entity) -> str:
@@ -257,9 +316,9 @@ def _append_markdown_value(lines: list[str], title: str, value: Any, level: int 
                 normalized = _format_structured_value(str(key), child)
                 if normalized is not None:
                     if isinstance(normalized, list):
-                        lines.extend(f"- {item}" for item in normalized)
+                        lines.extend(f"- {_display_scalar(item)}" for item in normalized)
                     else:
-                        lines.append(f"- **{key}:** {normalized}")
+                        lines.append(f"- **{_display_label(key)}:** {normalized}")
                 elif str(key).casefold() in {"table", "tables"} and isinstance(child, list):
                     _append_markdown_table(lines, title, child, level + 1)
                 elif str(key).casefold() in {"callout", "callouts"}:
@@ -267,7 +326,7 @@ def _append_markdown_value(lines: list[str], title: str, value: Any, level: int 
                 else:
                     _append_markdown_value(lines, title, child, level + 1)
             else:
-                lines.append(f"- **{key}:** {child}")
+                lines.append(f"- **{_display_label(key)}:** {_display_scalar(child)}")
     elif isinstance(value, list):
         for child in value:
             if child is None:
@@ -277,9 +336,9 @@ def _append_markdown_value(lines: list[str], title: str, value: Any, level: int 
             elif isinstance(child, list):
                 for nested in child:
                     if nested is not None:
-                        lines.append(f"- {nested}")
+                        lines.append(f"- {_display_scalar(nested)}")
             else:
-                lines.append(f"- {child}")
+                lines.append(f"- {_display_scalar(child)}")
     else:
         if value is not None:
             lines.append(str(value))
@@ -362,21 +421,32 @@ def _format_cost(value: dict[str, Any]) -> str:
 
 
 def _append_markdown_list_item(lines: list[str], value: dict[str, Any]):
-    if "name" in value and "description" in value:
+    if "name" in value:
         lines.append(f"- **{value['name']}**  ")
-        lines.append(f"  {value['description']}")
+        description = value.get("description")
+        if description is not None:
+            if isinstance(description, list):
+                lines.extend(f"  {_display_scalar(item)}" for item in description)
+            else:
+                lines.append(f"  {_display_scalar(description)}")
+        entries = value.get("entries")
+        if isinstance(entries, list):
+            lines.extend(f"  - {_display_scalar(item)}" for item in entries if item is not None)
         value = {
             key: child for key, child in value.items()
-            if key not in {"name", "description"}
+            if key not in {"name", "description", "entries"}
         }
         if not value:
             return
+        lines.append("")
     scalar_items = [(key, child) for key, child in value.items()
                     if child is not None and not isinstance(child, (dict, list))]
     nested_items = [(key, child) for key, child in value.items()
                     if child is not None and isinstance(child, (dict, list))]
     if scalar_items:
-        lines.append("- " + "; ".join(f"**{key}:** {child}" for key, child in scalar_items))
+        lines.append("- " + "; ".join(
+            f"**{_display_label(key)}:** {_display_scalar(child)}" for key, child in scalar_items
+        ))
     else:
         lines.append("-")
     for key, child in nested_items:
@@ -385,9 +455,28 @@ def _append_markdown_list_item(lines: list[str], value: dict[str, Any]):
             lines.append(f"  **{label}:**")
             for nested in child:
                 if nested is not None:
-                    lines.append(f"  - {nested}")
+                    lines.append(f"  - {_display_scalar(nested)}")
         else:
-            lines.append(f"  **{label}:** {child}")
+            lines.append(f"  **{_display_label(label)}:** {_display_scalar(child)}")
+
+
+def _display_scalar(value: Any) -> str:
+    if isinstance(value, list):
+        return "; ".join(_display_scalar(item) for item in value if item is not None)
+    if isinstance(value, dict):
+        if "text" in value and value["text"] is not None:
+            return str(value["text"])
+        return "; ".join(
+            f"{_display_label(key)}: {_display_scalar(child)}" for key, child in value.items()
+            if child is not None
+        )
+    if isinstance(value, str) and "_" in value:
+        return value.replace("_", " ").title()
+    return str(value)
+
+
+def _display_label(value: Any) -> str:
+    return str(value).replace("_", " ").title()
 
 
 def _append_markdown_table(
@@ -403,7 +492,10 @@ def _append_markdown_table(
     lines.append("| " + " | ".join(labels) + " |")
     lines.append("| " + " | ".join("---" for _ in columns) + " |")
     for row in mappings:
-        values = ["" if row.get(column) is None else str(row.get(column)) for column in columns]
+        values = [
+            "" if row.get(column) is None else _display_scalar(row.get(column))
+            for column in columns
+        ]
         lines.append("| " + " | ".join(values) + " |")
 
 
@@ -469,6 +561,13 @@ def _markdown_to_html(markdown: str) -> str:
                 in_list = False
             index += 1
             continue
+        if line.strip() == "---":
+            if in_list:
+                html.append("</ul>")
+                in_list = False
+            html.append("<hr>")
+            index += 1
+            continue
         if line.startswith("#"):
             if in_list:
                 html.append("</ul>")
@@ -516,7 +615,9 @@ def _markdown_table_to_html(lines: list[str]) -> str:
 
 def _markdown_inline(value: str) -> str:
     escaped = escape(value)
+    escaped = re.sub(r"\*\*\*(.+?)\*\*\*", r"<strong><em>\1</em></strong>", escaped)
     escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"\*(.+?)\*", r"<em>\1</em>", escaped)
     return re.sub(
         r"\[([^\]]+)\]\(dmtools://entity/([A-Za-z0-9._:-]+)\)",
         r'<a class="entity-link" href="dmtools://entity/\2">\1</a>',

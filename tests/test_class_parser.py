@@ -118,6 +118,15 @@ class TestClassParser(unittest.TestCase):
         self.assertEqual(result["1"], 3)
         self.assertEqual(result["4"], 4)
 
+    def test_extracts_bard_cantrip_progression_from_source_text(self):
+        result = ClassAdaptor().cantrips_known(self.source_class("Bard"))
+
+        self.assertEqual(result["1"], 2)
+        self.assertEqual(result["3"], 2)
+        self.assertEqual(result["4"], 3)
+        self.assertEqual(result["9"], 3)
+        self.assertEqual(result["10"], 4)
+
     def test_does_not_cross_assign_similarly_named_subclasses(self):
         subclasses = ClassAdaptor().subclasses(self.source_class("Rogue"))
         by_name = {value["name"]: value for value in subclasses}

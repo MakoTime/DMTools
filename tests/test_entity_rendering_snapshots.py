@@ -27,7 +27,8 @@ def test_entity_rendering_snapshots_cover_all_supported_types():
         markdown = render_entity_markdown(entity)
         html = render_entity_html(entity)
         assert f"dmtools-entity-uid: snapshot-{entity_type}" in markdown
-        assert f"**{snapshot['field']}:** value" in markdown
+        label = snapshot["field"].replace("_", " ").title()
+        assert f"**{label}:** value" in markdown
         assert 'class="dmtools-inspection"' in html
         assert f'data-entity-uid="snapshot-{entity_type}"' in html
         assert "Snapshot Entity" in html

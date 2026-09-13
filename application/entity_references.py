@@ -1,4 +1,5 @@
 from dataclasses import asdict, dataclass, replace
+import re
 from typing import Literal
 
 
@@ -31,14 +32,30 @@ def normalize_entity_references(
     for entity in (*tuple(existing_entities), *records):
         key = (entity.entity_type, _entity_name(entity).casefold())
         index.setdefault(key, {})[entity.uid] = entity
+    spell_names = {
+        _entity_name(entity): entity
+        for entity in (*tuple(existing_entities), *records)
+        if entity.entity_type == "spell" and _entity_name(entity)
+    }
     normalized = []
     for record in records:
         references = []
         diagnostics = []
-        for path, entity_type, name in extract_reference_candidates(
-            record.entity_type, record.payload
-        ):
-            candidates = tuple(index.get((entity_type, name.casefold()), {}).values())
+        candidates = list(extract_reference_candidates(record.entity_type, record.payload))
+        if record.entity_type != "spell":
+            candidates.extend(_extract_text_spell_candidates(record.payload, spell_names))
+        seen_candidates = set()
+        for path, entity_type, name in candidates:
+            lookup_name = (
+                _normalize_spell_reference_name(name)
+                if entity_type == "spell"
+                else name
+            )
+            candidate_key = (entity_type, lookup_name.casefold())
+            if candidate_key in seen_candidates:
+                continue
+            seen_candidates.add(candidate_key)
+            candidates = tuple(index.get((entity_type, lookup_name.casefold()), {}).values())
             if len(candidates) == 1:
                 target = candidates[0]
                 namespace = getattr(target, "source_namespace", source_namespace)
@@ -50,7 +67,7 @@ def normalize_entity_references(
                                 target_uid=target.uid,
                                 entity_type=entity_type,
                                 source_namespace=namespace,
-                                display_fallback=name,
+                                display_fallback=lookup_name,
                             )
                         ),
                     }
@@ -61,7 +78,7 @@ def normalize_entity_references(
                         ReferenceDiagnostic(
                             path=path,
                             entity_type=entity_type,
-                            display_fallback=name,
+                            display_fallback=lookup_name,
                             status="ambiguous" if candidates else "missing",
                             candidate_uids=tuple(item.uid for item in candidates),
                         )
@@ -76,6 +93,30 @@ def normalize_entity_references(
             metadata["reference_diagnostics"] = diagnostics
         normalized.append(replace(record, source_metadata=metadata))
     return tuple(normalized)
+
+
+def _normalize_spell_reference_name(name: str) -> str:
+    return re.sub(r"^(?:and|or)\s+", "", name.strip(), flags=re.IGNORECASE)
+
+
+def _extract_text_spell_candidates(payload, spell_names):
+    candidates = []
+    for path, text in _text_values(payload):
+        for name in sorted(spell_names, key=len, reverse=True):
+            if re.search(rf"(?<!\w){re.escape(name)}(?!\w)", text, re.IGNORECASE):
+                candidates.append((f"{path}:text", "spell", name))
+    return candidates
+
+
+def _text_values(value, path="payload"):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            yield from _text_values(child, f"{path}.{key}")
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            yield from _text_values(child, f"{path}[{index}]")
+    elif isinstance(value, str):
+        yield path, value
 
 
 def extract_reference_candidates(entity_type, payload):

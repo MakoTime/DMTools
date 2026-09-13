@@ -18,7 +18,7 @@ contract evolves.
 | Creature/monster | identity, defenses, movement, abilities, saves/skills, senses, languages, resistances, traits, actions, reactions, legendary actions, spellcasting | Implemented in renderer contract v2 |
 | Spell | level/school, casting time, target, components, material, duration, effects, description, higher-level effect, class lists | Implemented in renderer contract v2 |
 | Item | category, weapon/armor/magic properties, weight, cost, features, description, source | Implemented in renderer contract v2 |
-| Class/subclass | identity, proficiencies, progression, features, spellcasting, description | Implemented in renderer contract v3 |
+| Class/subclass | class table and feature order; source-backed subclass tables when present; subclass features and description | Contract corrected; table rendering remains source-data dependent |
 | Race | size, speed, ability increases, traits, languages, description | Implemented in renderer contract v2 |
 | Feat/background/ability | prerequisites or proficiencies, features/effects, description, source | Implemented in renderer contract v2 |
 
@@ -39,8 +39,10 @@ contract evolves.
    metadata takes precedence when imported data supplies exact slot values.
    Non-spellcasting classes omit slot columns rather than displaying empty ones.
 2. Class and subclass features are rendered at their imported levels. Missing
-   feature levels remain outside the derived progression table until source data
-   supplies them.
+   feature levels remain outside the derived class progression table until
+   source data supplies them. A subclass table is rendered only when the source
+   provides one; Eldritch Knight has a source-backed Spellcasting table, while
+   College of Lore does not have a separate PHB progression table.
 3. Proficiencies, damage, ranges, durations, and costs need additional typed
    fixtures as those source records become available. Unknown shapes currently
    use the safe generic renderer and remain visible.

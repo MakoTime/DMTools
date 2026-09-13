@@ -141,13 +141,23 @@ class ClassAdaptor:
 
     @staticmethod
     def _extract_initial_cantrips(text: str, values: dict[int, int]):
-        pattern = r"At\s+(\d+)(?:st|nd|rd|th)\s+level,\s+you\s+know\s+([\w-]+)\s+cantrips?"
-        for level, amount in re.findall(pattern, text, re.IGNORECASE):
-            values[int(level)] = _number_word(amount)
+        patterns = (
+            r"At\s+(\d+)(?:st|nd|rd|th)\s+level,\s+you\s+know\s+([\w-]+)\s+cantrips?",
+            r"\bYou\s+know\s+([\w-]+)\s+cantrips?\b",
+        )
+        for pattern in patterns[:1]:
+            for level, amount in re.findall(pattern, text, re.IGNORECASE):
+                values[int(level)] = _number_word(amount)
+        for amount in re.findall(patterns[1], text, re.IGNORECASE):
+            values.setdefault(1, _number_word(amount))
 
     @staticmethod
     def _extract_cantrip_increments(text: str, values: dict[int, int]):
-        pattern = r"(?:(?:learn|know)\s+an\s+additional|another)\s+[^.]*?at\s+(\d+)(?:st|nd|rd|th)\s+level"
+        pattern = (
+            r"(?:(?:learn|learning|know)\s+(?:an\s+additional|another|a\s+[\w-]+)"
+            r"|and\s+(?:another|a\s+[\w-]+))"
+            r"(?:\s+cantrip)?[^.]*?at\s+(\d+)(?:st|nd|rd|th)\s+level"
+        )
         for level in re.findall(pattern, text, re.IGNORECASE):
             level_number = int(level)
             values[level_number] = values.get(level_number, 0) + 1
