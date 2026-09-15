@@ -29,5 +29,10 @@ class Class(BaseModel):
     skill_choices: SkillChoice | None = None
     spellcasting: Spellcasting | None = None
     features: list[Feature] | None = None
+    repeating_features: list[Feature] | None = None
+    required_stats: list[str] | None = None
+    starting_class: str | None = None
+    multiclassing: str | None = None
+    ability_score_increase: list[int] | None = None
 
     model_config = {"extra": "forbid"}

@@ -139,6 +139,54 @@ class ClassAdaptor:
                 result[str(level)] = running
         return result or None
 
+    def resource_progression(self, source: dict[str, Any]) -> dict[str, dict[str, Any]]:
+        """Return PHB base-class resource columns for reader presentation."""
+        name = self.normalize(source.get("name"))
+        progressions = {
+            "barbarian": {
+                "rage_uses": ("Rages", {1: 2, 3: 3, 6: 4, 12: 5, 17: 6, 20: "Unlimited"}),
+                "rage_damage": ("Rage Damage", {1: "+2", 9: "+3", 16: "+4"}),
+            },
+            "bard": {
+                "bardic_inspiration": ("Bardic Inspiration", {1: "d6", 5: "d8", 10: "d10", 15: "d12"}),
+            },
+            "cleric": {
+                "channel_divinity": ("Channel Divinity", {2: 1, 6: 2, 18: 3}),
+                "destroy_undead": ("Destroy Undead", {5: "1/2", 8: "1", 11: "2", 14: "3", 17: "4"}),
+            },
+            "druid": {
+                "wild_shape_uses": ("Wild Shape Uses", {2: 2}),
+                "wild_shape_cr": ("Wild Shape CR", {2: "1/4", 4: "1/2", 8: 1}),
+            },
+            "monk": {
+                "martial_arts": ("Martial Arts", {1: "d4", 5: "d6", 11: "d8", 17: "d10"}),
+                "ki_points": ("Ki Points", {2: 2}),
+                "unarmored_movement": ("Unarmored Movement", {2: "+10 ft.", 6: "+15 ft.", 10: "+20 ft.", 14: "+25 ft.", 18: "+30 ft."}),
+            },
+            "rogue": {
+                "sneak_attack": ("Sneak Attack", {level: f"{(level + 1) // 2}d6" for level in range(1, 21)}),
+            },
+            "sorcerer": {
+                "sorcery_points": ("Sorcery Points", {2: 2}),
+            },
+            "warlock": {
+                "invocations_known": ("Invocations Known", {2: 2, 5: 3, 7: 4, 9: 5, 12: 6, 15: 7, 18: 8}),
+            },
+        }
+        result = {}
+        for key, (label, checkpoints) in progressions.get(name or "", {}).items():
+            values = {}
+            current = None
+            for level in range(1, 21):
+                if level in checkpoints:
+                    current = checkpoints[level]
+                if name in {"monk", "sorcerer"} and key.endswith("points") and level < 2:
+                    continue
+                if current is not None:
+                    values[level] = current if key in {"rage_uses", "rage_damage", "wild_shape_cr", "martial_arts", "unarmored_movement", "bardic_inspiration", "destroy_undead"} else (level if key in {"ki_points", "sorcery_points"} else current)
+            result[key] = {"label": label, "values": values}
+        return result
+
     @staticmethod
     def _extract_initial_cantrips(text: str, values: dict[int, int]):
         patterns = (

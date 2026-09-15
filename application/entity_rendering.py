@@ -347,6 +347,23 @@ def _append_markdown_value(lines: list[str], title: str, value: Any, level: int 
 def _format_structured_value(key: str, value: Any) -> str | list[str] | None:
     """Format known typed records while leaving unknown data to the fallback renderer."""
     normalized_key = key.casefold()
+    if normalized_key == "casting_time":
+        values = value if isinstance(value, list) else [value]
+        rendered = [
+            _amount_with_unit(item.get("amount"), item.get("unit"))
+            for item in values
+            if isinstance(item, dict)
+        ]
+        return " or ".join(rendered) or None
+    if normalized_key == "target" and isinstance(value, dict):
+        targeting = str(value.get("targeting", "")).replace("_", " ").title()
+        range_value = value.get("range")
+        if isinstance(range_value, dict):
+            distance = _amount_with_unit(
+                range_value.get("amount"), range_value.get("unit")
+            )
+            return f"{targeting}: {distance}" if targeting else distance
+        return targeting or value.get("description")
     if normalized_key in {"duration", "cost"} and isinstance(value, dict):
         if normalized_key == "duration":
             return _amount_with_unit(value.get("amount"), value.get("duration"))

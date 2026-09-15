@@ -23,6 +23,32 @@ class HomebrewDraft:
     source_identity: str | None = field(default=None, repr=False)
 
     @classmethod
+    def blank(cls, entity_type):
+        """Create a valid starting draft for one supported entity type."""
+        from application.imports.registry import ENTITY_REGISTRY
+
+        canonical_type = canonical_entity_type(entity_type)
+        if canonical_type not in ENTITY_REGISTRY:
+            raise ValueError(f"Unsupported Homebrew entity type: {canonical_type}")
+        name = f"New {canonical_type.title()}"
+        payload = {"name": name}
+        required_defaults = {
+            "monster": {"challenge_rating": 0},
+            "spell": {
+                "description": "Add a spell description.",
+                "level": 0,
+                "casting_time": {"unit": "action"},
+                "components": ["V"],
+                "duration": {"duration": "instantaneous"},
+            },
+            "class": {"hit_dice": 1},
+            "ability": {"kind": "other", "description": "Add an ability description."},
+            "subclass": {"class_name": ""},
+        }
+        payload.update(required_defaults.get(canonical_type, {}))
+        return cls(entity_type=canonical_type, name=name, payload=payload)
+
+    @classmethod
     def from_entity(cls, entity):
         return cls(
             entity_type=entity.entity_type,

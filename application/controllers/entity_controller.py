@@ -7,6 +7,7 @@ from dialog.entity_detail import create_entity_detail_dialog
 from dialog.entity_detail.controller import EntityInspectionController
 from dialog.entity_search import create_entity_search_dialog
 from dialog.entity_query_results import create_entity_query_results
+from components.tree.roots.entity_roots import compendium_root
 from tools.dropdown.factory import create_dropdown_menu
 
 
@@ -58,6 +59,7 @@ class EntityTreeController:
             self.inspection_controller = EntityInspectionController(
                 project_controller,
                 mdi_area,
+                on_edit=self._open_homebrew_editor,
             )
         if hasattr(tree_view, "doubleClicked"):
             tree_view.doubleClicked.connect(self._open_tree_entity)
@@ -92,6 +94,13 @@ class EntityTreeController:
                 )
             options.append(("Refresh", self.refresh))
         elif node_type == "entity_category":
+            if namespace == "homebrew":
+                options.extend(
+                    (
+                        ("Add", lambda: self.add_homebrew_entity(node)),
+                        ("Add from Source", lambda: self.add_from_source(node)),
+                    )
+                )
             options.append(("Search", lambda: self.search(node)))
             builtin = _BUILTIN_QUERY_BY_TYPE.get(node.entity_type)
             if builtin is not None:
@@ -154,6 +163,15 @@ class EntityTreeController:
     def edit_entity(self, node):
         entity = self.project_controller.resolve_entity(node.entity_uid)
         return self._open_homebrew_editor(entity)
+
+    def add_homebrew_entity(self, node):
+        from application.homebrew import HomebrewDraft
+
+        return self._open_new_homebrew_editor(HomebrewDraft.blank(node.entity_type))
+
+    def add_from_source(self, node):
+        source_node = compendium_root.category(node.entity_type)
+        return self.search(source_node)
 
     def run_builtin(self, node, query_key, prompt):
         value, accepted = self.input_provider(node.name, prompt)
@@ -244,7 +262,30 @@ class EntityTreeController:
         subwindow.show()
         return subwindow
 
+    def _open_new_homebrew_editor(self, draft):
+        from dialog.homebrew import create_homebrew_mdi_view
+
+        view = create_homebrew_mdi_view(
+            draft.entity_type,
+            draft=draft,
+            on_accept=lambda accepted_draft: self._commit_homebrew_draft(
+                None, accepted_draft
+            ),
+            parent=getattr(self.parent, "sceneViewer", None),
+        )
+        mdi_area = getattr(self.parent, "sceneViewer", None)
+        if mdi_area is None:
+            view.show()
+            return view
+        subwindow = mdi_area.addSubWindow(view)
+        subwindow.setWindowTitle(view.windowTitle())
+        subwindow.resize(1000, 650)
+        subwindow.show()
+        return subwindow
+
     def _commit_homebrew_draft(self, source_entity, draft):
+        if source_entity is None:
+            return self.project_controller.create_homebrew_entity(draft)
         if source_entity.source_namespace == "homebrew":
             updated = self.project_controller.update_homebrew_entity(
                 source_entity.uid,

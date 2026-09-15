@@ -53,6 +53,25 @@ class TestClassParser(unittest.TestCase):
             self.assertIn("Starting Barbarian", barbarian.get("description", ""))
             self.assertNotIn("Path of the Berserker", barbarian.get("description", ""))
 
+    def test_class_schema_uses_editor_friendly_progression_shapes(self):
+        class_data = {
+            "name": "Test Class",
+            "hit_dice": 8,
+            "required_stats": ["strength", "constitution"],
+            "starting_class": "You can start as a member of this class.",
+            "multiclassing": "You need Strength 13 to multiclass into this class.",
+            "ability_score_increase": [4, 8, 12, 16, 19],
+        }
+
+        Class.model_validate(class_data)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Class.schema.json",
+                class_data,
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
     def test_parse_preserves_progression_metadata(self):
         source = self.source_class("Wizard")
         score_levels = [

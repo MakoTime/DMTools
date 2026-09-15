@@ -134,6 +134,34 @@ def test_option_prefixed_spell_reference_resolves_to_canonical_spell():
     assert "reference_diagnostics" not in normalized.source_metadata
 
 
+def test_spell_class_lists_resolve_qualified_entries_to_subclasses():
+    subclasses = (
+        record("subclass", "subclass-eldritch-knight", "Eldritch Knight", {"name": "Eldritch Knight"}),
+        record("subclass", "subclass-arcane-trickster", "Arcane Trickster", {"name": "Arcane Trickster"}),
+        record("subclass", "subclass-swarmkeeper", "Swarmkeeper", {"name": "Swarmkeeper"}),
+    )
+    spell = record(
+        "spell",
+        "spell-acid-splash",
+        "Acid Splash",
+        {
+            "name": "Acid Splash",
+            "classes": [
+                "fighter (eldritch knight)",
+                "rogue (arcane trickster)",
+                "ranger (swarmkeeper)",
+            ],
+        },
+    )
+
+    normalized = normalize_entity_references((*subclasses, spell))[-1]
+
+    assert [reference["entity_type"] for reference in normalized.source_metadata["entity_references"]] == [
+        "subclass", "subclass", "subclass",
+    ]
+    assert "reference_diagnostics" not in normalized.source_metadata
+
+
 def test_reference_resolution_validates_namespace_and_type(tmp_path):
     controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
     imported = EntityImportService().preview_xml(ITEM_XML).records[0]

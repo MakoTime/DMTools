@@ -12,9 +12,10 @@ from .factory import create_entity_detail_mdi_view
 class EntityInspectionController:
     """Open and reuse modeless entity inspections in one MDI area."""
 
-    def __init__(self, project_controller, mdi_area: QMdiArea):
+    def __init__(self, project_controller, mdi_area: QMdiArea, *, on_edit=None):
         self.project_controller = project_controller
         self.mdi_area = mdi_area
+        self.on_edit = on_edit
         self.navigation = EntityNavigationController(
             project_controller,
             on_open=self._display,
@@ -71,6 +72,7 @@ class EntityInspectionController:
                     uid, None
                 ),
                 on_link=self.open_link,
+                on_edit=self.on_edit,
             )
             window = self.mdi_area.addSubWindow(view)
             self._windows[entity.uid] = window

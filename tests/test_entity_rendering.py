@@ -327,9 +327,11 @@ def test_class_progression_renders_available_levels_without_fabricating_slots():
     )
 
     assert "## Level Progression" in rendered
-    assert "| 1st | +2 | Spellcasting | - | 2 | - | - | - | - | - | - | - |" in rendered
-    assert "| 2nd | +2 | Arcane Recovery | - | 3 | - | - | - | - | - | - | - |" in rendered
-    assert "| 20th | +6 | - | - | 4 | 3 | 3 | 3 | 2 | 1 | 1 | 1 | 1 |" in rendered
+    assert "| Level | Proficiency Bonus | Features | 1st | 2nd |" in rendered
+    assert "| 1st | +2 | Spellcasting | 2 | - | - | - | - | - | - | - |" in rendered
+    assert "| 2nd | +2 | Arcane Recovery | 3 | - | - | - | - | - | - | - |" in rendered
+    assert "| 20th | +6 | - | 4 | 3 | 3 | 3 | 2 | 1 | 1 | 1 | 1 |" in rendered
+    assert "Cantrips Known" not in rendered
 
 
 def test_class_progression_projection_renders_cantrips_and_spell_slots():
@@ -571,6 +573,33 @@ def test_structured_fields_normalize_lists_ranges_durations_costs_and_html():
     assert "- Martial" in rendered
     assert "50 gold" in html
     assert "distance_type" not in rendered
+
+
+def test_spell_metadata_omits_internal_amount_and_unit_labels():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="spell",
+            payload={
+                "name": "Cure Wounds",
+                "level": 1,
+                "school": "evocation",
+                "casting_time": {"amount": 1, "unit": "action"},
+                "target": {
+                    "targeting": "range",
+                    "range": {"amount": 60, "unit": "feet"},
+                },
+                "duration": {"amount": 1, "duration": "hour"},
+                "components": ["verbal"],
+                "description": "Heal a creature.",
+            },
+        )
+    )
+
+    assert "**Casting Time:** 1 action" in rendered
+    assert "**Target:** Range: 60 ft" in rendered
+    assert "**Duration:** 1 hour" in rendered
+    assert "Amount:" not in rendered
+    assert "Unit:" not in rendered
 
 
 def test_markdown_handles_nested_lists_long_text_and_unresolved_references():

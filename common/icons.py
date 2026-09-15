@@ -35,6 +35,7 @@ FAST_FORWARD_2_ICON = _icon("fast_forward_2.svg")
 FAST_FORWARD_3_ICON = _icon("fast_forward_3.svg")
 RAIN_UMBRELLA_ICON = _icon("rain_umbrella.svg")
 SAVE_ICON = _icon("save.svg")
+EDIT_ICON = _icon("edit.svg")
 VISIBLE_ICON = _icon("visible.svg")
 INVISIBLE_ICON = _icon("invisible.svg")
 PHOTO_CHANGED_FILTER_ICON = _icon("photo_changed_filter.svg")
@@ -67,6 +68,7 @@ ICONS = {
 	"fast_forward_3": FAST_FORWARD_3_ICON,
 	"rain_umbrella": RAIN_UMBRELLA_ICON,
 	"save": SAVE_ICON,
+	"edit": EDIT_ICON,
 	"visible": VISIBLE_ICON,
 	"invisible": INVISIBLE_ICON,
 	"photo_changed_filter": PHOTO_CHANGED_FILTER_ICON,

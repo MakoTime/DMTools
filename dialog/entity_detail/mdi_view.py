@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from PySide6.QtWidgets import QTextBrowser, QVBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTextBrowser, QVBoxLayout
 
 from application.entity_rendering import render_entity_html
+from common.icons import get_icon
 from dialog.base.widget_editor import WidgetEditorView
 
 from .model import EntityDetailModel
@@ -18,6 +19,7 @@ class EntityDetailMdiView(WidgetEditorView):
         *,
         on_close=None,
         on_link=None,
+        on_edit=None,
     ):
         super().__init__(model, parent=parent, on_close=on_close)
         self.setWindowTitle(model.title)
@@ -35,7 +37,16 @@ class EntityDetailMdiView(WidgetEditorView):
         entity = model.entity
         self.browser.setHtml(render_entity_html(entity))
         model.release_entity()
+        toolbar = QHBoxLayout()
+        toolbar.addStretch(1)
+        if on_edit is not None:
+            edit_button = QPushButton(self)
+            edit_button.setIcon(get_icon("edit"))
+            edit_button.setToolTip("Edit Homebrew data")
+            edit_button.clicked.connect(lambda: on_edit(entity))
+            toolbar.addWidget(edit_button)
         layout = QVBoxLayout(self)
+        layout.addLayout(toolbar)
         layout.addWidget(self.browser, 1)
 
     def refresh_entity(self, entity):

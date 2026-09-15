@@ -61,9 +61,13 @@ def class_progression_rows(
     if not isinstance(progression, Mapping):
         progression = {}
     cantrips = _level_values(progression.get("cantrips_known"))
+    has_cantrip_progression = bool(cantrips)
     slots = progression.get("spell_slots")
     if not isinstance(slots, Mapping):
         slots = _standard_spell_slots(payload.get("spellcasting"))
+    resources = progression.get("resources")
+    if not isinstance(resources, Mapping):
+        resources = {}
 
     rows = []
     for level in range(1, 21):
@@ -71,8 +75,18 @@ def class_progression_rows(
             "level": _ordinal(level),
             "proficiency_bonus": f"+{2 + (level - 1) // 4}",
             "features": ", ".join(features_by_level.get(level, ())) or "-",
-            "cantrips_known": _display_value(cantrips.get(level)),
         }
+        if has_cantrip_progression:
+            row["cantrips_known"] = _display_value(cantrips.get(level))
+        for key, definition in resources.items():
+            if not isinstance(definition, Mapping):
+                continue
+            values = definition.get("values", {})
+            if not isinstance(values, Mapping):
+                continue
+            value = values.get(level, values.get(str(level)))
+            if value is not None:
+                row[key] = _display_value(value)
         if slots:
             for spell_level in SPELL_LEVEL_COLUMNS:
                 values = slots.get(spell_level, slots.get(int(spell_level), {}))

@@ -64,6 +64,36 @@
                 "$ref": "../components/feature.schema.json"
             }
         },
+        "repeating_features": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/feature.schema.json"
+            }
+        },
+        "required_stats": {
+            "type": "array",
+            "items": {
+                "$ref": "../values/ability_score.schema.json"
+            },
+            "uniqueItems": true
+        },
+        "starting_class": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "multiclassing": {
+            "type": "string",
+            "input": "textarea"
+        },
+        "ability_score_increase": {
+            "type": "array",
+            "items": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20
+            },
+            "uniqueItems": true
+        },
         "spellcasting": {
             "$ref": "../components/spellcasting.schema.json"
         },

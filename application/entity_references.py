@@ -46,18 +46,22 @@ def normalize_entity_references(
             candidates.extend(_extract_text_spell_candidates(record.payload, spell_names))
         seen_candidates = set()
         for path, entity_type, name in candidates:
-            lookup_name = (
-                _normalize_spell_reference_name(name)
-                if entity_type == "spell"
-                else name
-            )
-            candidate_key = (entity_type, lookup_name.casefold())
+            resolved_entity_type = entity_type
+            lookup_name = name
+            if entity_type == "spell":
+                lookup_name = _normalize_spell_reference_name(name)
+            elif entity_type == "class":
+                subclass_match = re.fullmatch(r".+\s+\(([^()]+)\)", name.strip())
+                if subclass_match:
+                    resolved_entity_type = "subclass"
+                    lookup_name = subclass_match.group(1).strip()
+            candidate_key = (resolved_entity_type, lookup_name.casefold())
             if candidate_key in seen_candidates:
                 continue
             seen_candidates.add(candidate_key)
-            candidates = tuple(index.get((entity_type, lookup_name.casefold()), {}).values())
-            if len(candidates) == 1:
-                target = candidates[0]
+            matches = tuple(index.get(candidate_key, {}).values())
+            if len(matches) == 1:
+                target = matches[0]
                 namespace = getattr(target, "source_namespace", source_namespace)
                 references.append(
                     {
@@ -65,9 +69,13 @@ def normalize_entity_references(
                         **asdict(
                             EntityReference(
                                 target_uid=target.uid,
-                                entity_type=entity_type,
+                                entity_type=resolved_entity_type,
                                 source_namespace=namespace,
-                                display_fallback=lookup_name,
+                                display_fallback=(
+                                    lookup_name
+                                    if entity_type == "spell"
+                                    else name
+                                ),
                             )
                         ),
                     }
@@ -77,10 +85,10 @@ def normalize_entity_references(
                     asdict(
                         ReferenceDiagnostic(
                             path=path,
-                            entity_type=entity_type,
-                            display_fallback=lookup_name,
-                            status="ambiguous" if candidates else "missing",
-                            candidate_uids=tuple(item.uid for item in candidates),
+                            entity_type=resolved_entity_type,
+                            display_fallback=name,
+                            status="ambiguous" if matches else "missing",
+                            candidate_uids=tuple(item.uid for item in matches),
                         )
                     )
                 )
@@ -96,7 +104,8 @@ def normalize_entity_references(
 
 
 def _normalize_spell_reference_name(name: str) -> str:
-    return re.sub(r"^(?:and|or)\s+", "", name.strip(), flags=re.IGNORECASE)
+    value = re.sub(r"^(?:and|or)\s+", "", name.strip(), flags=re.IGNORECASE)
+    return re.sub(r"[.,;:!?]+$", "", value).strip()
 
 
 def _extract_text_spell_candidates(payload, spell_names):

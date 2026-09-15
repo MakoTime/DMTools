@@ -105,6 +105,7 @@ def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
             "subclass_progression": ClassAdaptor().subclass_progression(raw),
             "presentation_progression": {
                 "cantrips_known": ClassAdaptor().cantrips_known(raw),
+                "resources": ClassAdaptor().resource_progression(raw),
             },
         }
     return result

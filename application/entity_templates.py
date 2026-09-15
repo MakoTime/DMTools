@@ -412,6 +412,34 @@ def _render_value(value: Any) -> str:
     return str(value)
 
 
+def _render_spell_value(field: str, value: Any) -> str:
+    if field == "casting_time":
+        values = value if isinstance(value, list) else [value]
+        return " or ".join(
+            _render_amount_unit(item.get("amount"), item.get("unit"))
+            for item in values
+            if isinstance(item, dict)
+        )
+    if field == "target" and isinstance(value, dict):
+        targeting = _label(value.get("targeting", ""))
+        range_value = value.get("range")
+        if isinstance(range_value, dict):
+            distance = _render_amount_unit(
+                range_value.get("amount"), range_value.get("unit")
+            )
+            return f"{targeting}: {distance}" if targeting else distance
+        return targeting or str(value.get("description", ""))
+    if field == "duration" and isinstance(value, dict):
+        return _render_amount_unit(value.get("amount"), value.get("duration"))
+    return _render_value(value)
+
+
+def _render_amount_unit(amount: Any, unit: Any) -> str:
+    labels = {"feet": "ft", "foot": "ft", "miles": "mi", "mile": "mi"}
+    rendered_unit = labels.get(str(unit).casefold(), str(unit or "").replace("_", " "))
+    return f"{amount} {rendered_unit}".strip() if amount is not None else rendered_unit
+
+
 def render_entity_template(
     entity_type: str, payload: dict[str, Any], *, fallback_name: str
 ) -> str | None:
@@ -443,5 +471,10 @@ def render_entity_template(
         elif field == "description":
             lines.extend(("## Description", "", _render_value(value), ""))
         else:
-            lines.extend((f"**{label}:** {_render_value(value)}", ""))
+            rendered_value = (
+                _render_spell_value(field, value)
+                if entity_type == "spell"
+                else _render_value(value)
+            )
+            lines.extend((f"**{label}:** {rendered_value}", ""))
     return "\n".join(lines).rstrip() + "\n"
