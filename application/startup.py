@@ -10,6 +10,7 @@ from application import ProjectController
 from application.controllers.db_controller import DataBaseController
 from application.controllers.entity_controller import EntityTreeController
 from application.controllers.import_controller import EntityImportController
+from application.display_space import DisplaySpaceController
 from application.file_window import FileWindow, ProjectPackageAdapter, ProjectPreview
 from components.tree import TreeView
 from menu import setup_menu
@@ -36,6 +37,8 @@ def load_main_window(project_file):
     window.treeWidget.setModel(controller.project_tree_model)
     database_controller = DataBaseController(window.treeWidget, parent=window)
     controller.load_project(project_file)
+    display_space_controller = DisplaySpaceController(window.sceneViewer, parent=window)
+    window.display_space_controller = display_space_controller
     import_controller = EntityImportController(controller, parent=window)
     entity_controller = EntityTreeController(
         window.treeWidget,
@@ -43,7 +46,7 @@ def load_main_window(project_file):
         import_controller,
         parent=window,
     )
-    setup_menu(window, import_controller)
+    setup_menu(window, import_controller, controller)
     window.open_action.triggered.connect(
         lambda checked=False: controller.open_project(window)
     )

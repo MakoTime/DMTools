@@ -102,6 +102,7 @@ def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
     }
     if tag == "class":
         result["source_metadata"] = {
+            "subclass_feature_levels": ClassAdaptor().subclass_feature_levels(raw),
             "subclass_progression": ClassAdaptor().subclass_progression(raw),
             "presentation_progression": {
                 "cantrips_known": ClassAdaptor().cantrips_known(raw),

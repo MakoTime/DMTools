@@ -93,7 +93,15 @@ def rebuild_project_tree(project, legacy_roots):
                 uid=legacy_node.uid,
             )
             project.add_node(node, object_uid=object_uid, parent_uid=parent_uid)
-        for field in ("node_type", "namespace", "entity_type", "protected"):
+        for field in (
+            "node_type",
+            "namespace",
+            "entity_type",
+            "category_type",
+            "value",
+            "schema_names",
+            "protected",
+        ):
             value = getattr(legacy_node, field, None)
             if value is not None:
                 setattr(node, field, value)
@@ -118,17 +126,14 @@ def rebuild_project_tree(project, legacy_roots):
         return node
 
     roots = tuple(mirror(root) for root in legacy_roots)
-    root_uids = {
-        getattr(root, "namespace", None): root.uid
-        for root in legacy_roots
-        if getattr(root, "node_type", None) == "entity_root"
-    }
     for block in project.blocks.values():
         block_type = getattr(block, "type_name", None)
         if block_type == "entity_database":
-            namespace = block.block_data.namespace
-            parent_uid = root_uids[namespace]
-        elif block_type == "entity_saved_query":
+            node_uid = f"{block.guid}-node"
+            if project.nodes.contains(node_uid):
+                project.remove_node(node_uid)
+            continue
+        if block_type == "entity_saved_query":
             database = project.blocks.get(block.block_data.database_uid)
             namespace = database.block_data.namespace
             category_type = category_entity_type(block.block_data.entity_type)

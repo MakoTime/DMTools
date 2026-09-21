@@ -303,6 +303,31 @@ def _description_repeats_features(description: Any, features: list[dict[str, Any
     return covered >= 2
 
 
+def _split_repeated_item_features(
+    description: Any, features: list[dict[str, Any]]
+) -> tuple[Any, list[dict[str, Any]]]:
+    if not isinstance(description, str) or not description.strip():
+        return description, features
+    description_folded = description.casefold()
+    split_at = None
+    for feature in features:
+        name = _feature_name(feature)
+        feature_description = feature.get("description")
+        if not isinstance(feature_description, str) or len(feature_description.strip()) < 20:
+            continue
+        marker = f"{name}:"
+        marker_index = description_folded.find(marker.casefold())
+        if marker_index < 0:
+            continue
+        content_start = marker_index + len(marker)
+        feature_prefix = feature_description.strip()[:80].casefold()
+        if feature_prefix in description_folded[content_start:]:
+            split_at = marker_index if split_at is None else min(split_at, marker_index)
+    if split_at is None:
+        return description, features
+    return description[:split_at].rstrip(), features
+
+
 def _table_lines(title: str, rows: list[dict[str, Any]]) -> list[str]:
     if not rows:
         return []
@@ -402,6 +427,123 @@ def render_subclass_template(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def render_item_template(
+    payload: dict[str, Any], *, fallback_name: str | None = None,
+) -> str:
+    """Render an item as a compact reader-facing stat block."""
+    view = readonly_payload(payload)
+    name = str(view.get("name") or fallback_name or "Unnamed Item")
+    armor = view.get("armor") if isinstance(view.get("armor"), dict) else {}
+    weapon = view.get("weapon") if isinstance(view.get("weapon"), dict) else {}
+    magic_item = view.get("magic_item") if isinstance(view.get("magic_item"), dict) else {}
+
+    category = _label(view.get("category")) if view.get("category") else None
+    subtype = armor.get("category") or weapon.get("type")
+    rarity = magic_item.get("rarity")
+    metadata = category or "Item"
+    if subtype:
+        metadata += f" ({_label(subtype).lower()})"
+    if rarity:
+        metadata += f", {_label(rarity).lower()}"
+
+    features = [feature for feature in view.get("features", ()) if isinstance(feature, dict)]
+    description, features = _split_repeated_item_features(
+        view.get("description"), features
+    )
+    lines = [f"# {name}", "", f"*{metadata}*", ""]
+    if description:
+        lines.extend((str(description), ""))
+
+    if armor:
+        lines.extend((f"**AC:** {armor.get('armor_class')}", ""))
+        if armor.get("strength_requirement") is not None:
+            lines.extend((f"**Strength:** {armor['strength_requirement']}", ""))
+        if armor.get("stealth_disadvantage"):
+            lines.extend(("**Stealth:** Disadvantage", ""))
+    if weapon:
+        if weapon.get("effects"):
+            lines.extend(("**Damage:**", "", _render_effects(weapon["effects"]), ""))
+        if weapon.get("properties"):
+            lines.extend((f"**Properties:** {_render_value(weapon['properties'])}", ""))
+        if weapon.get("range"):
+            lines.extend((f"**Range:** {_render_value(weapon['range'])}", ""))
+    if magic_item.get("attunement") is not None:
+        lines.extend((f"**Attunement:** {_render_value(magic_item['attunement'])}", ""))
+    if magic_item.get("bonuses"):
+        lines.extend((f"**Bonuses:** {_render_item_bonuses(magic_item['bonuses'])}", ""))
+    if magic_item.get("charges"):
+        lines.extend((f"**Charges:** {_render_item_charges(magic_item['charges'])}", ""))
+    if magic_item.get("spells"):
+        lines.extend(("**Spells:**", "", _render_item_spells(magic_item["spells"]), ""))
+    if magic_item.get("grants"):
+        lines.extend(("**Grants:**", "", _render_item_grants(magic_item["grants"]), ""))
+    if magic_item.get("effects"):
+        lines.extend(("**Effects:**", "", _render_effects(magic_item["effects"]), ""))
+    if view.get("weight") is not None:
+        lines.extend((f"**Weight:** {view['weight']}", ""))
+    if features:
+        lines.extend(("## Features", ""))
+        lines.extend(_feature_blocks(features))
+    return "\n".join(lines).rstrip() + "\n"
+
+
+def _render_item_bonuses(bonuses: Any) -> str:
+    rendered = []
+    for bonus in bonuses if isinstance(bonuses, list) else ():
+        if not isinstance(bonus, dict):
+            rendered.append(_render_value(bonus))
+            continue
+        value = bonus.get("value")
+        sign = f"{value:+}" if isinstance(value, (int, float)) else str(value)
+        label = _label(bonus.get("type", "bonus"))
+        if bonus.get("ability"):
+            label = f"{label} ({_label(bonus['ability'])})"
+        rendered.append(f"{sign} {label}")
+    return ", ".join(rendered)
+
+
+def _render_item_charges(charges: Any) -> str:
+    if not isinstance(charges, dict):
+        return _render_value(charges)
+    maximum = charges.get("maximum")
+    recharge = charges.get("recharge")
+    duration = charges.get("recharge_duration")
+    result = f"{maximum}" if maximum is not None else ""
+    if recharge is not None:
+        result += f", recharge {_render_value(recharge)}"
+    if duration:
+        result += f" per {_render_value(duration)}"
+    return result
+
+
+def _render_item_spells(spells: Any) -> str:
+    values = []
+    for entry in spells if isinstance(spells, list) else ():
+        if isinstance(entry, dict):
+            spell = entry.get("spell", "")
+            charges = entry.get("charges")
+            values.append(f"{spell} ({charges} charge{'s' if charges != 1 else ''})" if charges is not None else str(spell))
+        else:
+            values.append(str(entry))
+    return ", ".join(values)
+
+
+def _render_item_grants(grants: Any) -> str:
+    values = []
+    for grant in grants if isinstance(grants, list) else ():
+        if isinstance(grant, dict):
+            grant_type = _label(grant.get("type", "grant"))
+            details = [
+                _label(grant[key])
+                for key in ("ability_check", "skill", "saving_throw", "condition", "damage_type", "sense")
+                if grant.get(key) is not None
+            ]
+            values.append(f"{grant_type} ({', '.join(details)})" if details else grant_type)
+        else:
+            values.append(str(grant))
+    return ", ".join(values)
+
+
 def _render_value(value: Any) -> str:
     if isinstance(value, list):
         return ", ".join(_render_value(item) for item in value)
@@ -431,7 +573,89 @@ def _render_spell_value(field: str, value: Any) -> str:
         return targeting or str(value.get("description", ""))
     if field == "duration" and isinstance(value, dict):
         return _render_amount_unit(value.get("amount"), value.get("duration"))
+    if field == "effects" and isinstance(value, list):
+        return _render_effects(value)
     return _render_value(value)
+
+
+def _render_effects(effects: Any) -> str:
+    return "\n".join(
+        f"- {_render_effect(effect)}"
+        for effect in effects if isinstance(effects, list)
+    )
+
+
+def _render_effect(effect: Any) -> str:
+    if not isinstance(effect, dict):
+        return _render_value(effect)
+    if effect.get("attack_save"):
+        return _render_attack_save(effect["attack_save"])
+    if effect.get("attack_hit"):
+        return _render_attack_hit(effect["attack_hit"])
+    if effect.get("damage"):
+        return _render_damage(effect["damage"])
+    for key, label in (
+        ("healing", "Healing"),
+        ("max_hit_points", "Maximum hit points"),
+        ("temporary_hit_points", "Temporary hit points"),
+        ("ability_score", "Ability score"),
+        ("exhaustion", "Exhaustion"),
+    ):
+        if effect.get(key):
+            return f"{label}: {_render_roll(effect[key])}"
+    if effect.get("condition"):
+        return f"Condition: {_label(effect['condition'])}"
+    if effect.get("grants"):
+        return "; ".join(_render_item_grants([grant]) for grant in effect["grants"])
+    return str(effect.get("description") or _render_value(effect))
+
+
+def _render_attack_save(value: Any) -> str:
+    if not isinstance(value, dict):
+        return _render_value(value)
+    result = f"{_label(value.get('ability', ''))} saving throw"
+    if value.get("dc") is not None:
+        result += f" (DC {value['dc']})"
+    for key, label in (("success", "Success"), ("failure", "Failure")):
+        if value.get(key):
+            result += f"; {label.lower()}: " + ", ".join(_render_effect(item) for item in value[key])
+    return result
+
+
+def _render_attack_hit(value: Any) -> str:
+    if not isinstance(value, dict):
+        return _render_value(value)
+    result = _label(value.get("type", "attack"))
+    if value.get("bonus") is not None:
+        result += f" (+{value['bonus']} to hit)"
+    if value.get("effects"):
+        result += ": " + ", ".join(_render_effect(item) for item in value["effects"])
+    return result
+
+
+def _render_damage(value: Any) -> str:
+    if not isinstance(value, dict):
+        return _render_value(value)
+    roll = _render_roll(value.get("roll", {}))
+    result = f"{roll} {str(value.get('type', 'damage')).replace('_', ' ')} damage"
+    if value.get("modifier"):
+        result += f" ({value['modifier']:+})"
+    return result
+
+
+def _render_roll(value: Any) -> str:
+    if not isinstance(value, dict):
+        return _render_value(value)
+    parts = []
+    dice = value.get("dice")
+    count = value.get("count")
+    if dice is not None:
+        parts.append(f"{count or 1}d{dice}")
+    if value.get("modifier") not in (None, 0):
+        parts.append(f"{value['modifier']:+}")
+    if value.get("ability"):
+        parts.append(_label(value["ability"]))
+    return " ".join(parts) or _render_value(value)
 
 
 def _render_amount_unit(amount: Any, unit: Any) -> str:
@@ -448,6 +672,8 @@ def render_entity_template(
         return render_class_template(payload, fallback_name=fallback_name)
     if entity_type == "subclass":
         return render_subclass_template(payload, fallback_name=fallback_name)
+    if entity_type == "item":
+        return render_item_template(payload, fallback_name=fallback_name)
     fields = ENTITY_TEMPLATE_FIELDS.get(entity_type)
     if fields is None or len(payload) < 2 or not any(field in payload for field in fields):
         return None
@@ -458,7 +684,9 @@ def render_entity_template(
         if value is None or value == [] or value == {} or value == "":
             continue
         label = _label(field)
-        if field in {"features", "effects"} and isinstance(value, list):
+        if field == "effects" and isinstance(value, list):
+            lines.extend(("## Effects", "", _render_effects(value), ""))
+        elif field == "features" and isinstance(value, list):
             lines.extend((f"## {label}", ""))
             for entry in value:
                 if isinstance(entry, dict) and entry.get("name"):

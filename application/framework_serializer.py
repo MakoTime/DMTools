@@ -11,6 +11,9 @@ class DMToolsFrameworkSerializer(ProjectSerializer):
             "node_type",
             "namespace",
             "entity_type",
+            "category_type",
+            "value",
+            "schema_names",
             "entity_uid",
             "protected",
         ):
@@ -28,6 +31,9 @@ class DMToolsFrameworkSerializer(ProjectSerializer):
                 "node_type",
                 "namespace",
                 "entity_type",
+                "category_type",
+                "value",
+                "schema_names",
                 "entity_uid",
                 "protected",
             ):

@@ -3,6 +3,7 @@ from projectfoundry import ArtifactStore, Project
 
 from application.imports import EntityImportService
 from application.project_controller import ProjectController
+from application.homebrew import HomebrewDraft
 from components.tree.model import TreeNode
 from components.tree.roots.entity_roots import (
     ENTITY_CATEGORIES,
@@ -52,12 +53,133 @@ def test_project_owns_ordered_compendium_and_homebrew_hierarchies():
         (compendium_root, "compendium"),
         (homebrew_root, "homebrew"),
     ):
-        assert [node.name for node in root.children] == EXPECTED_CATEGORIES
-        assert [node.entity_type for node in root.children] == [
+        categories = root.children[: len(ENTITY_CATEGORIES)]
+        assert [node.name for node in categories] == EXPECTED_CATEGORIES
+        assert [node.entity_type for node in categories] == [
             entity_type for entity_type, _label in ENTITY_CATEGORIES
         ]
-        assert all(node.namespace == namespace for node in root.children)
+        assert all(node.namespace == namespace for node in categories)
         assert controller.project.nodes.get(root.uid).node_type == "entity_root"
+
+    assert compendium_root.rules.name == "Rules"
+    assert [node.name for node in compendium_root.rules.children] == [
+        "Proficiencies",
+        "Weapons",
+        "Ability Scores",
+        "Ability Kinds",
+        "Alignments",
+        "Action Types",
+        "Attack Types",
+        "Bonus Types",
+        "Casting Time Units",
+        "Class Names",
+        "Conditions",
+        "Distance Units",
+        "Duration Units",
+        "Movement Types",
+        "Recharge Times",
+        "Sizes",
+        "Senses",
+        "Spell Components",
+        "Spell Schools",
+        "Currencies",
+        "Rarities",
+        "Creature Types",
+        "Damage Types",
+        "Spellcasting Progressions",
+        "Item Categories",
+        "Target Types",
+        "Target Zones",
+        "Targeting Modes",
+    ]
+    assert [node.category_type for node in compendium_root.rules.children] == [
+        "proficiencies",
+        "weapons",
+        "ability_score",
+        "ability_kind",
+        "alignment",
+        "action_type",
+        "attack_type",
+        "bonus_type",
+        "casting_time",
+        "class_name",
+        "conditions",
+        "distance_type",
+        "duration",
+        "movement_type",
+        "recharge",
+        "size",
+        "sense",
+        "spell_component",
+        "spell_school",
+        "currency",
+        "rarity",
+        "creature_type",
+        "damage_type",
+        "spellcasting_progression",
+        "item_category",
+        "target_type",
+        "target_zone",
+        "targeting",
+    ]
+    assert [node.name for node in compendium_root.rules.category("proficiencies").children] == [
+        "Languages",
+        "Skills",
+        "Tools",
+        "Armor",
+        "Instruments",
+        "Gaming Sets",
+        "Vehicles",
+    ]
+    assert [node.name for node in compendium_root.rules.category("size").children] == [
+        "Tiny",
+        "Small",
+        "Medium",
+        "Large",
+        "Huge",
+        "Gargantuan",
+    ]
+    assert "Common" in [
+        node.name
+        for node in compendium_root.rules.category("proficiencies").children[0].children
+    ]
+    weapon_groups = compendium_root.rules.category("weapons").children[0]
+    weapon_types = compendium_root.rules.category("weapons").children[1]
+    weapon_tags = compendium_root.rules.category("weapons").children[2]
+    assert {"simple", "martial"}.issubset(
+        node.value for node in weapon_groups.children
+    )
+    assert weapon_types.children
+    assert {"light", "versatile", "ammunition"}.issubset(
+        node.value for node in weapon_tags.children
+    )
+    assert homebrew_root.rules.name == "Rules"
+    assert homebrew_root.rules.category("proficiencies").children[0].children == []
+
+
+def test_homebrew_custom_values_are_projected_into_homebrew_rules():
+    homebrew_root.rules.set_custom_values(
+        (("language", "astral"), ("weapon_property", "cleaving"))
+    )
+
+    languages = homebrew_root.rules.category("proficiencies").children[0]
+    weapons = homebrew_root.rules.category("weapons").children[2]
+    assert [node.value for node in languages.children] == ["astral"]
+    assert [node.value for node in weapons.children] == ["cleaving"]
+
+
+def test_persisted_homebrew_custom_value_is_projected_into_rules(tmp_path):
+    controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    draft = HomebrewDraft.blank("background")
+    draft.payload["languages"] = ["astral"]
+
+    controller.commit_imported_entities(
+        (draft.apply(),),
+        namespace="homebrew",
+    )
+
+    languages = homebrew_root.rules.category("proficiencies").children[0]
+    assert [node.value for node in languages.children] == ["astral"]
 
 
 def test_entity_hierarchy_uids_survive_project_replacement():
@@ -75,7 +197,12 @@ def test_entity_hierarchy_uids_survive_project_replacement():
         for root in (compendium_root, homebrew_root)
         for node in (root, *root.children)
     }
-    assert len(controller.project.nodes) == 2 * (len(ENTITY_CATEGORIES) + 1) + 2
+    def tree_size(node):
+        return 1 + sum(tree_size(child) for child in node.children)
+
+    assert len(controller.project.nodes) == sum(
+        tree_size(root) for root in controller.tree_manager.root_nodes
+    )
 
 
 def test_entity_category_validates_canonical_type_and_prevents_deletion():
@@ -106,8 +233,12 @@ def test_empty_entity_hierarchies_round_trip_through_legacy_project(tmp_path):
         controller.tree_model,
     )
 
-    assert [node.name for node in compendium_root.children] == EXPECTED_CATEGORIES
-    assert [node.name for node in homebrew_root.children] == EXPECTED_CATEGORIES
+    assert [node.name for node in compendium_root.children[: len(ENTITY_CATEGORIES)]] == EXPECTED_CATEGORIES
+    assert compendium_root.children[-1].name == "Rules"
+    assert [node.name for node in homebrew_root.children] == [
+        *EXPECTED_CATEGORIES,
+        "Rules",
+    ]
     assert compendium_root.category("spell").entity_type == "spell"
 
 

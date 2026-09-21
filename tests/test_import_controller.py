@@ -69,6 +69,23 @@ def test_import_file_selection_cancel_does_not_mutate_project(tmp_path):
     assert not (tmp_path / "data" / "compendium.sqlite").exists()
 
 
+def test_menu_exposes_normalise_references_action():
+    qt_app()
+    window = QMainWindow()
+    window.menuFile = window.menuBar().addMenu("File")
+    window.menuEdit = window.menuBar().addMenu("Edit")
+    calls = []
+    controller = SimpleNamespace(
+        normalize_entity_references=lambda **kwargs: calls.append("normalise")
+    )
+
+    actions = setup_menu(window, project_controller=controller)
+
+    assert actions["normalize_references"].text() == "Normalise References"
+    actions["normalize_references"].trigger()
+    assert calls == ["normalise"]
+
+
 def test_accepted_xml_import_commits_and_registers_category_node(tmp_path):
     qt_app()
     controller = project_controller(tmp_path)
@@ -208,8 +225,8 @@ def test_progress_dialog_reports_validation_progress():
     assert isinstance(dialog.model.task, Task)
     assert dialog.model.current == 1
     assert dialog.model.total == 1
-    assert dialog.progress_bar.value() == 1
-    assert dialog.status_label.text() == "Validating normalized records: 1 of 1"
+    assert dialog.progress_bar.value() == 1000
+    assert dialog.status_label.text() == "Resolving entity references: 1 of 1"
     task_runner.shutdown()
 
 

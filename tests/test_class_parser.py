@@ -113,6 +113,11 @@ class TestClassParser(unittest.TestCase):
             progression,
         )
 
+        self.assertEqual(
+            ClassAdaptor().subclass_feature_levels(self.source_class("Bard")),
+            [3, 6, 14],
+        )
+
     def test_cantrip_progression_ignores_empty_text_nodes(self):
         source = {
             "autolevels": [{

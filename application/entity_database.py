@@ -427,36 +427,55 @@ class EntityDatabaseStore:
         self._sync_block_metadata()
         return self
 
-    def commit_records(self, records, *, duplicate_policy="reject"):
+    def commit_records(
+        self,
+        records,
+        *,
+        duplicate_policy="reject",
+        progress_callback=None,
+        sync_block_metadata=True,
+    ):
         if duplicate_policy not in {"reject", "skip", "replace", "merge"}:
             raise ValueError(f"Unsupported duplicate policy: {duplicate_policy}")
         records = tuple(records)
+        total = len(records)
         with closing(self.connect()) as connection, connection:
             self.require_json1(connection)
-            for record in records:
-                self._validate_record_namespace(record)
-                values = self._record_values(record)
-                if duplicate_policy == "reject":
-                    connection.execute(self._insert_sql(), values)
-                elif duplicate_policy == "skip":
-                    connection.execute(
-                        self._insert_sql().replace("INSERT", "INSERT OR IGNORE", 1),
-                        values,
-                    )
+            if duplicate_policy in {"reject", "skip", "replace"}:
+                statement = self._insert_sql()
+                if duplicate_policy == "skip":
+                    statement = statement.replace("INSERT", "INSERT OR IGNORE", 1)
                 elif duplicate_policy == "replace":
-                    connection.execute(self._upsert_sql(), values)
-                else:
-                    existing = connection.execute(
-                        "SELECT payload FROM entities WHERE source_identity = ?",
-                        (record.source_identity,),
-                    ).fetchone()
-                    if existing is not None:
-                        payload = json.loads(existing["payload"])
-                        payload.update(record.payload)
-                        values = (*values[:-1], json.dumps(payload, separators=(",", ":")))
-                    connection.execute(self._upsert_sql(), values)
-        self._sync_block_metadata()
+                    statement = self._upsert_sql()
+                values = [self._record_values(record) for record in records]
+                for record in records:
+                    self._validate_record_namespace(record)
+                connection.executemany(statement, values)
+                if progress_callback is not None:
+                    for index in range(1, total + 1):
+                        progress_callback(index, total)
+            else:
+                self._commit_merge_records(connection, records, progress_callback)
+        if sync_block_metadata:
+            self._sync_block_metadata()
         return self.count()
+
+    def _commit_merge_records(self, connection, records, progress_callback):
+        total = len(records)
+        for index, record in enumerate(records, start=1):
+            self._validate_record_namespace(record)
+            values = self._record_values(record)
+            existing = connection.execute(
+                "SELECT payload FROM entities WHERE source_identity = ?",
+                (record.source_identity,),
+            ).fetchone()
+            if existing is not None:
+                payload = json.loads(existing["payload"])
+                payload.update(record.payload)
+                values = (*values[:-1], json.dumps(payload, separators=(",", ":")))
+            connection.execute(self._upsert_sql(), values)
+            if progress_callback is not None:
+                progress_callback(index, total)
 
     def query(
         self,

@@ -251,6 +251,52 @@ class TestItemParser(unittest.TestCase):
                 )
             )
 
+    def test_adapt_artifact_weapon_uses_proficiency_base_type(self):
+        sword = ItemAdaptor().adapt(parse_item(parse_xml(
+            """
+            <item>
+                <name>Sword of Kas</name>
+                <type>M</type>
+                <magic>1</magic>
+                <detail>artifact (requires attunement)</detail>
+                <weight>3</weight>
+                <text>Introductory lore.</text>
+                <text>More introductory lore.</text>
+                <text>Random Properties: The sword has random properties.</text>
+                <text>Spirit of Kas: The sword grants a bonus.</text>
+                <text>Spells: The sword casts spells.</text>
+                <text>Sentience: The sword is sentient.</text>
+                <text>Personality: The sword seeks Vecna.</text>
+                <text>Destroying the Sword: The sword can be destroyed.</text>
+                <text>Versatile: This weapon can be used with one or two hands.</text>
+                <text>Proficiency: martial, longsword</text>
+                <text>Source: Dungeon Master's Guide p. 226</text>
+                <dmg1>1d8</dmg1>
+                <dmg2>1d10</dmg2>
+                <dmgType>S</dmgType>
+                <property>V</property>
+            </item>
+            """
+        )))
+
+        self.assertEqual(sword["weapon"]["type"], "longsword")
+        self.assertEqual(
+            sword["description"],
+            "Introductory lore.\n\nMore introductory lore.",
+        )
+        self.assertEqual(
+            [feature["name"] for feature in sword["features"]],
+            [
+                "Random Properties",
+                "Spirit of Kas",
+                "Spells",
+                "Sentience",
+                "Personality",
+                "Destroying the Sword",
+                "Proficiency",
+            ],
+        )
+
     def test_adapt_source_weapon_and_armor_representatives(self):
         source_items = {}
         for element in parse_xml(PROJECT_ROOT / "5eFile.xml")["children"]:

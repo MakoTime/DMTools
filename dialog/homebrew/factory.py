@@ -18,8 +18,14 @@ def create_homebrew_mdi_view(
     draft=None,
     *,
     on_accept=None,
+    on_clone=None,
     parent: Optional[QWidget] = None,
 ):
     """Create a modeless Homebrew editor for a QMdiArea subwindow."""
     model = create_homebrew_editor_model(entity_type, draft=draft)
-    return HomebrewEditorMdiView(model, on_accept=on_accept, parent=parent)
+    return HomebrewEditorMdiView(
+        model,
+        on_accept=on_accept,
+        on_clone=on_clone,
+        parent=parent,
+    )

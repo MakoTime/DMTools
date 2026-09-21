@@ -1,6 +1,12 @@
 from types import SimpleNamespace
 
-from PySide6.QtWidgets import QApplication, QDialog, QMdiArea, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QDialog,
+    QDialogButtonBox,
+    QMdiArea,
+    QWidget,
+)
 
 from application.controllers.entity_controller import EntityTreeController
 from components.tree.roots.entity_roots import compendium_root, homebrew_root
@@ -194,4 +200,26 @@ def test_search_is_hosted_as_non_modal_mdi_child():
     assert controller.search(homebrew_root.category("spell")) is search_window
     search_window.close()
     assert controller._search_windows == {}
+    parent.close()
+
+
+def test_rule_view_is_hosted_as_reusable_mdi_child():
+    qt_app()
+    mdi_area = QMdiArea()
+    parent = QWidget()
+    parent.sceneViewer = mdi_area
+    controller = EntityTreeController(
+        FakeTreeView(), FakeProjectController(), FakeImportController(), parent=parent
+    )
+    node = compendium_root.rules.category("conditions").children[0]
+
+    first = controller._open_rule(node)
+    assert first is mdi_area.subWindowList()[0].widget()
+    assert first.isModal() is False
+    assert "blinded" in first.windowTitle().lower()
+    assert controller._open_rule(node) is first
+    assert len(mdi_area.subWindowList()) == 1
+    first.button_box.button(QDialogButtonBox.StandardButton.Close).click()
+    qt_app().processEvents()
+    assert mdi_area.subWindowList() == []
     parent.close()

@@ -296,6 +296,15 @@ class ClassAdaptor:
             if isinstance(feature.get("level"), int)
         ]
 
+    def subclass_feature_levels(self, source: dict[str, Any]) -> list[int]:
+        """Return one generic subclass-feature marker level per class level."""
+        return sorted({
+            feature["level"]
+            for subclass in self.subclasses(source)
+            for feature in subclass.get("features", ())
+            if isinstance(feature.get("level"), int)
+        })
+
     def level(self, value: Any) -> int | None:
         try:
             return int(value)

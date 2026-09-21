@@ -107,16 +107,14 @@ def test_entity_store_rejects_unsafe_fields_and_operators(tmp_path):
         store.query("item", operator="matches_sql", value="pack")
 
 
-def test_project_controller_owns_entity_database_block_and_node(tmp_path):
+def test_project_controller_owns_entity_database_block_without_redundant_node(tmp_path):
     controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
 
     store = controller.entity_database_store("compendium")
     block = store.block
-    node = controller.project.nodes.get(f"{block.guid}-node")
 
     assert controller.project.blocks.get(block.guid) is block
-    assert node.object_uid == block.guid
-    assert node.parent_uid == "dmtools-compendium-root"
+    assert not controller.project.nodes.contains(f"{block.guid}-node")
     record = next(
         item
         for item in controller.framework_project_document()["blocks"]
@@ -126,4 +124,4 @@ def test_project_controller_owns_entity_database_block_and_node(tmp_path):
     assert record["data"]["artifact"]["path"] == "data/compendium.sqlite"
 
     controller.refresh_project_tree()
-    assert controller.project.nodes.get(node.guid).object_uid == block.guid
+    assert not controller.project.nodes.contains(f"{block.guid}-node")

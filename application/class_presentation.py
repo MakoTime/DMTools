@@ -45,10 +45,16 @@ def class_progression_rows(
             str(feature.get("name", "")).strip()
         )
     subclass_levels = {
-        feature["level"]
-        for feature in (metadata or {}).get("subclass_progression", ())
-        if isinstance(feature, Mapping) and isinstance(feature.get("level"), int)
+        level
+        for level in (metadata or {}).get("subclass_feature_levels", ())
+        if isinstance(level, int)
     }
+    if not subclass_levels:
+        subclass_levels = {
+            feature["level"]
+            for feature in (metadata or {}).get("subclass_progression", ())
+            if isinstance(feature, Mapping) and isinstance(feature.get("level"), int)
+        }
     subclass_label = SUBCLASS_FEATURE_LABELS.get(
         str(payload.get("name", "")).casefold(), "Subclass"
     )

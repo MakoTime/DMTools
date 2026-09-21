@@ -1,6 +1,6 @@
 import pytest
 from projectfoundry import ArtifactStore
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QPushButton
 
 from application.homebrew import HomebrewDraft
 from application.imports import EntityImportService
@@ -10,6 +10,7 @@ from dialog.homebrew import (
     create_homebrew_editor_model,
     create_homebrew_mdi_view,
 )
+from dialog.homebrew.mdi_view import HomebrewEditorMdiView
 
 
 ITEM_XML = """
@@ -120,6 +121,27 @@ def test_adaptive_editor_surfaces_registry_validation():
     assert dialog.apply_changes() is None
     assert "name" in dialog.error_label.text()
     assert dialog.error_label.text()
+
+
+def test_homebrew_editor_can_clone_source_again(tmp_path):
+    qt_app()
+    controller, source_record = controller_with_item(tmp_path)
+    clone = controller.copy_entity_to_homebrew(source_record.uid)
+    draft = HomebrewDraft.for_edit(clone)
+    cloned_source_uids = []
+    view = HomebrewEditorMdiView(
+        create_homebrew_editor_model("item", draft),
+        on_clone=cloned_source_uids.append,
+    )
+
+    buttons = view.findChildren(QPushButton)
+    clone_button = next(
+        button for button in buttons if button.text() == "Clone Again to Homebrew"
+    )
+    clone_button.click()
+
+    assert cloned_source_uids == [source_record.uid]
+    view.close()
 
 
 def test_adaptive_editor_builds_schema_controls_for_scalar_fields():

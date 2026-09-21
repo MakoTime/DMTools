@@ -3,7 +3,10 @@ from pathlib import Path
 from PySide6.QtWidgets import QDialog, QFileDialog, QMessageBox
 
 from application.imports import EntityImportService
-from dialog.import_progress.factory import create_import_progress
+from dialog.import_progress.factory import (
+    create_import_progress,
+    create_import_task_progress,
+)
 from dialog.import_preview.factory import create_import_preview
 
 
@@ -53,6 +56,13 @@ class EntityImportController:
 
     def import_source(self, source, source_format, *, duplicate_policy="replace"):
         existing = self.project_controller.entity_source_identities("compendium")
+        existing_entities = tuple(
+            self.project_controller.entity_source_records(namespace)
+            for namespace in ("compendium", "homebrew")
+        )
+        existing_entities = tuple(
+            entity for namespace_records in existing_entities for entity in namespace_records
+        )
         progress_dialog = self.progress_factory(
             self.project_controller.task_runner,
             self.service,
@@ -60,6 +70,7 @@ class EntityImportController:
             source_format,
             duplicate_policy=duplicate_policy,
             existing_source_identities=existing,
+            existing_entities=existing_entities,
             parent=self.parent,
         )
         if progress_dialog.exec() != QDialog.DialogCode.Accepted:
@@ -75,18 +86,43 @@ class EntityImportController:
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return None
         try:
-            count = self.service.commit(
+            destination = dialog.model.destination
+            duplicate_policy = dialog.model.duplicate_policy
+            self.service.commit(
                 preview,
-                lambda records: self.project_controller.commit_imported_entities(
-                    records,
-                    namespace=dialog.model.destination,
-                    duplicate_policy=dialog.model.duplicate_policy,
-                ),
+                lambda records: records,
                 skip_invalid=getattr(dialog.model, "skip_invalid", False),
+            )
+            records = preview.records
+            database_store = self.project_controller.entity_database_store(destination)
+            task_dialog = create_import_task_progress(
+                self.project_controller.task_runner,
+                lambda set_progress: self.project_controller.persist_imported_entities(
+                    records,
+                    namespace=destination,
+                    duplicate_policy=duplicate_policy,
+                    database_path=database_store.database_path,
+                    progress_callback=lambda current, total: set_progress(
+                        current / total if total else 0.0
+                    ),
+                ),
+                Path(source).name,
+                operation_name="Writing imported entities...",
+                parent=self.parent,
+            )
+            if task_dialog.exec() != QDialog.DialogCode.Accepted:
+                if task_dialog.model.error:
+                    self.error_reporter(task_dialog.model.error)
+                return None
+            count = self.project_controller.commit_imported_entities(
+                records,
+                namespace=destination,
+                duplicate_policy=duplicate_policy,
+                persist=False,
             )
             if (
                 source_format.casefold() == "xml"
-                and dialog.model.destination == "compendium"
+                and destination == "compendium"
                 and self.project_controller.project_file is not None
             ):
                 self.project_controller.save_entity_namespace_json("compendium")

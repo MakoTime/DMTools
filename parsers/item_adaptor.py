@@ -7,6 +7,33 @@ from typing import Any
 class ItemAdaptor:
     """Adapt parsed item source data into the Item schema."""
 
+    FEATURE_HEADINGS = {
+        "Attunement",
+        "Random Properties",
+        "Protection",
+        "Power Strike",
+        "Spells",
+        "Call Undead",
+        "Retributive Strike",
+        "Sentience",
+        "Personality",
+        "Spirit of Kas",
+        "Destroying the Sword",
+        "Destroying the Wand",
+        "Proficiency",
+    }
+
+    NON_FEATURE_HEADINGS = {
+        "Finesse",
+        "Heavy",
+        "Light",
+        "Reach",
+        "Special",
+        "Thrown",
+        "Two-Handed",
+        "Versatile",
+    }
+
     CATEGORY_BY_TYPE = {
         "$": "adventuring_gear",
         "A": "adventuring_gear",
@@ -95,23 +122,17 @@ class ItemAdaptor:
         return {"amount": int(amount), "currency": "gp"}
 
     def description(self, text: list[str]) -> str | None:
-        paragraphs = [value for value in text if not value.startswith("Source:")]
+        paragraphs = []
+        for value in text:
+            if value.startswith("Source:"):
+                break
+            heading, separator, _ = value.partition(":")
+            if separator and heading in self.FEATURE_HEADINGS:
+                break
+            paragraphs.append(value)
         return "\n\n".join(paragraphs) or None
 
     def features(self, text: list[str]) -> list[dict[str, str]] | None:
-        names = {
-            "Attunement",
-            "Random Properties",
-            "Protection",
-            "Power Strike",
-            "Spells",
-            "Call Undead",
-            "Retributive Strike",
-            "Proficiency",
-            "Sentience",
-            "Personality",
-            "Destroying the Wand",
-        }
         features = []
         current_name = None
         current_text: list[str] = []
@@ -119,11 +140,19 @@ class ItemAdaptor:
         for value in text[2:]:
             heading, separator, remainder = value.partition(":")
 
-            if separator and heading in names:
+            if separator and heading in self.FEATURE_HEADINGS:
                 if current_name is not None:
                     features.append(self.feature(current_name, current_text))
+                if heading == "Proficiency":
+                    features.append(self.feature(heading, [remainder.strip()]))
+                    break
                 current_name = heading
                 current_text = [remainder.strip()] if remainder.strip() else []
+            elif separator and heading in self.NON_FEATURE_HEADINGS:
+                if current_name is not None:
+                    features.append(self.feature(current_name, current_text))
+                    current_name = None
+                    current_text = []
             elif current_name is not None:
                 current_text.append(value.lstrip("• "))
 
@@ -152,7 +181,7 @@ class ItemAdaptor:
             if code in self.PROPERTY_BY_CODE
         ]
         weapon: dict[str, Any] = {
-            "type": self.weapon_type(source.get("name")),
+            "type": self.weapon_type(source.get("name"), text),
             "properties": properties or None,
             "range": self.weapon_range(source.get("range")),
         }
@@ -194,7 +223,11 @@ class ItemAdaptor:
             if value is not None
         }
 
-    def weapon_type(self, name: Any) -> str | None:
+    def weapon_type(self, name: Any, text: list[str] | None = None) -> str | None:
+        for value in text or ():
+            match = re.fullmatch(r"\s*Proficiency:\s*(?:simple|martial),\s*(.+?)\s*", value, re.IGNORECASE)
+            if match:
+                return re.sub(r"[^a-z0-9]+", "_", match.group(1).lower()).strip("_")
         if not name:
             return None
 

@@ -104,18 +104,7 @@ def render_entity_markdown(entity) -> str:
             _append_markdown_value(lines, "Details", presentation_payload)
     references = metadata.get("entity_references", ())
     diagnostics = metadata.get("reference_diagnostics", ())
-    lines = _replace_inline_spell_links(lines, references)
-    other_references = [
-        reference for reference in references if reference.get("entity_type") != "spell"
-    ]
-    if other_references:
-        lines.extend(("", "## References"))
-        for reference in other_references:
-            label = reference.get("display_fallback", reference["target_uid"])
-            lines.append(
-                f"- [{label}](dmtools://entity/{reference['target_uid']}) "
-                f"({reference['entity_type']}, {reference['source_namespace']})"
-            )
+    lines = _replace_inline_entity_links(lines, references)
     if diagnostics:
         lines.extend(("", "## Unresolved References"))
         for diagnostic in diagnostics:
@@ -126,30 +115,51 @@ def render_entity_markdown(entity) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
-def _replace_inline_spell_links(lines: list[str], references) -> list[str]:
-    spell_references = [
-        reference for reference in references
-        if reference.get("entity_type") == "spell" and reference.get("display_fallback")
+def _replace_inline_entity_links(lines: list[str], references) -> list[str]:
+    entity_references = [
+        reference for reference in references if reference.get("display_fallback")
     ]
-    if not spell_references:
+    if not entity_references:
         return lines
     replacements = sorted(
-        ((reference["display_fallback"], reference["target_uid"]) for reference in spell_references),
+        ((reference["display_fallback"], reference["target_uid"])
+         for reference in entity_references),
         key=lambda item: len(item[0]),
         reverse=True,
     )
     result = []
     for line in lines:
+        protected_links = {}
         for label, target_uid in replacements:
-            link = f"[{label}](dmtools://entity/{target_uid})"
-            line = re.sub(
-                rf"(?<![\w\]]){re.escape(label)}(?!\w)",
-                link,
+            reference = next(
+                reference
+                for reference in entity_references
+                if reference["display_fallback"] == label
+                and reference["target_uid"] == target_uid
+            )
+            link = f"[{label}]({_reference_uri(reference)})"
+            token = f"\x00dmtools-link-{len(protected_links)}\x00"
+            replaced = re.sub(
+                rf"(?<![\w\]])`?{re.escape(label)}`?(?!\w)",
+                token,
                 line,
                 flags=re.IGNORECASE,
             )
+            if replaced != line:
+                protected_links[token] = link
+                line = replaced
+        for token, link in protected_links.items():
+            line = line.replace(token, link)
         result.append(line)
     return result
+
+
+def _reference_uri(reference):
+    if reference.get("entity_type") == "rule":
+        return (
+            f"dmtools://rule/{reference['category']}/{reference['value']}"
+        )
+    return f"dmtools://entity/{reference['target_uid']}"
 
 
 def _has_template_shape(entity_type: str, payload: Any) -> bool:
@@ -638,5 +648,9 @@ def _markdown_inline(value: str) -> str:
     return re.sub(
         r"\[([^\]]+)\]\(dmtools://entity/([A-Za-z0-9._:-]+)\)",
         r'<a class="entity-link" href="dmtools://entity/\2">\1</a>',
-        escaped,
+        re.sub(
+            r"\[([^\]]+)\]\(dmtools://rule/([A-Za-z0-9._:-]+)/([A-Za-z0-9._:-]+)\)",
+            r'<a class="entity-link" href="dmtools://rule/\2/\3">\1</a>',
+            escaped,
+        ),
     )

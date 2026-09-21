@@ -1,8 +1,10 @@
 import inspect
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QMdiArea
 
 from application.entity_queries import EntityQueryFactory
+from application.rules_catalog import _RULE_DESCRIPTIONS
 from dialog.entity_detail import create_entity_detail_dialog
 from dialog.entity_detail.controller import EntityInspectionController
 from dialog.entity_search import create_entity_search_dialog
@@ -49,6 +51,7 @@ class EntityTreeController:
         self.results_factory = results_factory
         self.error_reporter = error_reporter or self._report_error
         self._search_windows = {}
+        self._rule_windows = {}
         if hasattr(project_controller, "add_project_replacement_callback"):
             project_controller.add_project_replacement_callback(
                 self.close_search_windows
@@ -60,6 +63,7 @@ class EntityTreeController:
                 project_controller,
                 mdi_area,
                 on_edit=self._open_homebrew_editor,
+                on_rule=self._open_rule_value,
             )
         if hasattr(tree_view, "doubleClicked"):
             tree_view.doubleClicked.connect(self._open_tree_entity)
@@ -67,6 +71,8 @@ class EntityTreeController:
 
     def _open_tree_entity(self, index):
         node = index.internalPointer()
+        if getattr(node, "node_type", None) == "rules_value":
+            return self._open_rule(node)
         if getattr(node, "node_type", None) != "entity":
             return None
         entity_uid = getattr(node, "entity_uid", None)
@@ -76,6 +82,47 @@ class EntityTreeController:
         if entity is None:
             return None
         return self._open_entity(entity)
+
+    def _open_rule(self, node):
+        return self._open_rule_value(
+            node.category_type, node.value, schema_names=node.schema_names
+        )
+
+    def _open_rule_value(self, category, value, *, schema_names=()):
+        from dialog.rule_detail import create_rule_detail_dialog
+
+        values = _RULE_DESCRIPTIONS.get(category, {})
+        if value not in values or value in {"description", "handbook_reference"}:
+            raise ValueError(f"Unknown catalog rule value: {category}/{value}")
+        window_uid = f"dmtools-compendium-rules-{category}-{value}"
+        existing = self._rule_windows.get(window_uid)
+        if existing is not None:
+            existing.showNormal()
+            existing.raise_()
+            existing.activateWindow()
+            return existing.widget()
+        dialog = create_rule_detail_dialog(
+            value,
+            category,
+            schema_names,
+            parent=self.parent,
+        )
+        mdi_area = getattr(self.parent, "sceneViewer", None)
+        if mdi_area is None:
+            dialog.exec()
+            return dialog
+        window = mdi_area.addSubWindow(dialog)
+        self._rule_windows[window_uid] = window
+        window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        dialog.finished.connect(window.close)
+        window.setWindowTitle(dialog.windowTitle())
+        window.destroyed.connect(
+            lambda _object, uid=window_uid: self._rule_windows.pop(uid, None)
+        )
+        dialog.show()
+        window.showNormal()
+        window.raise_()
+        return dialog
 
     def _create_context_menu_for_index(self, index, parent):
         return self.create_context_menu(index.internalPointer(), parent)
@@ -111,6 +158,8 @@ class EntityTreeController:
                     )
                 )
             options.append(("Refresh", self.refresh))
+        elif node_type == "rules_value":
+            options.append(("View", lambda: self._open_rule(node)))
         elif node_type == "entity" and namespace == "homebrew":
             options.append(("Edit Homebrew", lambda: self.edit_entity(node)))
         return create_dropdown_menu(options, parent)
@@ -250,6 +299,11 @@ class EntityTreeController:
             entity.entity_type,
             draft=draft_factory(entity),
             on_accept=lambda draft: self._commit_homebrew_draft(entity, draft),
+            on_clone=(
+                self._clone_homebrew_source
+                if entity.source_namespace == "homebrew"
+                else None
+            ),
             parent=getattr(self.parent, "sceneViewer", None),
         )
         mdi_area = getattr(self.parent, "sceneViewer", None)
@@ -261,6 +315,10 @@ class EntityTreeController:
         subwindow.resize(680, 560)
         subwindow.show()
         return subwindow
+
+    def _clone_homebrew_source(self, source_uid):
+        clone = self.project_controller.copy_entity_to_homebrew(source_uid)
+        return self._open_homebrew_editor(clone)
 
     def _open_new_homebrew_editor(self, draft):
         from dialog.homebrew import create_homebrew_mdi_view

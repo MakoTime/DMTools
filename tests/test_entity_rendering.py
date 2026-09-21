@@ -57,6 +57,223 @@ def test_markdown_supports_empty_entities_and_homebrewery_style_tables():
     assert "> **At a Glance:** Useful gear." in rendered
 
 
+def test_item_template_renders_compact_armor_stat_block():
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Leather Armor +1",
+                "category": "armor",
+                "armor": {
+                    "category": "light",
+                    "type": "leather_armor_1",
+                    "armor_class": 11,
+                    "stealth_disadvantage": False,
+                },
+                "magic_item": {
+                    "attunement": False,
+                    "bonuses": [{"type": "armor_class", "value": 1}],
+                    "rarity": "rare",
+                },
+                "weight": 10.0,
+                "description": "You have a +1 bonus to AC while wearing this armor.",
+            }
+        )
+    )
+
+    assert "# Leather Armor +1" in rendered
+    assert "*Armor (light), rare*" in rendered
+    assert "You have a +1 bonus to AC while wearing this armor." in rendered
+    assert "**AC:** 11" in rendered
+    assert "**Attunement:** No" in rendered
+    assert "**Bonuses:** +1 Armor Class" in rendered
+    assert "**Weight:** 10.0" in rendered
+    assert "**Category:** Armor" not in rendered
+    assert "**Magic Item:**" not in rendered
+
+
+def test_item_template_renders_phb_weapon_damage_dice():
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Scimitar of Life",
+                "category": "weapon",
+                "weapon": {
+                    "type": "scimitar",
+                    "effects": [{
+                        "damage": {
+                            "type": "slashing",
+                            "roll": {"count": 1, "dice": 6},
+                        },
+                    }],
+                    "properties": ["Finesse", "Light"],
+                },
+                "weight": 3,
+            }
+        )
+    )
+
+    assert "**Damage:**" in rendered
+    assert "- 1d6 slashing damage" in rendered
+    assert "**Properties:** Finesse, Light" in rendered
+
+
+def test_item_template_does_not_repeat_feature_text_already_in_description():
+    feature_description = (
+        "The book has the following random properties: 3 minor beneficial properties."
+    )
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Book of Vile Darkness",
+                "category": "wondrous_item",
+                "weight": 5.0,
+                "description": (
+                    "The book is a foul manuscript.\n\n"
+                    f"Random Properties: {feature_description}"
+                ),
+                "features": [{
+                    "name": "Random Properties",
+                    "description": feature_description,
+                }],
+            }
+        )
+    )
+
+    assert rendered.count(feature_description) == 1
+    assert "## Features" in rendered
+
+
+def test_spell_effects_render_as_readable_rules():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="spell",
+            payload={
+                "name": "Acid Splash",
+                "level": 0,
+                "school": "conjuration",
+                "casting_time": [{"amount": 1, "unit": "action"}],
+                "effects": [{
+                    "attack_save": {
+                        "ability": "dexterity",
+                        "dc": 13,
+                        "failure": [{
+                            "damage": {
+                                "type": "acid",
+                                "roll": {"dice": 6, "count": 1, "modifier": 0},
+                            },
+                        }],
+                    },
+                }],
+            },
+        )
+    )
+
+    assert "- Dexterity saving throw (DC 13); failure: 1d6 acid damage" in rendered
+    assert "Attack Save: Ability:" not in rendered
+
+
+def test_rule_references_render_as_selectable_rule_links():
+    rendered = render_entity_html(
+        entity(
+            entity_type="monster",
+            payload={"name": "Warder", "description": "The warder is poisoned."},
+            metadata={
+                "entity_references": [
+                    {
+                        "category": "conditions",
+                        "value": "poisoned",
+                        "target_uid": "dmtools-compendium-rules-conditions-poisoned",
+                        "entity_type": "rule",
+                        "source_namespace": "compendium",
+                        "display_fallback": "poisoned",
+                    }
+                ]
+            },
+        )
+    )
+
+    assert (
+        'href="dmtools://rule/conditions/poisoned"' in rendered
+    )
+
+
+def test_rule_links_replace_code_formatted_values_without_reference_appendix():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="item",
+            payload={
+                "name": "Book of Vile Darkness",
+                "description": "The bearer serves `evil` until `Dawn`.",
+            },
+            metadata={
+                "entity_references": [
+                    {
+                        "category": "alignment",
+                        "value": "evil",
+                        "target_uid": "dmtools-compendium-rules-alignment-evil",
+                        "entity_type": "rule",
+                        "source_namespace": "compendium",
+                        "display_fallback": "evil",
+                    },
+                    {
+                        "category": "recharge",
+                        "value": "dawn",
+                        "target_uid": "dmtools-compendium-rules-recharge-dawn",
+                        "entity_type": "rule",
+                        "source_namespace": "compendium",
+                        "display_fallback": "Dawn",
+                    },
+                ]
+            },
+        )
+    )
+
+    assert "[evil](dmtools://rule/alignment/evil)" in rendered
+    assert "[Dawn](dmtools://rule/recharge/dawn)" in rendered
+    assert "`evil`" not in rendered
+    assert "`Dawn`" not in rendered
+    assert "## References" not in rendered
+
+
+def test_duplicate_reference_labels_do_not_nest_or_corrupt_links():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="item",
+            payload={"name": "Wand", "description": "Use `Dawn` and `evil`."},
+            metadata={
+                "entity_references": [
+                    {
+                        "category": "recharge",
+                        "value": "dawn",
+                        "target_uid": "dmtools-compendium-rules-recharge-dawn",
+                        "entity_type": "rule",
+                        "source_namespace": "compendium",
+                        "display_fallback": "Dawn",
+                    },
+                    {
+                        "target_uid": "spell-dawn",
+                        "entity_type": "spell",
+                        "source_namespace": "compendium",
+                        "display_fallback": "Dawn",
+                    },
+                    {
+                        "category": "alignment",
+                        "value": "evil",
+                        "target_uid": "dmtools-compendium-rules-alignment-evil",
+                        "entity_type": "rule",
+                        "source_namespace": "compendium",
+                        "display_fallback": "evil",
+                    },
+                ]
+            },
+        )
+    )
+
+    assert "[[" not in rendered
+    assert "dmtools://rule/recharge/[" not in rendered
+    assert "[Dawn](dmtools://rule/recharge/dawn)" in rendered
+
+
 def test_presentation_contract_defines_stable_type_specific_field_order():
     entity_types = (
         "item", "spell", "race", "class", "subclass", "monster",
@@ -166,6 +383,24 @@ def test_any_spell_bearing_entity_renders_spell_links_section():
 
     assert "[Shield](dmtools://entity/spell-shield)" in rendered
     assert "## Spells" not in rendered
+
+
+def test_non_spell_references_render_as_inline_entity_links():
+    rendered = render_entity_markdown(
+        entity(
+            payload={"name": "Human", "description": "Choose Alert."},
+            metadata={
+                "entity_references": [{
+                    "target_uid": "feat-alert",
+                    "entity_type": "feat",
+                    "source_namespace": "compendium",
+                    "display_fallback": "Alert",
+                }]
+            },
+        )
+    )
+
+    assert "[Alert](dmtools://entity/feat-alert)" in rendered
 
 
 def test_renderers_follow_type_specific_field_order():
@@ -366,10 +601,7 @@ def test_class_progression_mentions_one_generic_subclass_feature_per_level():
                 "features": [{"name": "Bardic Inspiration", "level": 1}],
             },
             metadata={
-                "subclass_progression": [
-                    {"subclass": "College of Lore", "level": 3, "feature": "Cutting Words"},
-                    {"subclass": "College of Valor", "level": 3, "feature": "Combat Inspiration"},
-                ],
+                "subclass_feature_levels": [3],
             },
         )
     )

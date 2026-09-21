@@ -75,8 +75,7 @@
         "languages": {
             "type": "array",
             "items": {
-                "type": "string",
-                "minLength": 1
+                "$ref": "../values/language.schema.json"
             },
             "uniqueItems": true
         },

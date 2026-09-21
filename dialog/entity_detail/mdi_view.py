@@ -19,6 +19,7 @@ class EntityDetailMdiView(WidgetEditorView):
         *,
         on_close=None,
         on_link=None,
+        on_rule=None,
         on_edit=None,
     ):
         super().__init__(model, parent=parent, on_close=on_close)
@@ -28,7 +29,9 @@ class EntityDetailMdiView(WidgetEditorView):
         self.browser.setOpenLinks(False)
         self.browser.setOpenExternalLinks(False)
         if on_link is not None:
-            self.browser.anchorClicked.connect(lambda url: on_link(url.toString()))
+            self.browser.anchorClicked.connect(
+                lambda url: on_link(url.toString(), on_rule=on_rule)
+            )
         stylesheet = Path(__file__).resolve().parents[2] / "views" / "entity_inspection.css"
         if stylesheet.exists():
             self.browser.document().setDefaultStyleSheet(

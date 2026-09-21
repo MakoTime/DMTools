@@ -31,6 +31,7 @@ class EntityImportService:
         source_name: str | None = None,
         duplicate_policy: str = "reject",
         existing_source_identities: Collection[str] = (),
+        existing_entities=(),
         is_cancelled: Callable[[], bool] | None = None,
         progress_callback: Callable[[int, int], None] | None = None,
         status_callback: Callable[[str], None] | None = None,
@@ -52,8 +53,10 @@ class EntityImportService:
             provenance,
             duplicate_policy,
             existing_source_identities,
+            existing_entities,
             is_cancelled,
             progress_callback,
+            status_callback,
         )
 
     def preview_json(
@@ -63,6 +66,7 @@ class EntityImportService:
         source_name: str | None = None,
         duplicate_policy: str = "reject",
         existing_source_identities: Collection[str] = (),
+        existing_entities=(),
         is_cancelled: Callable[[], bool] | None = None,
         progress_callback: Callable[[int, int], None] | None = None,
         status_callback: Callable[[str], None] | None = None,
@@ -79,8 +83,10 @@ class EntityImportService:
             provenance,
             duplicate_policy,
             existing_source_identities,
+            existing_entities,
             is_cancelled,
             progress_callback,
+            status_callback,
         )
 
     @staticmethod
@@ -103,8 +109,10 @@ class EntityImportService:
         provenance,
         duplicate_policy,
         existing_source_identities,
+        existing_entities,
         is_cancelled,
         progress_callback,
+        status_callback,
     ):
         if duplicate_policy not in {"reject", "skip", "replace"}:
             raise ValueError(f"Unsupported duplicate policy: {duplicate_policy}")
@@ -192,9 +200,17 @@ class EntityImportService:
                     continue
             record_indexes[record.source_identity] = len(records)
             records.append(record)
-        if progress_callback is not None:
+        self._report_status(status_callback, "Resolving entity references")
+        records = normalize_entity_references(
+            records,
+            existing_entities,
+            is_cancelled=is_cancelled,
+            progress_callback=progress_callback,
+        )
+        if is_cancelled is not None and is_cancelled():
+            return ImportPreview(tuple(), tuple(issues), provenance, cancelled=True)
+        if progress_callback is not None and not total:
             progress_callback(total, total)
-        records = normalize_entity_references(records)
         updated_count = sum(
             record.source_identity in existing for record in records
         )

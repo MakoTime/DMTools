@@ -27,7 +27,30 @@ class TestSchemas(unittest.TestCase):
                 self.assertTrue(
                     validate(schema_path, data_path, SCHEMA_ROOT)
                 )
-                
+
+    def test_language_and_custom_value_rules(self):
+        creature_schema = SCHEMA_ROOT / "entities" / "Creature.schema.json"
+        self.assertTrue(
+            validate(
+                creature_schema,
+                {"name": "Test", "languages": ["common", "Astral"]},
+                SCHEMA_ROOT,
+            )
+        )
+        with self.assertRaises(ValueError):
+            validate(
+                creature_schema,
+                {"name": "Test", "languages": [""]},
+                SCHEMA_ROOT,
+            )
+
+        progression_schema = (
+            SCHEMA_ROOT / "values" / "spellcasting_progression.schema.json"
+        )
+        self.assertTrue(
+            validate(progression_schema, "homebrew_progression", SCHEMA_ROOT)
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

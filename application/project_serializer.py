@@ -94,7 +94,15 @@ class ProjectSerializer:
         object_base = node.node_object
         if object_base is None:
             item = {"type": "folder", "name": node.name, "uid": node.uid}
-            for field in ("node_type", "namespace", "entity_type", "protected"):
+            for field in (
+                "node_type",
+                "namespace",
+                "entity_type",
+                "category_type",
+                "value",
+                "schema_names",
+                "protected",
+            ):
                 value = getattr(node, field, None)
                 if value is not None:
                     item[field] = value
@@ -122,7 +130,15 @@ class ProjectSerializer:
                 node = database_root if item.get("name") == database_root.name else TreeNode(
                     name=item.get("name", "Folder"), uid=item.get("uid")
                 )
-            for field in ("node_type", "namespace", "entity_type", "protected"):
+            for field in (
+                "node_type",
+                "namespace",
+                "entity_type",
+                "category_type",
+                "value",
+                "schema_names",
+                "protected",
+            ):
                 if field in item:
                     setattr(node, field, item[field])
             if parent is None:

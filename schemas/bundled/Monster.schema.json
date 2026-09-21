@@ -107,8 +107,7 @@
                 "languages": {
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "minLength": 1
+                        "$ref": "#/$defs/language"
                     },
                     "uniqueItems": true
                 },
@@ -270,7 +269,7 @@
             "title": "D&D 5e Alignment",
             "description": "A creature's alignment.",
             "$comment": "version 0.5.0",
-            "oneOf": [
+            "anyOf": [
                 {
                     "type": "object",
                     "properties": {
@@ -312,6 +311,9 @@
                         "unaligned",
                         "any"
                     ]
+                },
+                {
+                    "type": "string"
                 }
             ]
         },
@@ -325,27 +327,27 @@
             "properties": {
                 "strength": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 },
                 "dexterity": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 },
                 "constitution": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 },
                 "intelligence": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 },
                 "wisdom": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 },
                 "charisma": {
                     "type": "integer",
-                    "minimum": 1
+                    "minimum": 0
                 }
             },
             "required": [
@@ -422,6 +424,8 @@
                 {
                     "type": "integer",
                     "enum": [
+                        3,
+                        7,
                         4,
                         6,
                         8,
@@ -602,6 +606,39 @@
                 }
             ]
         },
+        "language": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/language.schema.json",
+            "title": "D&D 5e Language",
+            "description": "A language. Canonical languages are listed; custom languages are allowed.",
+            "$comment": "version 0.5.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "common",
+                        "dwarvish",
+                        "elvish",
+                        "giant",
+                        "gnomish",
+                        "goblin",
+                        "halfling",
+                        "orc",
+                        "abyssal",
+                        "celestial",
+                        "draconic",
+                        "deep_speech",
+                        "infernal",
+                        "primordial",
+                        "sylvan",
+                        "undercommon"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
         "condition": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "$id": "values/condition.schema.json",
@@ -690,314 +727,17 @@
                     "minimum": 1,
                     "maximum": 20
                 },
-                "source": {
-                    "$ref": "#/$defs/source"
-                }
-            },
-            "additionalProperties": false
-        },
-        "source": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "values/source.schema.json",
-            "title": "Data Source",
-            "description": "The source from which the data was obtained.",
-            "$comment": "version 0.4.0",
-            "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "Human-readable reference to the source.",
-                    "examples": [
-                        "PHB p41",
-                        "Unearthed Arcana: The Artificer Revisited"
-                    ]
-                },
-                "note": {
-                    "type": "string",
-                    "description": "Additional information about the source.",
-                    "input": "textarea"
-                },
-                "href": {
-                    "type": "string",
-                    "format": "uri",
-                    "description": "A URI linking to the source.",
-                    "examples": [
-                        "https://media.wizards.com/2019/dnd/downloads/UA-Artificer-2019.pdf"
-                    ]
-                }
-            },
-            "anyOf": [
-                {
-                    "required": [
-                        "text"
-                    ]
-                },
-                {
-                    "required": [
-                        "href"
-                    ]
-                }
-            ],
-            "additionalProperties": false
-        },
-        "action": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/action.schema.json",
-            "title": "D&D 5e Action",
-            "description": "An action a creature, race, class, or feat may use.",
-            "$comment": "version 0.4.0",
-            "type": "object",
-            "required": [
-                "name",
-                "description"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "description": {
-                    "type": "string",
-                    "input": "textarea"
-                },
-                "type": {
-                    "$ref": "#/$defs/action_type"
-                },
-                "target": {
-                    "$ref": "#/$defs/target"
-                },
                 "effects": {
                     "type": "array",
                     "items": {
                         "$ref": "#/$defs/effect"
                     }
+                },
+                "source": {
+                    "$ref": "#/$defs/source"
                 }
             },
             "additionalProperties": false
-        },
-        "action_type": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "values/action_type.schema.json",
-            "title": "D&D 5e Action Type",
-            "description": "The type of action used by a creature or feature.",
-            "$comment": "version 0.4.0",
-            "anyOf": [
-                {
-                    "type": "string",
-                    "enum": [
-                        "action",
-                        "bonus_action",
-                        "reaction",
-                        "free_action",
-                        "legendary_action",
-                        "lair_action",
-                        "mythic_action"
-                    ]
-                },
-                {
-                    "$ref": "#/$defs/custom_value"
-                }
-            ]
-        },
-        "target": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/target.schema.json",
-            "title": "D&D 5e Target",
-            "description": "A target specification for an action or spell.",
-            "$comment": "version 0.5.0",
-            "type": "object",
-            "required": [
-                "targeting"
-            ],
-            "properties": {
-                "targeting": {
-                    "type": "string",
-                    "enum": [
-                        "self",
-                        "touch",
-                        "range"
-                    ]
-                },
-                "range": {
-                    "$ref": "#/$defs/distance"
-                },
-                "type": {
-                    "$ref": "#/$defs/target_type"
-                },
-                "count": {
-                    "$ref": "#/$defs/target_count"
-                },
-                "zone": {
-                    "type": "object",
-                    "required": [
-                        "type",
-                        "size"
-                    ],
-                    "properties": {
-                        "type": {
-                            "$ref": "#/$defs/target_zone"
-                        },
-                        "size": {
-                            "type": "integer",
-                            "minimum": 0
-                        }
-                    },
-                    "additionalProperties": false
-                },
-                "description": {
-                    "type": "string"
-                }
-            },
-            "if": {
-                "properties": {
-                    "targeting": {
-                        "const": "range"
-                    }
-                }
-            },
-            "then": {
-                "required": [
-                    "range"
-                ]
-            },
-            "additionalProperties": false
-        },
-        "distance": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/distance.schema.json",
-            "title": "D&D 5e Distance",
-            "description": "A distance value and its unit.",
-            "$comment": "version 0.4.0",
-            "type": "object",
-            "required": [
-                "amount",
-                "unit"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "unit": {
-                    "$ref": "#/$defs/distance_type"
-                }
-            },
-            "additionalProperties": false
-        },
-        "target_type": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "values/target_type.schema.json",
-            "title": "D&D 5e Target Type",
-            "description": "The kind of creature or object that can be targeted.",
-            "$comment": "version 0.4.0",
-            "anyOf": [
-                {
-                    "type": "string",
-                    "enum": [
-                        "creature",
-                        "ally",
-                        "enemy",
-                        "object",
-                        "self"
-                    ]
-                },
-                {
-                    "$ref": "#/$defs/custom_value"
-                }
-            ]
-        },
-        "target_count": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/target_count.schema.json",
-            "title": "D&D 5e Target Count",
-            "description": "The number of targets an action or spell can affect.",
-            "$comment": "version 0.4.0",
-            "type": "object",
-            "properties": {
-                "minimum": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "maximum": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "all": {
-                    "type": "boolean",
-                    "const": true
-                }
-            },
-            "oneOf": [
-                {
-                    "required": [
-                        "all"
-                    ],
-                    "not": {
-                        "anyOf": [
-                            {
-                                "required": [
-                                    "minimum"
-                                ]
-                            },
-                            {
-                                "required": [
-                                    "maximum"
-                                ]
-                            }
-                        ]
-                    }
-                },
-                {
-                    "required": [
-                        "minimum",
-                        "maximum"
-                    ]
-                },
-                {
-                    "required": [
-                        "minimum"
-                    ],
-                    "not": {
-                        "required": [
-                            "maximum"
-                        ]
-                    }
-                },
-                {
-                    "required": [
-                        "maximum"
-                    ],
-                    "not": {
-                        "required": [
-                            "minimum"
-                        ]
-                    }
-                }
-            ],
-            "additionalProperties": false
-        },
-        "target_zone": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "values/target_zone.schema.json",
-            "title": "D&D 5e Target Zone",
-            "description": "The shape or scope of an action or spell's area.",
-            "$comment": "version 0.4.0",
-            "anyOf": [
-                {
-                    "type": "string",
-                    "enum": [
-                        "single",
-                        "line",
-                        "cone",
-                        "cube",
-                        "cylinder",
-                        "sphere"
-                    ]
-                },
-                {
-                    "$ref": "#/$defs/custom_value"
-                }
-            ]
         },
         "effect": {
             "$schema": "http://json-schema.org/draft-07/schema#",
@@ -1364,6 +1104,374 @@
                 }
             ]
         },
+        "source": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/source.schema.json",
+            "title": "Data Source",
+            "description": "The source from which the data was obtained.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Human-readable reference to the source.",
+                    "examples": [
+                        "PHB p41",
+                        "Unearthed Arcana: The Artificer Revisited"
+                    ]
+                },
+                "note": {
+                    "type": "string",
+                    "description": "Additional information about the source.",
+                    "input": "textarea"
+                },
+                "href": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "A URI linking to the source.",
+                    "examples": [
+                        "https://media.wizards.com/2019/dnd/downloads/UA-Artificer-2019.pdf"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "required": [
+                        "text"
+                    ]
+                },
+                {
+                    "required": [
+                        "href"
+                    ]
+                }
+            ],
+            "additionalProperties": false
+        },
+        "action": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/action.schema.json",
+            "title": "D&D 5e Action",
+            "description": "An action a creature, race, class, or feat may use.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "name",
+                "description"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "description": {
+                    "type": "string",
+                    "input": "textarea"
+                },
+                "type": {
+                    "$ref": "#/$defs/action_type"
+                },
+                "target": {
+                    "$ref": "#/$defs/target"
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    }
+                },
+                "roll_table": {
+                    "$ref": "#/$defs/roll_table"
+                }
+            },
+            "additionalProperties": false
+        },
+        "action_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/action_type.schema.json",
+            "title": "D&D 5e Action Type",
+            "description": "The type of action used by a creature or feature.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "action",
+                        "bonus_action",
+                        "reaction",
+                        "free_action",
+                        "legendary_action",
+                        "lair_action",
+                        "mythic_action"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "target": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/target.schema.json",
+            "title": "D&D 5e Target",
+            "description": "A target specification for an action or spell.",
+            "$comment": "version 0.5.0",
+            "type": "object",
+            "required": [
+                "targeting"
+            ],
+            "properties": {
+                "targeting": {
+                    "type": "string",
+                    "enum": [
+                        "self",
+                        "touch",
+                        "range",
+                        "special",
+                        "sight",
+                        "unlimited"
+                    ]
+                },
+                "range": {
+                    "$ref": "#/$defs/distance"
+                },
+                "type": {
+                    "$ref": "#/$defs/target_type"
+                },
+                "count": {
+                    "$ref": "#/$defs/target_count"
+                },
+                "zone": {
+                    "type": "object",
+                    "required": [
+                        "type",
+                        "size"
+                    ],
+                    "properties": {
+                        "type": {
+                            "$ref": "#/$defs/target_zone"
+                        },
+                        "size": {
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "description": {
+                    "type": "string"
+                }
+            },
+            "if": {
+                "properties": {
+                    "targeting": {
+                        "const": "range"
+                    }
+                }
+            },
+            "then": {
+                "required": [
+                    "range"
+                ]
+            },
+            "additionalProperties": false
+        },
+        "distance": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/distance.schema.json",
+            "title": "D&D 5e Distance",
+            "description": "A distance value and its unit.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "required": [
+                "amount",
+                "unit"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "unit": {
+                    "$ref": "#/$defs/distance_type"
+                }
+            },
+            "additionalProperties": false
+        },
+        "target_type": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/target_type.schema.json",
+            "title": "D&D 5e Target Type",
+            "description": "The kind of creature or object that can be targeted.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "creature",
+                        "ally",
+                        "enemy",
+                        "object",
+                        "self"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "target_count": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/target_count.schema.json",
+            "title": "D&D 5e Target Count",
+            "description": "The number of targets an action or spell can affect.",
+            "$comment": "version 0.4.0",
+            "type": "object",
+            "properties": {
+                "minimum": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "maximum": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "all": {
+                    "type": "boolean",
+                    "const": true
+                }
+            },
+            "oneOf": [
+                {
+                    "required": [
+                        "all"
+                    ],
+                    "not": {
+                        "anyOf": [
+                            {
+                                "required": [
+                                    "minimum"
+                                ]
+                            },
+                            {
+                                "required": [
+                                    "maximum"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                {
+                    "required": [
+                        "minimum",
+                        "maximum"
+                    ]
+                },
+                {
+                    "required": [
+                        "minimum"
+                    ],
+                    "not": {
+                        "required": [
+                            "maximum"
+                        ]
+                    }
+                },
+                {
+                    "required": [
+                        "maximum"
+                    ],
+                    "not": {
+                        "required": [
+                            "minimum"
+                        ]
+                    }
+                }
+            ],
+            "additionalProperties": false
+        },
+        "target_zone": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "values/target_zone.schema.json",
+            "title": "D&D 5e Target Zone",
+            "description": "The shape or scope of an action or spell's area.",
+            "$comment": "version 0.4.0",
+            "anyOf": [
+                {
+                    "type": "string",
+                    "enum": [
+                        "single",
+                        "line",
+                        "cone",
+                        "cube",
+                        "cylinder",
+                        "sphere"
+                    ]
+                },
+                {
+                    "$ref": "#/$defs/custom_value"
+                }
+            ]
+        },
+        "roll_table": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/roll_table.schema.json",
+            "title": "D&D 5e Roll Table",
+            "description": "A table of outcomes determined by a dice roll.",
+            "$comment": "version 0.3.0",
+            "type": "object",
+            "required": [
+                "dice",
+                "entries"
+            ],
+            "properties": {
+                "count": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "dice": {
+                    "$ref": "#/$defs/dice"
+                },
+                "entries": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/roll_table_entry"
+                    },
+                    "minItems": 1
+                }
+            },
+            "additionalProperties": false
+        },
+        "roll_table_entry": {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "$id": "components/roll_table_entry.schema.json",
+            "title": "D&D 5e Roll Table Entry",
+            "description": "An outcome corresponding to a roll result.",
+            "$comment": "version 0.3.0",
+            "type": "object",
+            "required": [
+                "roll",
+                "result"
+            ],
+            "properties": {
+                "roll": {
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "result": {
+                    "type": "string",
+                    "minLength": 1
+                },
+                "effects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/effect"
+                    },
+                    "minItems": 1
+                }
+            },
+            "additionalProperties": false
+        },
         "spell_casting": {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "$id": "components/spell_casting.schema.json",
@@ -1478,65 +1586,6 @@
                     "$ref": "#/$defs/custom_value"
                 }
             ]
-        },
-        "roll_table": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/roll_table.schema.json",
-            "title": "D&D 5e Roll Table",
-            "description": "A table of outcomes determined by a dice roll.",
-            "$comment": "version 0.3.0",
-            "type": "object",
-            "required": [
-                "dice",
-                "entries"
-            ],
-            "properties": {
-                "count": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "dice": {
-                    "$ref": "#/$defs/dice"
-                },
-                "entries": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/roll_table_entry"
-                    },
-                    "minItems": 1
-                }
-            },
-            "additionalProperties": false
-        },
-        "roll_table_entry": {
-            "$schema": "http://json-schema.org/draft-07/schema#",
-            "$id": "components/roll_table_entry.schema.json",
-            "title": "D&D 5e Roll Table Entry",
-            "description": "An outcome corresponding to a roll result.",
-            "$comment": "version 0.3.0",
-            "type": "object",
-            "required": [
-                "roll",
-                "result"
-            ],
-            "properties": {
-                "roll": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "result": {
-                    "type": "string",
-                    "minLength": 1
-                },
-                "effects": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/$defs/effect"
-                    },
-                    "minItems": 1
-                }
-            },
-            "additionalProperties": false
         },
         "image": {
             "$schema": "http://json-schema.org/draft-07/schema#",

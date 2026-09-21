@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from urllib.parse import urlparse
+from urllib.parse import unquote, urlparse
 
 from PySide6.QtWidgets import QMdiArea
 
 from application.entity_references import EntityNavigationController, EntityReference
+from application.rules_catalog import _RULE_DESCRIPTIONS
 
 from .factory import create_entity_detail_mdi_view
 
@@ -12,10 +13,13 @@ from .factory import create_entity_detail_mdi_view
 class EntityInspectionController:
     """Open and reuse modeless entity inspections in one MDI area."""
 
-    def __init__(self, project_controller, mdi_area: QMdiArea, *, on_edit=None):
+    def __init__(
+        self, project_controller, mdi_area: QMdiArea, *, on_edit=None, on_rule=None
+    ):
         self.project_controller = project_controller
         self.mdi_area = mdi_area
         self.on_edit = on_edit
+        self.on_rule = on_rule
         self.navigation = EntityNavigationController(
             project_controller,
             on_open=self._display,
@@ -29,10 +33,24 @@ class EntityInspectionController:
     def back(self):
         return self.navigation.back()
 
-    def open_link(self, link):
-        """Open one renderer-generated canonical entity link."""
+    def open_link(self, link, *, on_rule=None):
+        """Open one renderer-generated entity or rule link."""
         parsed = urlparse(link)
-        if parsed.scheme != "dmtools" or parsed.netloc != "entity":
+        if parsed.scheme != "dmtools":
+            raise ValueError("Unsupported entity link")
+        if parsed.netloc == "rule":
+            parts = [unquote(part) for part in parsed.path.strip("/").split("/")]
+            if len(parts) != 2 or not all(parts):
+                raise ValueError("Rule link is missing a valid category or value")
+            category, value = parts
+            values = _RULE_DESCRIPTIONS.get(category, {})
+            if value not in values or value in {"description", "handbook_reference"}:
+                raise ValueError("Rule link does not identify a catalog value")
+            callback = on_rule or self.on_rule
+            if callback is None:
+                raise ValueError("No rule link handler is configured")
+            return callback(category, value)
+        if parsed.netloc != "entity":
             raise ValueError("Unsupported entity link")
         entity_uid = parsed.path.strip("/")
         if not entity_uid or "/" in entity_uid:
@@ -72,6 +90,7 @@ class EntityInspectionController:
                     uid, None
                 ),
                 on_link=self.open_link,
+                on_rule=self.on_rule,
                 on_edit=self.on_edit,
             )
             window = self.mdi_area.addSubWindow(view)

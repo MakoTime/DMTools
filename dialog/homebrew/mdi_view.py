@@ -40,10 +40,18 @@ ENTITY_SCHEMAS = {
 class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
     """Modeless Homebrew draft editor for the main window MDI area."""
 
-    def __init__(self, model: HomebrewEditorModel, *, on_accept=None, parent=None):
+    def __init__(
+        self,
+        model: HomebrewEditorModel,
+        *,
+        on_accept=None,
+        on_clone=None,
+        parent=None,
+    ):
         super().__init__(model, parent=parent)
         EditorButtonBoxImplementation.__init__(self)
         self.on_accept = on_accept
+        self.on_clone = on_clone
         self._close_reason = None
         self._dirty = False
         self.setWindowTitle(f"Homebrew {model.entity_type.title()}")
@@ -98,7 +106,14 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         editor_layout.addLayout(metadata)
         editor_layout.addWidget(self.property_table, 1)
         editor_layout.addWidget(self.error_label)
-        editor_layout.addWidget(self.create_button_box())
+        buttons = self.create_button_box()
+        if self.model.source_entity_uid and self.on_clone is not None:
+            clone_button = buttons.addButton(
+                "Clone Again to Homebrew",
+                QDialogButtonBox.ButtonRole.ActionRole,
+            )
+            clone_button.clicked.connect(self._clone_again)
+        editor_layout.addWidget(buttons)
 
         self.preview = QTextBrowser(self)
         self.preview.setOpenLinks(False)
@@ -277,6 +292,10 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         except (ValueError, json.JSONDecodeError) as error:
             self.error_label.setText(str(error))
             return None
+
+    def _clone_again(self):
+        if self.on_clone is not None and self.model.source_entity_uid:
+            self.on_clone(self.model.source_entity_uid)
 
     def update_preview(self):
         if self.model is None:

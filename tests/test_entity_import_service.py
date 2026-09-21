@@ -221,5 +221,6 @@ def test_import_reports_file_phases_before_record_validation():
         "Reading and parsing XML structure",
         "Parsing source entities",
         "Validating normalized records",
+        "Resolving entity references",
     ]
     assert progress == [(0, 1), (1, 1), (0, 1), (1, 1)]

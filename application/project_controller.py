@@ -19,7 +19,11 @@ from application.project_tree import ProjectTreeMutationService
 from application.legacy_tree_projection import LegacyTreeProjectionAdapter
 from components.tree import TreeManager, TreeModel
 from components.tree.roots.db_root import database_root
-from components.tree.roots.entity_roots import compendium_root, homebrew_root
+from components.tree.roots.entity_roots import (
+    compendium_root,
+    custom_rule_values,
+    homebrew_root,
+)
 from components.tree.roots.root_objects import root_objects
 
 
@@ -235,6 +239,13 @@ class ProjectController:
             return set()
         return self.entity_database_store(namespace).source_identities()
 
+    def entity_source_records(self, namespace="compendium"):
+        """Return persisted entity rows for import reference resolution."""
+        block_uid = f"dmtools-{namespace}-entity-database"
+        if not self.project.blocks.contains(block_uid):
+            return ()
+        return tuple(self.entity_database_store(namespace).all_records())
+
     def save_entity_namespace_json(self, namespace="compendium"):
         """Write a shareable JSON projection of the canonical entity store."""
         if namespace not in {"compendium", "homebrew"}:
@@ -262,14 +273,8 @@ class ProjectController:
         temporary.replace(path)
         return path
 
-    def commit_imported_entities(
-        self,
-        records,
-        *,
-        namespace="compendium",
-        duplicate_policy="replace",
-    ):
-        """Atomically persist a validated batch, then register its tree projection."""
+    def prepare_imported_entities(self, records, *, namespace="compendium"):
+        """Validate and normalize records before the persistence task runs."""
         from application.entity_references import normalize_entity_references
 
         records = tuple(records)
@@ -286,13 +291,139 @@ class ProjectController:
                 existing_entities.extend(
                     existing_store.query(entity_type, operator="all", limit=1000)
                 )
-        records = normalize_entity_references(
+        return normalize_entity_references(
             records,
             existing_entities,
             source_namespace=namespace,
         )
+
+    def normalize_entity_references(self, parent=None, *, progress_factory=None):
+        """Rebuild stored entity references with visible progress feedback."""
+        from application.entity_references import normalize_entity_references
+        from application.imports import ImportedEntityRecord
+
+        if progress_factory is None:
+            from dialog.import_progress.factory import create_import_task_progress
+
+            progress_factory = create_import_task_progress
+
+        records_by_namespace = {}
+        existing_entities = []
+        for namespace in ("compendium", "homebrew"):
+            if not self.project.blocks.contains(
+                f"dmtools-{namespace}-entity-database"
+            ):
+                continue
+            records = []
+            for row in self.entity_database_store(namespace).all_records():
+                metadata = dict(row.source_metadata)
+                metadata.pop("entity_references", None)
+                metadata.pop("reference_diagnostics", None)
+                records.append(
+                    ImportedEntityRecord(
+                        entity_type=row.entity_type,
+                        uid=row.uid,
+                        source_identity=row.source_identity,
+                        display_name=row.name,
+                        payload=row.payload,
+                        source_metadata=metadata,
+                        provenance=row.provenance,
+                    )
+                )
+            records_by_namespace[namespace] = records
+            existing_entities.extend(self.entity_database_store(namespace).all_records())
+
+        total = sum(len(records) for records in records_by_namespace.values())
+        if not total:
+            return 0
+
+        def prepare_normalized_records(set_progress, is_cancelled):
+            normalized_by_namespace = {}
+            processed = 0
+            for namespace, records in records_by_namespace.items():
+                if is_cancelled():
+                    return None
+                namespace_start = processed
+                normalized = normalize_entity_references(
+                    records,
+                    existing_entities,
+                    source_namespace=namespace,
+                    is_cancelled=is_cancelled,
+                    progress_callback=lambda namespace_current, namespace_total: set_progress(
+                        namespace_start + namespace_current,
+                        total,
+                    ),
+                )
+                if len(normalized) != len(records):
+                    return None
+                normalized_by_namespace[namespace] = normalized
+                processed += len(normalized)
+            return normalized_by_namespace
+
+        progress_dialog = progress_factory(
+            self.task_runner,
+            prepare_normalized_records,
+            "stored entity references",
+            operation_name="Normalising references...",
+            parent=parent,
+        )
+        if progress_dialog.exec() != QDialog.DialogCode.Accepted:
+            return 0
+        normalized_by_namespace = progress_dialog.model.result
+        if normalized_by_namespace is None:
+            return 0
+
+        updated = 0
+        for namespace, normalized in normalized_by_namespace.items():
+            store = self.entity_database_store(namespace)
+            store.commit_records(normalized, duplicate_policy="replace")
+            updated += len(normalized)
+            self.save_entity_namespace_json(namespace)
+        if updated and self.project_file is not None:
+            self.save_project()
+        return updated
+
+    def persist_imported_entities(
+        self,
+        records,
+        *,
+        namespace="compendium",
+        duplicate_policy="replace",
+        progress_callback=None,
+        database_path=None,
+    ):
+        """Persist records without touching Project or Qt-owned state."""
+        from application.entity_database import EntityDatabaseStore
+
+        if database_path is None:
+            database_path = self.entity_database_store(namespace).database_path
+        worker_store = EntityDatabaseStore(database_path, namespace=namespace)
+        return worker_store.commit_records(
+            records,
+            duplicate_policy=duplicate_policy,
+            progress_callback=progress_callback,
+            sync_block_metadata=False,
+        )
+
+    def commit_imported_entities(
+        self,
+        records,
+        *,
+        namespace="compendium",
+        duplicate_policy="replace",
+        persist=True,
+    ):
+        """Atomically persist a validated batch, then register its tree projection."""
+        if persist:
+            records = self.prepare_imported_entities(records, namespace=namespace)
+            self.persist_imported_entities(
+                records,
+                namespace=namespace,
+                duplicate_policy=duplicate_policy,
+            )
+        root = compendium_root if namespace == "compendium" else homebrew_root
         store = self.entity_database_store(namespace)
-        count = store.commit_records(records, duplicate_policy=duplicate_policy)
+        count = store.count()
         for record in records:
             node_uid = f"dmtools-{namespace}-entity-{record.uid}"
             if self.project.nodes.contains(node_uid):
@@ -308,6 +439,8 @@ class ProjectController:
                 node,
                 parent_uid=root.category(record.entity_type).uid,
             )
+        if namespace == "homebrew":
+            self._refresh_homebrew_rules()
         self.project_tree_model.refresh()
         return count
 
@@ -755,6 +888,7 @@ class ProjectController:
         return query_object
 
     def refresh_project_tree(self):
+        self._refresh_homebrew_rules()
         project_roots = self.tree_projection.refresh()
         self._migrate_subclass_nodes()
         self.project_tree_model.root_data = [
@@ -763,6 +897,16 @@ class ProjectController:
             if node.uid != database_root.uid
         ]
         self.project_tree_model.refresh()
+
+    def _refresh_homebrew_rules(self):
+        block_uid = "dmtools-homebrew-entity-database"
+        if not self.project.blocks.contains(block_uid):
+            homebrew_root.rules.set_custom_values(())
+            return
+        values = []
+        for record in self.entity_database_store("homebrew").all_records():
+            values.extend(custom_rule_values(record.entity_type, record.payload))
+        homebrew_root.rules.set_custom_values(values)
 
     def _migrate_subclass_nodes(self):
         for node in tuple(self.project.nodes.values()):
