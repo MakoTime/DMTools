@@ -9,6 +9,7 @@ class RuleDetailModel(EditorModel):
     value: str
     category: str
     schema_names: tuple[str, ...]
+    related_entities: tuple[tuple[str, str], ...] = ()
 
     @property
     def title(self):
@@ -16,4 +17,7 @@ class RuleDetailModel(EditorModel):
 
     @property
     def details(self):
-        return rule_details(self.value, self.category, self.schema_names)
+        details = rule_details(self.value, self.category, self.schema_names)
+        if self.related_entities:
+            details["Related entities"] = self.related_entities
+        return details

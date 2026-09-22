@@ -21,6 +21,7 @@ class EntityDetailMdiView(WidgetEditorView):
         on_link=None,
         on_rule=None,
         on_edit=None,
+        on_resolve=None,
     ):
         super().__init__(model, parent=parent, on_close=on_close)
         self.setWindowTitle(model.title)
@@ -48,6 +49,14 @@ class EntityDetailMdiView(WidgetEditorView):
             edit_button.setToolTip("Edit Homebrew data")
             edit_button.clicked.connect(lambda: on_edit(entity))
             toolbar.addWidget(edit_button)
+        if on_resolve is not None and getattr(entity, "source_metadata", {}).get(
+            "reference_diagnostics"
+        ):
+            self.resolve_button = QPushButton("Resolve references", self)
+            self.resolve_button.clicked.connect(lambda: on_resolve(entity))
+            toolbar.addWidget(self.resolve_button)
+        else:
+            self.resolve_button = None
         layout = QVBoxLayout(self)
         layout.addLayout(toolbar)
         layout.addWidget(self.browser, 1)
@@ -57,6 +66,10 @@ class EntityDetailMdiView(WidgetEditorView):
         self.model._entity = entity
         self.setWindowTitle(self.model.title)
         self.browser.setHtml(render_entity_html(entity))
+        if self.resolve_button is not None:
+            self.resolve_button.setVisible(
+                bool(getattr(entity, "source_metadata", {}).get("reference_diagnostics"))
+            )
         self.model.release_entity()
 
     def closeEvent(self, event):

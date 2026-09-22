@@ -91,6 +91,46 @@ def test_item_template_renders_compact_armor_stat_block():
     assert "**Magic Item:**" not in rendered
 
 
+def test_race_template_formats_movement_abilities_and_senses():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="race",
+            payload={
+                "name": "Aquatic Elf",
+                "size": "medium",
+                "subtype": "elf",
+                "movement": [
+                    {"movement_type": "walk", "speed": {"distance": 30, "unit": "feet"}},
+                    {"movement_type": "swim", "speed": {"distance": 30, "unit": "feet"}},
+                ],
+                "ability_score_increases": [{"ability": "dexterity", "amount": 2}],
+                "senses": [{"type": "darkvision", "distance": 60, "distance_type": "feet"}],
+            },
+        )
+    )
+
+    assert "# Aquatic Elf, elf" in rendered
+    assert "*Medium*" in rendered
+    assert "**Speed** 30ft, Swim 30ft" in rendered
+    assert "**Ability Score Increases** Dexterity +2" in rendered
+    assert "**Senses** Darkvision 60 ft." in rendered
+
+
+def test_race_fallback_does_not_repeat_source_citation():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="race",
+            payload={
+                "name": "Legacy Race",
+                "source": "Player's Handbook p. 24",
+                "traits": ["Darkvision"],
+            },
+        )
+    )
+
+    assert "Player's Handbook p. 24" not in rendered
+
+
 def test_item_template_renders_phb_weapon_damage_dice():
     rendered = render_entity_markdown(
         entity(
@@ -229,9 +269,9 @@ def test_rule_links_replace_code_formatted_values_without_reference_appendix():
     )
 
     assert "[evil](dmtools://rule/alignment/evil)" in rendered
-    assert "[Dawn](dmtools://rule/recharge/dawn)" in rendered
+    assert "[Dawn](dmtools://rule/recharge/dawn)" not in rendered
     assert "`evil`" not in rendered
-    assert "`Dawn`" not in rendered
+    assert "`Dawn`" in rendered
     assert "## References" not in rendered
 
 
@@ -271,7 +311,7 @@ def test_duplicate_reference_labels_do_not_nest_or_corrupt_links():
 
     assert "[[" not in rendered
     assert "dmtools://rule/recharge/[" not in rendered
-    assert "[Dawn](dmtools://rule/recharge/dawn)" in rendered
+    assert "[Dawn](dmtools://rule/recharge/dawn)" not in rendered
 
 
 def test_presentation_contract_defines_stable_type_specific_field_order():
@@ -401,6 +441,60 @@ def test_non_spell_references_render_as_inline_entity_links():
     )
 
     assert "[Alert](dmtools://entity/feat-alert)" in rendered
+
+
+def test_entity_and_section_headers_are_not_linked():
+    rendered = render_entity_markdown(
+        entity(
+            entity_type="feat",
+            payload={
+                "name": "Alert",
+                "prerequisite": "Choose Alert as a feat.",
+                "features": [{"name": "Alert", "description": "Alert grants a bonus."}],
+            },
+            metadata={
+                "entity_references": [{
+                    "target_uid": "feat-alert",
+                    "entity_type": "feat",
+                    "source_namespace": "compendium",
+                    "display_fallback": "Alert",
+                }]
+            },
+        )
+    )
+
+    lines = rendered.splitlines()
+    assert "# Alert" in lines
+    assert all("[Alert](" not in line for line in lines if line.startswith("#"))
+    feature_line = next(line for line in lines if line.startswith("***Alert."))
+    assert "[Alert](" not in feature_line.split("***", 2)[1]
+    assert any("[Alert](dmtools://entity/feat-alert)" in line for line in lines)
+
+
+def test_table_headers_are_not_linked_but_table_body_is():
+    rendered = render_entity_markdown(
+        entity(
+            payload={
+                "name": "Pack",
+                "table": [
+                    {"property": "Fireball", "value": "Fireball"},
+                ],
+            },
+            metadata={
+                "entity_references": [{
+                    "target_uid": "spell-fireball",
+                    "entity_type": "spell",
+                    "source_namespace": "compendium",
+                    "display_fallback": "Fireball",
+                }]
+            },
+        )
+    )
+
+    lines = rendered.splitlines()
+    header_index = lines.index("| property | value |")
+    assert "[Fireball](" not in lines[header_index]
+    assert "[Fireball](dmtools://entity/spell-fireball)" in lines[header_index + 2]
 
 
 def test_renderers_follow_type_specific_field_order():

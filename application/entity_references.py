@@ -36,59 +36,139 @@ _RULE_SCHEMA_CATEGORIES = {
     "sense_type": "sense",
     "spell_component": "spell_component",
     "spell_school": "spell_school",
-    "casting_time": "casting_time",
-    "duration": "duration",
-    "duration_amount": "duration",
-    "distance_type": "distance_type",
     "movement_type": "movement_type",
-    "recharge": "recharge",
-    "target_type": "target_type",
+    "spellcasting_progression": "spellcasting_progression",
     "target_zone": "target_zone",
-    "targeting": "targeting",
-    "attack_type": "attack_type",
     "action_type": "action_type",
-    "bonus_type": "bonus_type",
-    "ability_kind": "ability_kind",
     "currency": "currency",
     "rarity": "rarity",
     "spell_level": "spell_level",
 }
+DISABLED_RULE_CATEGORIES = frozenset(
+    {
+        "ability_kind",
+        "attack_type",
+        "bonus_type",
+        "casting_time",
+        "distance_type",
+        "duration",
+        "recharge",
+        "target_type",
+        "targeting",
+    }
+)
 _RULE_METADATA_KEYS = {"description", "handbook_reference"}
+_RULE_CATEGORY_SCHEMA_NAMES = {
+    "ability_score": ("ability_score",),
+    "alignment": ("alignment",),
+    "conditions": ("condition",),
+    "creature_type": ("creature_type",),
+    "damage_type": ("damage_type",),
+    "proficiencies-languages": ("language",),
+    "proficiencies-skills": ("skill",),
+    "proficiencies-tools": ("tool",),
+    "proficiencies-armor": ("armor_proficiency", "armor_category", "armor_type"),
+    "proficiencies-instruments": ("instrument",),
+    "proficiencies-gaming_sets": ("gaming_set",),
+    "proficiencies-vehicles": ("vehicle",),
+    "weapons-groups": ("weapon_category",),
+    "weapons-tags": ("weapon_property", "weapon_tag"),
+    "weapons-types": ("weapon_type",),
+    "item_category": ("item_category",),
+    "size": ("size",),
+    "sense": ("sense_type",),
+    "spell_component": ("spell_component",),
+    "spell_school": ("spell_school",),
+    "movement_type": ("movement_type",),
+    "spellcasting_progression": ("spellcasting_progression",),
+    "target_zone": ("target_zone",),
+    "action_type": ("action_type",),
+    "currency": ("currency",),
+    "rarity": ("rarity",),
+}
 _RULE_CONTEXTS = {
     "ability_score": r"\b(?:saving throw|save|ability|check|modifier|score)s?\b",
-    "ability_kind": r"\bability\b|\bkind\b",
-    "alignment": r"\balignment\b",
+    "alignment": (
+        r"\balign(?:ed|ment)\b|\b{value}\s+alignment\b|"
+        r"\b{value}\s+aligned\b|\bcreature\s+of\s+{value}\b|"
+        r"\b(?:detect|detects|detected|detecting)\s+{value}\b|"
+        r"\bprotection\s+from\s+{value}\b|"
+        r"\b(?:damage|immune|immunity|resistance|resistant)\s+(?:to\s+)?"
+        r"{value}\b"
+    ),
     "conditions": r"\bcondition\b|\b(?:becomes?|is|are|while)\s+{value}\b",
-    "damage_type": r"\bdamage\b",
-    "spell_school": r"\bschool\b",
-    "spell_component": r"\bcomponents?\b|\bcast(?:ing)?\b",
-    "casting_time": r"\bcasting time\b|\bcast(?:ing)?\b",
-    "proficiencies-languages": r"\blanguages?\b|\bspeak(?:s|ing)?\b|\bunderstand(?:s|ing)?\b",
-    "proficiencies-skills": r"\bproficien(?:cy|cies)\b|\bcheck\b",
-    "proficiencies-tools": r"\btools?\b|\bkits?\b|\bproficien(?:cy|cies)\b",
-    "proficiencies-armor": r"\b(?:armor|armour)\b|\bproficien(?:cy|cies)\b",
-    "proficiencies-instruments": r"\binstruments?\b|\bmusical\b|\bproficien(?:cy|cies)\b",
-    "proficiencies-gaming_sets": r"\bgaming\b|\bgame\b|\bset\b|\bproficien(?:cy|cies)\b",
-    "proficiencies-vehicles": r"\bvehicles?\b|\bproficien(?:cy|cies)\b",
+    "damage_type": (
+        r"\b{value}\s+damage\b|\bdamage\s+{value}\b|"
+        r"\b(?:resistance|resistant|immunity|immune|vulnerability|vulnerable)"
+        r"\s+(?:to\s+)?{value}\b|"
+        r"\b(?:deal|deals|dealing|take|takes|taking)\s+{value}\s+damage\b"
+    ),
+    "spell_school": (
+        r"\bspell\s+school\b|\bschool\s+of\s+magic\b|"
+        r"\b{value}\s+(?:school|spell)\b"
+    ),
+    "spellcasting_progression": r"\bspellcasting\b|\bspell slots?\b",
+    "spell_component": (
+        r"\bcomponents?\b|\b{value}\s+component\b|"
+        r"\b(?:speak|spoken|gesture|focus|subtle)\b"
+    ),
+    "proficiencies-languages": r"\blanguages?\b|\blanguage proficien(?:cy|cies)\b",
+    "proficiencies-skills": r"\bskills?\b|\bskill proficien(?:cy|cies)\b",
+    "proficiencies-tools": r"\btools?\b|\btool proficien(?:cy|cies)\b|\bkits?\b",
+    "proficiencies-armor": r"\b(?:armor|armour)\b|\barmor proficien(?:cy|cies)\b",
+    "proficiencies-instruments": r"\binstruments?\b|\binstrument proficien(?:cy|cies)\b",
+    "proficiencies-gaming_sets": r"\bgaming sets?\b|\bgaming[- ]set proficien(?:cy|cies)\b",
+    "proficiencies-vehicles": r"\bvehicles?\b|\bvehicle proficien(?:cy|cies)\b",
     "weapons-tags": r"\bweapon\b|\battack\b",
     "weapons-groups": r"\bweapon\b|\bproficien(?:cy|cies)\b",
     "weapons-types": r"\bweapon\b|\battack\b",
-    "bonus_type": r"\bbonus\b|\bmodifier\b",
-    "action_type": r"\b(?:action|reaction|turn)\b",
-    "distance_type": r"\b(?:range|distance|speed|feet|miles?)\b",
-    "duration": r"\bduration\b|\b(?:last|lasting)\b",
-    "movement_type": r"\bmovement\b|\bspeed\b",
-    "recharge": r"\brecharge\b|\brest\b|\bdawn\b|\bdusk\b",
-    "target_type": r"\btarget\b",
+    "action_type": (
+        r"\b(?:action|bonus action|reaction|legendary action|lair action|"
+        r"mythic action)\b|\b(?:take|takes|use|uses|using|spend|spends)\s+"
+        r"(?:an?\s+)?{value}\b"
+    ),
+    "movement_type": (
+        r"\b(?:movement|movement speed|speed)\b|"
+        r"\b(?:can|cannot|can't|gains?|loses?|grants?|reduces?|increases?)\s+"
+        r"(?:a\s+)?{value}\b|\b{value}\s+(?:speed|movement)\b"
+    ),
     "target_zone": r"\b(?:area|zone|shape)\b",
-    "targeting": r"\b(?:target|range|reach)\b",
-    "attack_type": r"\battack\b",
-    "currency": r"\b(?:cost|value|price|coin|pieces?|currency)\b",
+    "currency": r"\b(?:cost|price|value|currency|coins?|pieces?)\b",
     "rarity": r"\b(?:rarity|magic item)\b",
-    "sense": r"\bsense\b|\b(?:see|vision|perceive|{value})\b",
+    "sense": (
+        r"\bsenses?\b|\bvision\b|\bperceiv(?:e|es|ed|ing)\b|"
+        r"\bsee\s+through\b|\bblind(?:ed|ness)?\b|"
+        r"\b(?:has|have|gains?|grants?|loses?|without)\s+{value}\b|"
+        r"\b{value}\s+(?:vision|sense|range)\b"
+    ),
     "size": r"\b(?:size|creature)\b",
-    "creature_type": r"\bcreature\b|\btype\b",
+    "creature_type": (
+        r"\bcreature\s+type\b|\btype\s+of\s+creature\b|"
+        r"\b{value}\s+(?:creature|monsters?)\b|"
+        r"\b(?:creature|monsters?)\s+(?:of|with)\s+{value}\b|"
+        r"\b(?:affect|affects|affected|affecting|target|targets|targeted|"
+        r"exclude|excludes|excluded|excluding)\s+(?:a\s+|an\s+|the\s+)?"
+        r"{value}\b|\b(?:to|against|at)\s+(?:a\s+|an\s+|the\s+)?{value}\b"
+    ),
     "item_category": r"\b(?:item|equipment|gear)\b",
+}
+_PROSE_REFERENCE_FIELDS = {
+    "action",
+    "description",
+    "effect",
+    "effects",
+    "entries",
+    "feature",
+    "grant",
+    "higher_level",
+    "notes",
+    "prerequisite",
+    "requirements",
+    "reaction",
+    "special",
+    "summary",
+    "text",
+    "trait",
 }
 
 
@@ -123,11 +203,17 @@ def normalize_entity_references(
     for entity in (*tuple(existing_entities), *records):
         key = (entity.entity_type, _reference_key(_entity_name(entity)))
         index.setdefault(key, {})[entity.uid] = entity
-    spell_names = {
-        _reference_key(_entity_name(entity)): _entity_name(entity)
-        for entity in (*tuple(existing_entities), *records)
-        if entity.entity_type == "spell" and _entity_name(entity)
-    }
+    spell_index = {}
+    spell_names = {}
+    spell_pattern_names = []
+    for entity in (*tuple(existing_entities), *records):
+        if entity.entity_type != "spell" or not _entity_name(entity):
+            continue
+        display_name = _entity_name(entity)
+        for form in _spell_reference_forms(display_name):
+            spell_names[_reference_key(form)] = display_name
+            spell_index.setdefault(_reference_key(form), {})[entity.uid] = entity
+            spell_pattern_names.append(form)
     item_names = {}
     item_pattern_names = []
     for entity in (*tuple(existing_entities), *records):
@@ -138,7 +224,7 @@ def normalize_entity_references(
             item_names[_reference_key(form)] = item_name
             item_pattern_names.append(form)
     item_pattern = _compile_name_pattern(item_pattern_names)
-    spell_pattern = _compile_name_pattern(spell_names.values())
+    spell_pattern = _compile_name_pattern(spell_pattern_names)
     normalized = []
     for record in records:
         if is_cancelled is not None and is_cancelled():
@@ -176,7 +262,7 @@ def normalize_entity_references(
                     "target_uid": f"dmtools-compendium-rules-{category}-{value}",
                     "entity_type": "rule",
                     "source_namespace": "compendium",
-                    "display_fallback": value,
+                    "display_fallback": _link_display_name(value),
                 }
             )
         for path, entity_type, name in candidates:
@@ -193,7 +279,22 @@ def normalize_entity_references(
             if candidate_key in seen_candidates:
                 continue
             seen_candidates.add(candidate_key)
-            matches = tuple(index.get(candidate_key, {}).values())
+            matches = tuple(
+                (spell_index if resolved_entity_type == "spell" else index)
+                .get(candidate_key[1] if resolved_entity_type == "spell" else candidate_key, {})
+                .values()
+            )
+            canonical_spell_match = False
+            if resolved_entity_type == "spell" and len(matches) > 1:
+                canonical_matches = tuple(
+                    match
+                    for match in matches
+                    if _entity_name(match).casefold()
+                    == _spell_reference_forms(_entity_name(match))[-1].casefold()
+                )
+                if len(canonical_matches) == 1:
+                    matches = canonical_matches
+                    canonical_spell_match = True
             if len(matches) == 1:
                 target = matches[0]
                 namespace = getattr(target, "source_namespace", source_namespace)
@@ -206,9 +307,11 @@ def normalize_entity_references(
                                 entity_type=resolved_entity_type,
                                 source_namespace=namespace,
                                 display_fallback=(
-                                    lookup_name
-                                    if entity_type == "spell"
-                                    else name
+                                    _link_display_name(_entity_name(target))
+                                    if canonical_spell_match
+                                    else _link_display_name(
+                                        lookup_name if entity_type == "spell" else name
+                                    )
                                 ),
                             )
                         ),
@@ -220,7 +323,7 @@ def normalize_entity_references(
                         ReferenceDiagnostic(
                             path=path,
                             entity_type=resolved_entity_type,
-                            display_fallback=name,
+                            display_fallback=_link_display_name(name),
                             status="ambiguous" if matches else "missing",
                             candidate_uids=tuple(item.uid for item in matches),
                         )
@@ -268,9 +371,23 @@ def _schema_fragment(schema, fragment):
 
 def _catalog_values(category):
     entry = _RULE_DESCRIPTIONS.get(category)
-    if not entry:
-        return frozenset()
-    return frozenset(key for key in entry if key not in _RULE_METADATA_KEYS)
+    values = {
+        key for key in (entry or {}) if key not in _RULE_METADATA_KEYS
+    }
+    for schema_name in _RULE_CATEGORY_SCHEMA_NAMES.get(category, ()):
+        schema = _load_schema(_SCHEMA_ROOT / "values" / f"{schema_name}.schema.json")
+        values.update(_schema_enum_values(schema))
+    return frozenset(values)
+
+
+def _schema_enum_values(schema):
+    if not isinstance(schema, dict):
+        return set()
+    values = set(schema.get("enum", ()))
+    for key in ("anyOf", "oneOf", "allOf"):
+        for child in schema.get(key, ()):
+            values.update(_schema_enum_values(child))
+    return values
 
 
 def _category_for_schema(schema_path, property_name=None):
@@ -289,7 +406,6 @@ def _extract_schema_rule_candidates(entity_type, payload):
     if schema is None:
         return ()
     candidates = []
-    visited = set()
 
     def visit(current_schema, value, current_path, data_path, property_name=None):
         if not isinstance(current_schema, dict):
@@ -310,9 +426,19 @@ def _extract_schema_rule_candidates(entity_type, payload):
             referenced_schema = _schema_fragment(referenced_schema, fragment)
             category = _category_for_schema(referenced_path, property_name)
             if category and isinstance(value, str):
-                enum_values = set(referenced_schema.get("enum", ()))
-                if value in enum_values and value in _catalog_values(category):
-                    candidates.append((data_path, category, value))
+                enum_values = _schema_enum_values(referenced_schema)
+                canonical_value = value
+                if category == "proficiencies-armor" and value.casefold() == "shields":
+                    canonical_value = "shield"
+                if (
+                    canonical_value in enum_values or category == "alignment"
+                ) and canonical_value in _catalog_values(category):
+                    candidates.append((data_path, category, canonical_value))
+                if category == "damage_type":
+                    candidates.extend(
+                        (data_path, category, embedded_value)
+                        for embedded_value in _embedded_rule_values(category, value)
+                    )
             visit(referenced_schema, value, referenced_path, data_path, property_name)
             return
         for key in ("allOf", "anyOf", "oneOf"):
@@ -329,7 +455,11 @@ def _extract_schema_rule_candidates(entity_type, payload):
         if isinstance(value, str):
             enum_values = set(current_schema.get("enum", ()))
             category = _category_for_schema(current_path, property_name)
-            if category and value in enum_values and value in _catalog_values(category):
+            if (
+                category
+                and (value in enum_values or category == "alignment")
+                and value in _catalog_values(category)
+            ):
                 candidates.append((data_path, category, value))
 
     visit(schema, payload, entity_path, "payload")
@@ -339,16 +469,31 @@ def _extract_schema_rule_candidates(entity_type, payload):
 def _text_rule_value_pattern(category):
     values = _catalog_values(category)
     names = {value.replace("_", " "): value for value in values}
+    if category == "creature_type":
+        names.update({f"{name}s": value for name, value in tuple(names.items())})
     if not names:
         return None, {}
     pattern = _compile_name_pattern(names)
     return pattern, {match_key.casefold(): value for match_key, value in names.items()}
 
 
+def _embedded_rule_values(category, text):
+    pattern, values = _text_rule_value_pattern(category)
+    if pattern is None:
+        return ()
+    return tuple(
+        dict.fromkeys(
+            values[match.group(0).casefold()]
+            for match in pattern.finditer(text)
+        )
+    )
+
+
 def _extract_text_rule_candidates(payload):
     candidates = []
     for path, text in _text_values(payload):
-        if not any(field in path.casefold() for field in ("description", "effect", "action", "feature")):
+        field_name = re.sub(r"\[\d+\]", "", path.rsplit(".", 1)[-1]).casefold()
+        if field_name not in _PROSE_REFERENCE_FIELDS:
             continue
         for category, context_pattern in _RULE_CONTEXTS.items():
             pattern, values = _text_rule_value_pattern(category)
@@ -375,7 +520,7 @@ def _rule_context_matches(category, matched_value, context, context_pattern):
             context,
             re.IGNORECASE,
         ) is not None
-    if category == "action_type" and re.search(
+    if category == "action_type" and matched_value.casefold() == "action" and re.search(
         r"\b(?:cast|casts|casting|spell|spells)\b", context, re.IGNORECASE
     ):
         return False
@@ -385,7 +530,44 @@ def _rule_context_matches(category, matched_value, context, context_pattern):
 
 def _normalize_spell_reference_name(name: str) -> str:
     value = re.sub(r"^(?:and|or)\s+", "", name.strip(), flags=re.IGNORECASE)
+    value = re.sub(r"\s*\*.*$", "", value).strip()
     return re.sub(r"[.,;:!?]+$", "", value).strip()
+
+
+_LINK_DISPLAY_CONNECTORS = frozenset(
+    {"a", "an", "and", "as", "at", "by", "for", "from", "in", "into", "nor", "of", "on", "or", "the", "to", "with"}
+)
+
+
+def _link_display_name(value: str) -> str:
+    """Format link labels while keeping natural-language connector words lowercase."""
+    text = str(value).replace("_", " ").strip()
+    words = list(re.finditer(r"[A-Za-z]+(?:['’][A-Za-z]+)?", text))
+    if not words:
+        return text
+    last_index = len(words) - 1
+    result = []
+    cursor = 0
+    for index, match in enumerate(words):
+        result.append(text[cursor:match.start()])
+        word = match.group(0)
+        lowered = word.casefold()
+        if 0 < index < last_index and lowered in _LINK_DISPLAY_CONNECTORS:
+            result.append(lowered)
+        else:
+            result.append(word[:1].upper() + word[1:].lower())
+        cursor = match.end()
+    result.append(text[cursor:])
+    return "".join(result)
+
+
+def _spell_reference_forms(name: str):
+    forms = [name]
+    cleaned = re.sub(r"[*\u2020\u2021]+", "", name).strip()
+    cleaned = re.sub(r"\s*\([^()]*\)\s*$", "", cleaned).strip()
+    if cleaned and cleaned.casefold() != name.casefold():
+        forms.append(cleaned)
+    return tuple(forms)
 
 
 def _reference_key(name: str) -> str:
@@ -425,7 +607,7 @@ def _extract_weak_item_candidates(entity_type, payload, item_names, item_pattern
             for index, value in enumerate(payload.get(field) or []):
                 if not isinstance(value, str):
                     continue
-                if field != "tool_proficiencies" and len(_reference_key(value).split()) < 2:
+                if field == "tool_proficiencies" and len(_reference_key(value).split()) < 2:
                     continue
                 if _reference_key(value) in item_names:
                     candidates.append((f"{field}[{index}]", "item", item_names[_reference_key(value)]))
@@ -495,7 +677,8 @@ def _extract_text_spell_candidates(
     if spell_pattern is None:
         return candidates
     for path, text in _text_values(payload):
-        if not path.endswith(".description"):
+        field_name = re.sub(r"\[\d+\]$", "", path.rsplit(".", 1)[-1]).casefold()
+        if field_name not in _PROSE_REFERENCE_FIELDS:
             continue
         item_section_ranges = _equipment_reference_ranges(text)
         for section_start, section_end in _spell_reference_ranges(text):
@@ -521,8 +704,10 @@ def _extract_text_spell_candidates(
                     continue
                 if len(name.split()) == 1 and not re.search(
                     r"\b(?:cast|casts|casting|spell|spells|learn|learns|prepare|prepared|known|invoke|invokes|conjure|conjures)\b",
-                    _local_reference_context(text, absolute_start, absolute_end),
+                    f"{_local_reference_context(text, absolute_start, absolute_end)} {section}",
                     re.IGNORECASE,
+                ) and not re.search(
+                    r"\b\d{1,2}(?:st|nd|rd|th)\s*[—-]", section, re.IGNORECASE
                 ):
                     continue
                 candidates.append((f"{path}:text", "spell", name))
@@ -538,20 +723,40 @@ def _local_reference_context(text, start, end):
 
 
 def _spell_reference_ranges(text):
+    paragraphs = [
+        (paragraph.start(), paragraph.end(), paragraph.group(0).strip())
+        for paragraph in re.finditer(r"(?s).*?(?:\n\s*\n|\Z)", text)
+    ]
     ranges = []
-    paragraph_start = 0
-    for paragraph in re.finditer(r"(?s).*?(?:\n\s*\n|\Z)", text):
-        value = paragraph.group(0)
-        content = value.strip()
-        if content and re.search(
-            r"\b(?:cast|casts|casting|cantrip|cantrips|spell|spells|prepared|learn|learns|known|invoke|invokes|conjure|conjures)\b|"
+    index = 0
+    while index < len(paragraphs):
+        start, end, content = paragraphs[index]
+        if not content or not re.search(
+            r"\b(?:cast|casts|casting|cantrip|cantrips|spell|spells|prepared|prepare|learn|learns|known|invoke|invokes|conjure|conjures|"
+            r"choose|chooses|choice|choices|option|options|available|granted|grant|gained)\b|"
             r"\b(?:following\s+spells|spell\s+list|spells?\s+table|domain\s+spells|on\s+spell\s+lists?)\b|"
-            r"\b(?:1st|2nd|3rd|4th|5th|6th|7th|8th|9th)\s*[—-]",
+            r"\b\d{1,2}(?:st|nd|rd|th)\s*[—-]",
             content,
             re.IGNORECASE,
         ):
-            ranges.append((paragraph.start(), paragraph.end()))
-        paragraph_start = paragraph.end()
+            index += 1
+            continue
+
+        range_end = end
+        next_index = index + 1
+        while next_index < len(paragraphs):
+            continuation_start, continuation_end, continuation = paragraphs[next_index]
+            if not re.match(
+                r"(?:[-*\u2022]\s*)?(?:\d+\s*/\s*day\b|\d{1,2}(?:st|nd|rd|th)\s+level\b|"
+                r"cantrips?\b|at\s+will\b)",
+                continuation,
+                re.IGNORECASE,
+            ):
+                break
+            range_end = continuation_end
+            next_index += 1
+        ranges.append((start, range_end))
+        index = next_index
     return tuple(ranges)
 
 

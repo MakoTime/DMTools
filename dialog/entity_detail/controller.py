@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from urllib.parse import unquote, urlparse
 
-from PySide6.QtWidgets import QMdiArea
+from PySide6.QtWidgets import QDialog, QMdiArea
 
 from application.entity_references import EntityNavigationController, EntityReference
 from application.rules_catalog import _RULE_DESCRIPTIONS
@@ -26,6 +26,21 @@ class EntityInspectionController:
         )
         self._windows = {}
         self._active_uid = None
+
+    def resolve_references(self, entity):
+        from dialog.resolve_reference import create_resolve_references_dialog
+
+        dialog = create_resolve_references_dialog(
+            entity,
+            project_controller=self.project_controller,
+            parent=self.mdi_area,
+        )
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return ()
+        updated_uids = dialog.model.result
+        for entity_uid in updated_uids:
+            self.refresh(entity_uid)
+        return updated_uids
 
     def open(self, reference, *, origin_uid=None):
         return self.navigation.open(reference, origin_uid=origin_uid)
@@ -92,6 +107,7 @@ class EntityInspectionController:
                 on_link=self.open_link,
                 on_rule=self.on_rule,
                 on_edit=self.on_edit,
+                on_resolve=self.resolve_references,
             )
             window = self.mdi_area.addSubWindow(view)
             self._windows[entity.uid] = window

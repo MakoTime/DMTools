@@ -106,6 +106,8 @@ class EntityTreeController:
             category,
             schema_names,
             parent=self.parent,
+            related_entities=self._rule_related_entities(category, value),
+            on_entity_link=self._open_rule_entity_link,
         )
         mdi_area = getattr(self.parent, "sceneViewer", None)
         if mdi_area is None:
@@ -123,6 +125,28 @@ class EntityTreeController:
         window.showNormal()
         window.raise_()
         return dialog
+
+    def _rule_related_entities(self, category, value):
+        if category != "weapons-groups":
+            return ()
+        return tuple(
+            (
+                weapon_type.replace("_", " ").title(),
+                f"dmtools://rule/weapons-types/{weapon_type}",
+            )
+            for weapon_type, description in _RULE_DESCRIPTIONS[
+                "weapons-types"
+            ].items()
+            if weapon_type not in {"description", "handbook_reference"}
+            and f" {value} " in f" {description} "
+        )
+
+    def _open_rule_entity_link(self, url):
+        if url.startswith("dmtools://rule/"):
+            _scheme, _authority, _kind, category, value = url.split("/", 4)
+            return self._open_rule_value(category, value)
+        entity = self.project_controller.resolve_entity(url.rsplit("/", 1)[-1])
+        return self._open_entity(entity) if entity is not None else None
 
     def _create_context_menu_for_index(self, index, parent):
         return self.create_context_menu(index.internalPointer(), parent)

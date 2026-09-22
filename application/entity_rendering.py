@@ -7,6 +7,7 @@ from typing import Any
 
 from application.class_presentation import class_progression_rows
 from application.entity_templates import render_entity_template, render_monster_template
+from application.entity_references import DISABLED_RULE_CATEGORIES
 
 
 RENDERER_VERSION = "3"
@@ -117,7 +118,13 @@ def render_entity_markdown(entity) -> str:
 
 def _replace_inline_entity_links(lines: list[str], references) -> list[str]:
     entity_references = [
-        reference for reference in references if reference.get("display_fallback")
+        reference
+        for reference in references
+        if reference.get("display_fallback")
+        and not (
+            reference.get("entity_type") == "rule"
+            and reference.get("category") in DISABLED_RULE_CATEGORIES
+        )
     ]
     if not entity_references:
         return lines
@@ -128,7 +135,20 @@ def _replace_inline_entity_links(lines: list[str], references) -> list[str]:
         reverse=True,
     )
     result = []
-    for line in lines:
+    for index, line in enumerate(lines):
+        if line.lstrip().startswith("#") or (
+            line.lstrip().startswith("|")
+            and index + 1 < len(lines)
+            and re.match(r"^\s*\|(?:\s*:?-{3,}:?\s*\|)+\s*$", lines[index + 1])
+        ):
+            result.append(line)
+            continue
+        structural_prefix = re.match(
+            r"^(\s*(?:>\s*)?(?:[-*]\s+)?(?:\*{3}|_{3}|\*{2}|_{2}).+?(?:\*{3}|_{3}|\*{2}|_{2}))",
+            line,
+        )
+        prefix = structural_prefix.group(1) if structural_prefix else ""
+        line = line[len(prefix):]
         protected_links = {}
         for label, target_uid in replacements:
             reference = next(
@@ -150,7 +170,7 @@ def _replace_inline_entity_links(lines: list[str], references) -> list[str]:
                 line = replaced
         for token, link in protected_links.items():
             line = line.replace(token, link)
-        result.append(line)
+        result.append(prefix + line)
     return result
 
 
@@ -211,6 +231,8 @@ def _ordered_payload(
         field: value for field, value in payload.items()
         if field not in ordered
     })
+    if entity_type == "race":
+        ordered.pop("source", None)
     return {
         field: _order_nested_values(value)
         for field, value in ordered.items()

@@ -160,6 +160,24 @@ class TestClassParser(unittest.TestCase):
             for feature in by_name["Thief"]["features"]
         })
 
+    def test_paladin_subclass_features_are_not_class_features(self):
+        source = self.source_class("Paladin")
+        adaptor = ClassAdaptor()
+
+        class_feature_names = {feature["name"] for feature in adaptor.adapt(source)["features"]}
+        subclasses = {subclass["name"]: subclass for subclass in adaptor.subclasses(source)}
+
+        self.assertNotIn("Channel Divinity: Peerless Athlete (Oath of Glory)", class_feature_names)
+        self.assertNotIn("Channel Divinity: Watcher's Will (Oath of the Watchers)", class_feature_names)
+        self.assertIn(
+            "Channel Divinity: Peerless Athlete (Oath of Glory)",
+            {feature["name"] for feature in subclasses["Oath of Glory"]["features"]},
+        )
+        self.assertIn(
+            "Channel Divinity: Watcher's Will (Oath of the Watchers)",
+            {feature["name"] for feature in subclasses["Oath of the Watchers"]["features"]},
+        )
+
     def test_replacement_features_remain_class_features(self):
         source = self.source_class("Cleric")
         adaptor = ClassAdaptor()

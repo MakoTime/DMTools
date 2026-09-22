@@ -58,7 +58,14 @@ def test_json_preview_accepts_canonical_records_and_raw_entities():
     )
 
     assert canonical.can_commit is True
-    assert canonical.records[0].source_metadata == {"book": "Rules"}
+    assert canonical.records[0].source_metadata["book"] == "Rules"
+    assert {
+        (reference["category"], reference["value"])
+        for reference in canonical.records[0].source_metadata["entity_references"]
+    } == {
+        ("item_category", "adventuring_gear"),
+        ("currency", "gp"),
+    }
     assert raw.can_commit is True
     assert raw.records[0].display_name == "Backpack"
 

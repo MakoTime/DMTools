@@ -35,6 +35,8 @@ class ImportProgressView(QDialog):
         self.details_log = QPlainTextEdit()
         self.details_log.setReadOnly(True)
         self.details_log.setMaximumBlockCount(8)
+        self.details_log.setMaximumHeight(100)
+        self.details_log.setVisible(False)
         self.details_panel = QWidget()
         details_layout = QVBoxLayout(self.details_panel)
         details_layout.setContentsMargins(0, 0, 0, 0)
@@ -62,7 +64,6 @@ class ImportProgressView(QDialog):
         self.details_toggle.toggled.connect(self._set_details_visible)
         self._started = False
         self._running = False
-        self._auto_expanded = False
         self.layout().activate()
         self._collapsed_height = self.sizeHint().height()
 
@@ -150,9 +151,7 @@ class ImportProgressView(QDialog):
             f"<b>Remaining:</b> {remaining_text}"
         )
         self.details_log.setPlainText("\n".join(activity))
-        if elapsed >= 3 and not self._auto_expanded:
-            self._auto_expanded = True
-            self.details_toggle.setChecked(True)
+        self.details_log.setVisible(bool(activity))
 
     @staticmethod
     def _format_duration(seconds):

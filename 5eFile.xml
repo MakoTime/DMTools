@@ -43728,7 +43728,7 @@
 		</autolevel>
     <autolevel level="3">
 			<feature optional="YES">
-				<name>Hunter's Prey: Colossus Slayer</name>
+				<name>Hunter's Prey: Colossus Slayer (Hunter)</name>
 				<text>Your tenacity can wear down the most potent foes. When you hit a creature with a weapon attack, the creature takes an extra 1d8 damage if it’s below its hit point maximum. You can deal this extra damage only once per turn. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43736,7 +43736,7 @@
 		</autolevel>
     <autolevel level="3">
 			<feature optional="YES">
-				<name>Hunter's Prey: Giant Killer</name>
+				<name>Hunter's Prey: Giant Killer (Hunter)</name>
 				<text>When a Large or larger creature within 5 feet of you hits or misses you with an attack, you can use your reaction to attack that creature immediately after its attack, provided that you can see the creature. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43744,7 +43744,7 @@
 		</autolevel>
     <autolevel level="3">
 			<feature optional="YES">
-				<name>Hunter's Prey: Horde Breaker</name>
+				<name>Hunter's Prey: Horde Breaker (Hunter)</name>
 				<text>Once on each of your turns when you make a weapon attack, you can make another attack with the same weapon against a different creature that is within 5 feet of the original target and within range of your weapon.</text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43797,7 +43797,7 @@
 		</autolevel>
     <autolevel level="7">
 			<feature optional="YES">
-				<name>Defensive Tactics: Escape the Horde</name>
+				<name>Defensive Tactics: Escape the Horde (Hunter)</name>
 				<text>Opportunity attacks against you are made with disadvantage. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43805,7 +43805,7 @@
 		</autolevel>
     <autolevel level="7">
 			<feature optional="YES">
-				<name>Defensive Tactics: Multiattack Defense</name>
+				<name>Defensive Tactics: Multiattack Defense (Hunter)</name>
 				<text>When a creature hits you with an attack, you gain a +4 bonus to AC against all subsequent attacks made by that creature for the rest of the turn. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43813,7 +43813,7 @@
 		</autolevel>
     <autolevel level="7">
 			<feature optional="YES">
-				<name>Defensive Tactics: Steel Will</name>
+				<name>Defensive Tactics: Steel Will (Hunter)</name>
 				<text>You have advantage on saving throws against being frightened.</text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43876,7 +43876,7 @@
 		</autolevel>
     <autolevel level="11">
 			<feature optional="YES">
-				<name>Multiattack: Volley</name>
+				<name>Multiattack: Volley (Hunter)</name>
 				<text>You can use your action to make a ranged attack against any number of creatures within 10 feet of a point you can see within your weapon’s range. You must have ammunition for each target, as normal, and you make a separate attack roll for each target. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43884,7 +43884,7 @@
 		</autolevel>
     <autolevel level="11">
 			<feature optional="YES">
-				<name>Multiattack: Whirlwind Attack</name>
+				<name>Multiattack: Whirlwind Attack (Hunter)</name>
 				<text>You can use your action to make a melee attack against any number of creatures within 5 feet of you, with a separate attack roll for each target.</text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43937,7 +43937,7 @@
 		</autolevel>
     <autolevel level="15">
 			<feature optional="YES">
-				<name>Superior Hunter's Defense: Evasion</name>
+				<name>Superior Hunter's Defense: Evasion (Hunter)</name>
 				<text>You can nimbly dodge out of the way of certain area effects, such as a red dragon’s fiery breath or a lightning bolt spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail.</text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43945,7 +43945,7 @@
 		</autolevel>
     <autolevel level="15">
 			<feature optional="YES">
-				<name>Superior Hunter's Defense: Stand Against the Tide</name>
+				<name>Superior Hunter's Defense: Stand Against the Tide (Hunter)</name>
 				<text>When a hostile creature misses you with a melee attack, you can use your reaction to force that creature to repeat the same attack against another creature (other than itself) of your choice. </text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>
@@ -43953,7 +43953,7 @@
 		</autolevel>
     <autolevel level="15">
 			<feature optional="YES">
-				<name>Superior Hunter's Defense: Uncanny Dodge</name>
+				<name>Superior Hunter's Defense: Uncanny Dodge (Hunter)</name>
 				<text>When an attacker that you can see hits you with an attack, you can use your reaction to halve the attack’s damage against you.</text>
 				<text/>
 				<text>Source: Player's Handbook p. 93</text>

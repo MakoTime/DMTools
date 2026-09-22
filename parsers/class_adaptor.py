@@ -235,10 +235,7 @@ class ClassAdaptor:
                 if child.get("tag") != "feature":
                     continue
                 feature = self.feature(child, level_number)
-                if (
-                    child.get("attributes", {}).get("optional") == "YES"
-                    and self.feature_owners(feature["name"], marker, known)
-                ):
+                if self.feature_owners(feature["name"], marker, known):
                     continue
                 features.append(feature)
         return features or None
@@ -273,7 +270,7 @@ class ClassAdaptor:
         for level in source.get("autolevels", []):
             level_number = self.level(level.get("attributes", {}).get("level"))
             for child in level.get("children", []):
-                if child.get("tag") != "feature" or child.get("attributes", {}).get("optional") != "YES":
+                if child.get("tag") != "feature":
                     continue
                 feature = self.feature(child, level_number)
                 owners = self.feature_owners(feature["name"], marker, grouped)
@@ -338,11 +335,13 @@ class ClassAdaptor:
         owners: list[str] = []
         prefix = f"{marker}: "
         if name.startswith(prefix):
-            owners.append(name[len(prefix):].strip())
+            owner = name[len(prefix):].strip()
+            if owner in known:
+                owners.append(owner)
         match = re.search(r"\(([^()]+)\)\s*$", name)
         if match:
             owner = match.group(1).strip()
-            if owner not in owners and owner != marker:
+            if owner in known and owner not in owners and owner != marker:
                 owners.append(owner)
         for owner in known:
             if name.startswith(f"{owner}: ") and owner not in owners:

@@ -427,6 +427,77 @@ def render_subclass_template(
     return "\n".join(lines).rstrip() + "\n"
 
 
+def render_race_template(
+    payload: dict[str, Any], *, fallback_name: str | None = None,
+) -> str:
+    """Render a race with compact movement, ability, and sense summaries."""
+    view = readonly_payload(payload)
+    name = str(view.get("name") or fallback_name or "Unnamed Race")
+    subtype = str(view.get("subtype") or "").strip()
+    title = f"{name}, {subtype}" if subtype else name
+    identity = ", ".join(
+        part for part in (_label(view.get("size")),) if part
+    )
+    lines = [f"# {title}", ""]
+    if identity:
+        lines.extend((f"*{identity}*", ""))
+
+    movement_values = []
+    for movement in view.get("movement", ()):
+        if not isinstance(movement, dict):
+            continue
+        movement_type = str(movement.get("movement_type") or "").casefold()
+        speed = movement.get("speed")
+        if not isinstance(speed, dict) or speed.get("distance") is None:
+            continue
+        unit = str(speed.get("unit") or "feet").casefold()
+        unit_label = "ft" if unit in {"foot", "feet"} else _label(unit).lower()
+        value = f"{speed['distance']}{unit_label}"
+        if movement_type not in {"walk", "walking"}:
+            value = f"{_label(movement_type)} {value}"
+        movement_values.append(value)
+    if movement_values:
+        lines.extend((f"**Speed** {', '.join(movement_values)}", ""))
+
+    ability_values = []
+    for increase in view.get("ability_score_increases", ()):
+        if not isinstance(increase, dict) or increase.get("ability") is None:
+            continue
+        if increase.get("amount") is None:
+            continue
+        ability_values.append(f"{_label(increase['ability'])} +{increase['amount']}")
+    if ability_values:
+        lines.extend((f"**Ability Score Increases** {', '.join(ability_values)}", ""))
+
+    sense_values = []
+    for sense in view.get("senses", ()):
+        if not isinstance(sense, dict) or sense.get("distance") is None:
+            continue
+        sense_type = _label(sense.get("type", "sense"))
+        distance = sense["distance"]
+        distance_type = str(sense.get("distance_type") or "feet").casefold()
+        unit = "ft." if distance_type in {"foot", "feet"} else f"{_label(distance_type)}."
+        sense_values.append(f"{sense_type} {distance} {unit}")
+    if sense_values:
+        lines.extend((f"**Senses** {', '.join(sense_values)}", ""))
+
+    for label, field in (
+        ("Skill Proficiencies", "skill_proficiencies"),
+        ("Languages", "languages"),
+        ("Weapon Proficiencies", "weapon_proficiencies"),
+    ):
+        value = view.get(field)
+        if value not in (None, [], {}, ""):
+            lines.extend((f"**{label}** {_render_value(value)}", ""))
+    if view.get("description"):
+        lines.extend(("## Description", "", str(view["description"]), ""))
+    features = [feature for feature in view.get("features", ()) if isinstance(feature, dict)]
+    if features:
+        lines.extend(("## Racial Traits", ""))
+        lines.extend(_feature_blocks(features))
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def render_item_template(
     payload: dict[str, Any], *, fallback_name: str | None = None,
 ) -> str:
@@ -672,6 +743,8 @@ def render_entity_template(
         return render_class_template(payload, fallback_name=fallback_name)
     if entity_type == "subclass":
         return render_subclass_template(payload, fallback_name=fallback_name)
+    if entity_type == "race":
+        return render_race_template(payload, fallback_name=fallback_name)
     if entity_type == "item":
         return render_item_template(payload, fallback_name=fallback_name)
     fields = ENTITY_TEMPLATE_FIELDS.get(entity_type)

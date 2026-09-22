@@ -30,6 +30,7 @@ def create_entity_detail_mdi_view(
     on_link=None,
     on_rule=None,
     on_edit=None,
+    on_resolve=None,
 ):
     """Create a modeless inspection view for insertion into a QMdiArea."""
     return EntityDetailMdiView(
@@ -43,4 +44,5 @@ def create_entity_detail_mdi_view(
         on_link=on_link,
         on_rule=on_rule,
         on_edit=on_edit,
+        on_resolve=on_resolve,
     )

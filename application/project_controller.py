@@ -383,6 +383,78 @@ class ProjectController:
             self.save_project()
         return updated
 
+    def resolve_unresolved_reference(
+        self, entity_type, display_fallback, target_uid
+    ):
+        """Resolve every matching unresolved reference to one canonical entity."""
+        from application.entity_references import _link_display_name, _reference_key
+        from application.imports import ImportedEntityRecord
+
+        target = self.resolve_entity(target_uid)
+        target_reference = {
+            "target_uid": target.uid,
+            "entity_type": target.entity_type,
+            "source_namespace": target.source_namespace,
+        }
+        target_key = (entity_type, _reference_key(display_fallback))
+        updated_uids = []
+        for namespace in ("compendium", "homebrew"):
+            block_uid = f"dmtools-{namespace}-entity-database"
+            if not self.project.blocks.contains(block_uid):
+                continue
+            store = self.entity_database_store(namespace)
+            replacements = []
+            for row in store.all_records():
+                metadata = dict(row.source_metadata)
+                diagnostics = metadata.get("reference_diagnostics", ())
+                matching = [
+                    diagnostic
+                    for diagnostic in diagnostics
+                    if (
+                        diagnostic.get("entity_type"),
+                        _reference_key(diagnostic.get("display_fallback", "")),
+                    )
+                    == target_key
+                ]
+                if not matching:
+                    continue
+                references = list(metadata.get("entity_references", ()))
+                for diagnostic in matching:
+                    references.append({
+                        "path": diagnostic["path"],
+                        **target_reference,
+                        "display_fallback": _link_display_name(
+                            diagnostic["display_fallback"]
+                        ),
+                    })
+                remaining = [
+                    diagnostic
+                    for diagnostic in diagnostics
+                    if diagnostic not in matching
+                ]
+                metadata["entity_references"] = references
+                if remaining:
+                    metadata["reference_diagnostics"] = remaining
+                else:
+                    metadata.pop("reference_diagnostics", None)
+                replacements.append(
+                    ImportedEntityRecord(
+                        entity_type=row.entity_type,
+                        uid=row.uid,
+                        source_identity=row.source_identity,
+                        display_name=row.name,
+                        payload=row.payload,
+                        source_metadata=metadata,
+                        provenance=row.provenance,
+                    )
+                )
+            if replacements:
+                store.commit_records(replacements, duplicate_policy="replace")
+                updated_uids.extend(record.uid for record in replacements)
+        if updated_uids and self.project_file is not None:
+            self.save_project()
+        return tuple(updated_uids)
+
     def persist_imported_entities(
         self,
         records,
