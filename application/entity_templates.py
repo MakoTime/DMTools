@@ -572,6 +572,8 @@ def render_item_template(
         lines.extend(("**Effects:**", "", _render_effects(magic_item["effects"]), ""))
     if view.get("weight") is not None:
         lines.extend((f"**Weight:** {view['weight']}", ""))
+    if view.get("cost") is not None:
+        lines.extend((f"**Cost:** {_render_cost(view['cost'])}", ""))
     if features:
         lines.extend(("## Features", ""))
         lines.extend(_feature_blocks(features))
@@ -634,6 +636,9 @@ def _render_item_grants(grants: Any) -> str:
             values.append(str(grant))
     return ", ".join(values)
 
+def _render_cost(cost: Any) -> str:
+    return "{amount}{currency}".format(amount=cost.get("amount"), currency=cost.get("currency"))
+
 
 def _render_value(value: Any) -> str:
     if isinstance(value, list):
@@ -666,6 +671,8 @@ def _render_spell_value(field: str, value: Any) -> str:
         return _render_amount_unit(value.get("amount"), value.get("duration"))
     if field == "effects" and isinstance(value, list):
         return _render_effects(value)
+    if field == "material" and isinstance(value, dict):
+        return value.get("description")
     return _render_value(value)
 
 
@@ -707,9 +714,21 @@ def _render_attack_save(value: Any) -> str:
     result = f"{_label(value.get('ability', ''))} saving throw"
     if value.get("dc") is not None:
         result += f" (DC {value['dc']})"
-    for key, label in (("success", "Success"), ("failure", "Failure")):
-        if value.get(key):
-            result += f"; {label.lower()}: " + ", ".join(_render_effect(item) for item in value[key])
+       
+    failure = value.get("failure") 
+    if failure is not None:
+        result += f"; On a failed save: " + ", ".join(_render_effect(item) for item in failure)
+    success = value.get("success")
+    if success is not None:
+        halved = all(
+            {k: v for k, v in s.items() if not (k == "description" and v == "(Halved)")} == f
+            for s, f in zip(success, failure)
+        )
+        if halved:
+            result += ", or half as much damage on a successful save"
+        else:
+            result += "; " + ", ".join(_render_effect(item) for item in success)
+            result += " on a successful save"
     return result
 
 

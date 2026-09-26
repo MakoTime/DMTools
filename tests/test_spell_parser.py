@@ -235,6 +235,42 @@ class TestSpellParser(unittest.TestCase):
                 PROJECT_ROOT / "schemas",
             ))
 
+    def test_adapt_spell_effects_per_paragraph(self):
+        adaptor = SpellAdaptor()
+
+        wall_of_fire = adaptor.effects(
+            "When the wall appears, each creature must make a Dexterity saving throw. "
+            "On a failed save, a creature takes 5d8 fire damage, or half as much damage "
+            "on a successful save.\n\n"
+            "One side of the wall deals 5d8 fire damage to each creature that ends its turn "
+            "within 10 feet of that side. A creature takes the same damage when it enters the wall."
+        )
+        self.assertEqual(len(wall_of_fire), 2)
+        self.assertIn("attack_save", wall_of_fire[0])
+        self.assertEqual(wall_of_fire[1]["damage"]["roll"]["dice"], 8)
+
+        hunger_of_hadar = adaptor.effects(
+            "Creatures fully within the area are blinded.\n\n"
+            "Any creature that starts its turn in the area takes 2d6 cold damage. "
+            "Any creature that ends its turn in the area must succeed on a Dexterity "
+            "saving throw or take 2d6 acid damage."
+        )
+        self.assertEqual(hunger_of_hadar[0], {"condition": "blinded"})
+        self.assertEqual(hunger_of_hadar[1]["damage"]["type"], "cold")
+        self.assertEqual(
+            hunger_of_hadar[2]["attack_save"]["failure"][0]["damage"]["type"],
+            "acid",
+        )
+
+        blindness_deafness = adaptor.effects(
+            "The target must make a Constitution saving throw. If it fails, the target "
+            "is either blinded or deafened (your choice) for the duration."
+        )
+        self.assertEqual(
+            blindness_deafness[0]["attack_save"]["failure"],
+            [{"condition": "blinded"}, {"condition": "deafened"}],
+        )
+
     def test_spell_models_round_trip_source_representatives(self):
         root = parse_xml(PROJECT_ROOT / "5eFile.xml")
         for name in {"Cure Wounds", "Prismatic Spray"}:

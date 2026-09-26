@@ -573,7 +573,7 @@ def _spell_material(source, component_text):
         return XMLSpellAdaptor().material(component_text)
     description = str(description).strip()
     result = {"description": description}
-    if "consumed" in description.lower() or "must be consumed" in description.lower():
+    if "consumed" in description.lower() or "consumes" in description.lower():
         result["consumed"] = True
     import re
     cost = re.search(r"(?:worth|costs?)\s+(?:at least\s+)?(\d+(?:\.\d+)?)\s*gp", description, re.IGNORECASE)
@@ -649,3 +649,9 @@ def _source(source):
     if source.get("url"):
         return {"href": source["url"]}
     return None
+
+
+if __name__ == "__main__":
+    item_dict = {"desc":[],"special":[],"index":"shield","name":"Shield","equipment_category":{"index":"armor","name":"Armor","url":"/api/2014/equipment-categories/armor"},"armor_category":"Shield","armor_class":{"base":2,"dex_bonus":false},"str_minimum":0,"stealth_disadvantage":false,"weight":6,"cost":{"quantity":10,"unit":"gp"},"url":"/api/2014/equipment/shield","updated_at":"2026-09-23T20:15:25.115Z","equipment_categories":[{"index":"armor","name":"Armor","url":"/api/2014/equipment-categories/armor"},{"index":"shields","name":"Shields","url":"/api/2014/equipment-categories/shields"}],"contents":[],"properties":[]}
+    adaptor = _armor(item_dict)
+    print(adaptor)

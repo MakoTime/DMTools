@@ -298,6 +298,12 @@ def normalize_entity_references(
             if len(matches) == 1:
                 target = matches[0]
                 namespace = getattr(target, "source_namespace", source_namespace)
+                spell_display_name = lookup_name
+                if (
+                    resolved_entity_type == "spell"
+                    and _entity_name(target).casefold() == name.casefold()
+                ):
+                    spell_display_name = re.sub(r"[*\u2020\u2021]+", "", name).strip()
                 references.append(
                     {
                         "path": path,
@@ -310,7 +316,7 @@ def normalize_entity_references(
                                     _link_display_name(_entity_name(target))
                                     if canonical_spell_match
                                     else _link_display_name(
-                                        lookup_name if entity_type == "spell" else name
+                                        spell_display_name if entity_type == "spell" else name
                                     )
                                 ),
                             )
@@ -531,6 +537,7 @@ def _rule_context_matches(category, matched_value, context, context_pattern):
 def _normalize_spell_reference_name(name: str) -> str:
     value = re.sub(r"^(?:and|or)\s+", "", name.strip(), flags=re.IGNORECASE)
     value = re.sub(r"\s*\*.*$", "", value).strip()
+    value = re.sub(r"\s*\([^()]*\)\s*$", "", value).strip()
     return re.sub(r"[.,;:!?]+$", "", value).strip()
 
 

@@ -1,6 +1,6 @@
 import inspect
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QMdiArea
 
 from application.entity_queries import EntityQueryFactory
@@ -313,6 +313,46 @@ class EntityTreeController:
         dialog = self.detail_dialog_factory(entity, **kwargs)
         dialog.exec()
         return dialog
+
+    def open_entity_and_reveal(self, entity):
+        """Open an entity inspection and reveal its node in the project tree."""
+        result = self._open_entity(entity)
+        self.reveal_entity(entity.uid)
+        return result
+
+    def reveal_entity(self, entity_uid):
+        """Expand the tree to an entity UID and make its node current."""
+        model = self.tree_view.model()
+        if model is None:
+            return QModelIndex()
+
+        def find_index(parent=QModelIndex()):
+            for row in range(model.rowCount(parent)):
+                index = model.index(row, 0, parent)
+                node = index.internalPointer()
+                if getattr(node, "object_uid", None) == entity_uid or getattr(
+                    node, "entity_uid", None
+                ) == entity_uid:
+                    return index
+                found = find_index(index)
+                if found.isValid():
+                    return found
+            return QModelIndex()
+
+        index = find_index()
+        if not index.isValid():
+            return index
+
+        ancestors = []
+        parent = model.parent(index)
+        while parent.isValid():
+            ancestors.append(parent)
+            parent = model.parent(parent)
+        for ancestor in reversed(ancestors):
+            self.tree_view.expand(ancestor)
+        self.tree_view.setCurrentIndex(index)
+        self.tree_view.scrollTo(index)
+        return index
 
     def _open_homebrew_editor(self, entity):
         from application.homebrew import HomebrewDraft

@@ -336,6 +336,70 @@ def test_structured_monster_spell_lists_strip_editorial_annotations():
     assert "reference_diagnostics" not in normalized.source_metadata
 
 
+def test_structured_monster_spell_lists_strip_parenthetical_editorial_annotations():
+    spell = record("spell", "spell-fire-shield", "Fire Shield", {"name": "Fire Shield"})
+    monster = record(
+        "monster",
+        "monster-flamewrath",
+        "Flamewrath",
+        {
+            "name": "Flamewrath",
+            "spell_casting": {
+                "spells_known": {
+                    "level_4": {"spells": ["fire shield (see Wreathed in Flame)"]},
+                }
+            },
+        },
+    )
+
+    normalized = normalize_entity_references((spell, monster))[-1]
+
+    assert entity_references(normalized) == [{
+        "path": "spell_casting.spells_known.level_4.spells[0]",
+        "target_uid": "spell-fire-shield",
+        "entity_type": "spell",
+        "source_namespace": "compendium",
+        "display_fallback": "Fire Shield",
+    }]
+    assert "reference_diagnostics" not in normalized.source_metadata
+
+
+def test_avarice_curly_apostrophe_spell_resolves_to_canonical_spell():
+    spells = [
+        record("spell", "spell-rary", "Rary's Telepathic Bond", {"name": "Rary's Telepathic Bond"}),
+        record(
+            "spell",
+            "spell-rary-ritual",
+            "Rary's Telepathic Bond (Ritual Only)",
+            {"name": "Rary's Telepathic Bond (Ritual Only)"},
+        ),
+    ]
+    avarice = record(
+        "monster",
+        "monster-avarice",
+        "Avarice",
+        {
+            "name": "Avarice",
+            "spell_casting": {
+                "spells_known": {
+                    "level_5": {"spells": ["Rary’s telepathic bond"]}
+                }
+            },
+        },
+    )
+
+    normalized = normalize_entity_references((*spells, avarice))[-1]
+
+    assert normalized.source_metadata["entity_references"] == [{
+        "path": "spell_casting.spells_known.level_5.spells[0]",
+        "target_uid": "spell-rary",
+        "entity_type": "spell",
+        "source_namespace": "compendium",
+        "display_fallback": "Rary's Telepathic Bond",
+    }]
+    assert "reference_diagnostics" not in normalized.source_metadata
+
+
 def test_subclass_spell_lists_support_levels_above_ninth():
     spell_names = (
         "Blight",
@@ -1159,7 +1223,91 @@ def test_project_controller_resolves_all_matching_unresolved_references(tmp_path
             "source_namespace": "compendium",
             "display_fallback": "Sorcerer (Clockwork)",
         }]
+        assert stored.source_metadata["manual_entity_references"] == [{
+            "path": "classes[4]",
+            "target_uid": target.uid,
+            "entity_type": "subclass",
+            "source_namespace": "compendium",
+            "display_fallback": "Sorcerer (Clockwork)",
+        }]
         assert "reference_diagnostics" not in stored.source_metadata
+
+
+def test_project_controller_marks_one_unresolved_reference_as_intended(tmp_path):
+    controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    controller.commit_imported_entities((record("spell", "spell-sacred-flame", "Sacred Flame", {"name": "Sacred Flame"}),))
+    source = record("monster", "monster-thurstwell", "Thurstwell", {"name": "Thurstwell"})
+    diagnostic = {
+        "path": "spell_casting.spells_known.cantrips[1]",
+        "entity_type": "spell",
+        "display_fallback": 'Sacred Flame (See "Actions" Below)',
+        "status": "missing",
+    }
+    source = replace(source, source_metadata={"reference_diagnostics": [diagnostic]})
+    controller.persist_imported_entities((source,))
+
+    assert controller.mark_reference_intended(
+        source.uid, diagnostic["path"]
+    ) is True
+
+    stored = controller.resolve_entity(source.uid)
+    assert "reference_diagnostics" not in stored.source_metadata
+    assert stored.source_metadata["ignored_reference_diagnostics"] == [diagnostic]
+    assert "entity_references" not in stored.source_metadata
+
+
+def test_project_controller_resolves_one_reference_to_multiple_targets(tmp_path):
+    controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    first_target = record("spell", "spell-sacred-flame", "Sacred Flame", {"name": "Sacred Flame"})
+    second_target = record("spell", "spell-thaumaturgy", "Thaumaturgy", {"name": "Thaumaturgy"})
+    source = record("monster", "monster-thurstwell", "Thurstwell", {"name": "Thurstwell"})
+    diagnostic = {
+        "path": "spell_casting.spells_known.cantrips[1]",
+        "entity_type": "spell",
+        "display_fallback": "Sacred Flame",
+        "status": "missing",
+    }
+    source = replace(source, source_metadata={"reference_diagnostics": [diagnostic]})
+    controller.commit_imported_entities((first_target, second_target))
+    controller.persist_imported_entities((source,))
+
+    controller.resolve_unresolved_reference(
+        "spell", "Sacred Flame", (first_target.uid, second_target.uid)
+    )
+
+    stored = controller.resolve_entity(source.uid)
+    assert [reference["target_uid"] for reference in stored.source_metadata["entity_references"]] == [
+        first_target.uid,
+        second_target.uid,
+    ]
+
+
+def test_project_controller_replaces_existing_resolved_reference(tmp_path):
+    controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    first_target = record("spell", "spell-first", "First Spell", {"name": "First Spell"})
+    second_target = record("spell", "spell-second", "Second Spell", {"name": "Second Spell"})
+    source = record("monster", "monster-source", "Source", {"name": "Source"})
+    source = replace(source, source_metadata={"entity_references": [{
+        "path": "spellcasting.cantrips[0]",
+        "target_uid": first_target.uid,
+        "entity_type": "spell",
+        "source_namespace": "compendium",
+        "display_fallback": "First Spell",
+    }]})
+    controller.commit_imported_entities((first_target, second_target))
+    controller.persist_imported_entities((source,))
+
+    controller.replace_resolved_reference(
+        source.uid,
+        "spellcasting.cantrips[0]",
+        "spell",
+        "First Spell",
+        second_target.uid,
+    )
+
+    stored = controller.resolve_entity(source.uid)
+    assert stored.source_metadata["entity_references"][0]["target_uid"] == second_target.uid
+    assert stored.source_metadata["manual_entity_references"][0]["target_uid"] == second_target.uid
 
 
 def test_navigation_reuses_entities_preserves_back_context_and_rejects_cycle():

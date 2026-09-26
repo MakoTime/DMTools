@@ -198,40 +198,96 @@ class SpellAdaptor:
         if not description:
             return None
 
-        damages = []
-        for match in DAMAGE_ROLL.finditer(description):
-            damages.append({
-                "damage": {
-                    "type": match.group("type").lower(),
-                    "roll": {
-                        "count": int(match.group("count") or 1),
-                        "dice": int(match.group("dice")),
-                        **self.modifier(match.group("modifier")),
-                    },
-                },
-            })
-        if not damages:
-            return None
+        effects = []
+        for paragraph in re.split(r"\n\s*\n", description):
+            effects.extend(self.paragraph_effects(paragraph))
 
+        return effects or None
+
+    def paragraph_effects(self, paragraph: str) -> list[dict[str, Any]]:
         save = re.search(
             r"(?P<ability>Strength|Dexterity|Constitution|Intelligence|Wisdom|Charisma)"
             r"\s+saving throw",
-            description,
+            paragraph,
             re.IGNORECASE,
         )
-        if save is None:
-            return damages
+        guaranteed_damage = []
+        saved_damage = []
+        damage_effects = []
+        seen_damage = set()
+        for match in DAMAGE_ROLL.finditer(paragraph):
+            if re.search(
+                r"reduced|increases? by",
+                paragraph[max(0, match.start() - 24):match.start()],
+                re.IGNORECASE,
+            ):
+                continue
 
-        attack_save: dict[str, Any] = {
-            "ability": save.group("ability").lower(),
-            "failure": damages,
-        }
-        if re.search(r"half as much|successful save|successful one", description, re.IGNORECASE):
-            attack_save["success"] = [
-                {**damage, "description": "(Halved)"}
-                for damage in damages
-            ]
-        return [{"attack_save": attack_save}]
+            damage = {
+                "type": match.group("type").lower(),
+                "roll": {
+                    "count": int(match.group("count") or 1),
+                    "dice": int(match.group("dice")),
+                    **self.modifier(match.group("modifier")),
+                },
+            }
+            damage_key = (
+                damage["type"],
+                damage["roll"]["count"],
+                damage["roll"]["dice"],
+                damage["roll"].get("modifier"),
+            )
+            if damage_key not in seen_damage:
+                effect = {"damage": damage}
+                damage_effects.append(effect)
+                if save is not None and match.start() > save.start():
+                    saved_damage.append(effect)
+                else:
+                    guaranteed_damage.append(effect)
+                seen_damage.add(damage_key)
+
+        condition_match = re.search(
+            r"\b(?:is|are|becomes?|be|fall(?:s)?)\s+"
+            r"(?:either\s+)?(?P<condition>blinded|charmed|deafened|frightened|grappled|"
+            r"incapacitated|invisible|paralyzed|petrified|poisoned|prone|"
+            r"restrained|stunned|unconscious)\b"
+            r"(?:\s+or\s+(?P<alternative>blinded|charmed|deafened|frightened|grappled|"
+            r"incapacitated|invisible|paralyzed|petrified|poisoned|prone|"
+            r"restrained|stunned|unconscious))?",
+            paragraph,
+            re.IGNORECASE,
+        )
+        conditions = []
+        if condition_match is not None:
+            conditions.append(condition_match.group("condition").lower())
+            if condition_match.group("alternative"):
+                conditions.append(condition_match.group("alternative").lower())
+
+        if save is not None:
+            failure = saved_damage
+            if conditions:
+                failure = [{"condition": condition} for condition in conditions]
+                failure.extend(saved_damage)
+
+            attack_save: dict[str, Any] = {
+                "ability": save.group("ability").lower(),
+                "failure": failure or None,
+            }
+            if re.search(
+                r"half as much|successful save|successful one",
+                paragraph,
+                re.IGNORECASE,
+            ):
+                attack_save["success"] = [
+                    {**damage, "description": "(Halved)"}
+                    for damage in saved_damage
+                ]
+            if failure:
+                return guaranteed_damage + [{"attack_save": attack_save}]
+
+        if conditions:
+            return guaranteed_damage + [{"condition": condition} for condition in conditions]
+        return damage_effects
 
     def modifier(self, value: str | None) -> dict[str, int]:
         return {"modifier": int(value)} if value else {}

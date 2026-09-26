@@ -1,10 +1,17 @@
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMessageBox
 
+from dialog.manual_references import create_manual_references_dialog
 from dialog.purge_data.factory import create_purge_data_dialog
 
 
-def setup_menu(main_window, import_controller=None, project_controller=None):
+def setup_menu(
+	main_window,
+	import_controller=None,
+	project_controller=None,
+	*,
+	on_open_entity=None,
+):
 	"""Populate the menus created by the main window UI."""
 	file_menu = main_window.menuFile
 	edit_menu = main_window.menuEdit
@@ -70,6 +77,23 @@ def setup_menu(main_window, import_controller=None, project_controller=None):
 		normalize_references_action.triggered.connect(
 			lambda: project_controller.normalize_entity_references(parent=main_window)
 		)
+	manual_references_action = data_menu.addAction("Manual References")
+	manual_references_action.setEnabled(project_controller is not None)
+	if project_controller is not None:
+		def open_manual_references():
+			dialog = getattr(main_window, "manual_references_dialog", None)
+			if dialog is None:
+				dialog = create_manual_references_dialog(
+					project_controller,
+					on_open_entity=on_open_entity,
+					parent=main_window,
+				)
+				main_window.manual_references_dialog = dialog
+			dialog.show()
+			dialog.raise_()
+			dialog.activateWindow()
+
+		manual_references_action.triggered.connect(open_manual_references)
 	purge_menu = data_menu.addMenu("Purge Data")
 	purge_compendium_action = purge_menu.addAction("Compendium")
 	purge_homebrew_action = purge_menu.addAction("Homebrew")
@@ -128,6 +152,8 @@ def setup_menu(main_window, import_controller=None, project_controller=None):
 	main_window.redo_action = redo_action
 	main_window.data_menu = data_menu
 	main_window.normalize_references_action = normalize_references_action
+	main_window.manual_references_action = manual_references_action
+	main_window.manual_references_dialog = None
 	main_window.purge_data_menu = purge_menu
 	main_window.purge_compendium_action = purge_compendium_action
 	main_window.purge_homebrew_action = purge_homebrew_action

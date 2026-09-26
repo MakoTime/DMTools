@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
 )
 
 from application.controllers.entity_controller import EntityTreeController
+from components.tree.model import TreeModel, TreeNode
 from components.tree.roots.entity_roots import compendium_root, homebrew_root
 
 
@@ -176,6 +177,49 @@ def test_entity_tree_activation_resolves_uid_and_opens_entity():
 
     assert controller._open_tree_entity(index) is None
     assert opened == [entity]
+
+
+def test_reveal_entity_expands_ancestors_and_selects_node():
+    qt_app()
+
+    root = TreeNode("Compendium")
+    category = TreeNode("Spells")
+    entity_node = TreeNode("Fireball", uid="node-fireball")
+    entity_node.object_uid = "spell-fireball"
+    root.add_child(category)
+    category.add_child(entity_node)
+    tree_model = TreeModel([root])
+
+    class RevealTreeView(FakeTreeView):
+        def __init__(self):
+            super().__init__()
+            self.expanded = []
+            self.current = None
+            self.scrolled = None
+
+        def model(self):
+            return tree_model
+
+        def expand(self, index):
+            self.expanded.append(index.internalPointer())
+
+        def setCurrentIndex(self, index):
+            self.current = index
+
+        def scrollTo(self, index):
+            self.scrolled = index
+
+    tree = RevealTreeView()
+    controller = EntityTreeController(
+        tree, FakeProjectController(), FakeImportController()
+    )
+
+    index = controller.reveal_entity("spell-fireball")
+
+    assert index.internalPointer() is entity_node
+    assert tree.expanded == [root, category]
+    assert tree.current == index
+    assert tree.scrolled == index
 
 
 def test_search_is_hosted_as_non_modal_mdi_child():

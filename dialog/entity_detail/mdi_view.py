@@ -85,8 +85,9 @@ class EntityDetailMdiView(WidgetEditorView):
 
     @staticmethod
     def _raw_json(entity):
-        metadata = getattr(entity, "source_metadata", {}) or {}
-        source = metadata.get("api_source") or getattr(entity, "payload", {})
+        # metadata = getattr(entity, "source_metadata", {}) or {}
+        source = getattr(entity, "payload", {})
+        # source = metadata.get("api_source")
         return json.dumps(source, indent=2, ensure_ascii=False, sort_keys=True)
 
     def refresh_entity(self, entity):

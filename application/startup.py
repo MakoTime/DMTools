@@ -44,7 +44,12 @@ def load_main_window(project_file):
         import_controller,
         parent=window,
     )
-    setup_menu(window, import_controller, controller)
+    setup_menu(
+        window,
+        import_controller,
+        controller,
+        on_open_entity=entity_controller.open_entity_and_reveal,
+    )
     window.open_action.triggered.connect(
         lambda checked=False: controller.open_project(window)
     )

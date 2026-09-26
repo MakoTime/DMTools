@@ -370,18 +370,19 @@ class ProjectController:
         return updated
 
     def resolve_unresolved_reference(
-        self, entity_type, display_fallback, target_uid
+        self, entity_type, display_fallback, target_uids
     ):
-        """Resolve every matching unresolved reference to one canonical entity."""
+        """Resolve every matching unresolved reference to canonical entities."""
         from application.entity_references import _link_display_name, _reference_key
         from application.imports import ImportedEntityRecord
 
-        target = self.resolve_entity(target_uid)
-        target_reference = {
-            "target_uid": target.uid,
-            "entity_type": target.entity_type,
-            "source_namespace": target.source_namespace,
-        }
+        if isinstance(target_uids, str):
+            target_uids = (target_uids,)
+        else:
+            target_uids = tuple(target_uids)
+        if not target_uids:
+            raise ValueError("Select at least one entity to match this reference")
+        targets = tuple(self.resolve_entity(target_uid) for target_uid in target_uids)
         target_key = (entity_type, _reference_key(display_fallback))
         updated_uids = []
         for namespace in ("compendium", "homebrew"):
@@ -405,20 +406,29 @@ class ProjectController:
                 if not matching:
                     continue
                 references = list(metadata.get("entity_references", ()))
+                manual_references = list(
+                    metadata.get("manual_entity_references", ())
+                )
                 for diagnostic in matching:
-                    references.append({
-                        "path": diagnostic["path"],
-                        **target_reference,
-                        "display_fallback": _link_display_name(
-                            diagnostic["display_fallback"]
-                        ),
-                    })
+                    for target in targets:
+                        reference = {
+                            "path": diagnostic["path"],
+                            "target_uid": target.uid,
+                            "entity_type": target.entity_type,
+                            "source_namespace": target.source_namespace,
+                            "display_fallback": _link_display_name(
+                                diagnostic["display_fallback"]
+                            ),
+                        }
+                        references.append(reference)
+                        manual_references.append(reference)
                 remaining = [
                     diagnostic
                     for diagnostic in diagnostics
                     if diagnostic not in matching
                 ]
                 metadata["entity_references"] = references
+                metadata["manual_entity_references"] = manual_references
                 if remaining:
                     metadata["reference_diagnostics"] = remaining
                 else:
@@ -440,6 +450,111 @@ class ProjectController:
         if updated_uids and self.project_file is not None:
             self.save_project()
         return tuple(updated_uids)
+
+    def replace_resolved_reference(
+        self, source_uid, path, entity_type, display_fallback, target_uids
+    ):
+        """Replace all resolved links at one source path with selected targets."""
+        from application.entity_references import _link_display_name
+        from application.imports import ImportedEntityRecord
+
+        if isinstance(target_uids, str):
+            target_uids = (target_uids,)
+        else:
+            target_uids = tuple(target_uids)
+        if not target_uids:
+            raise ValueError("Select at least one entity to match this reference")
+        targets = tuple(self.resolve_entity(target_uid) for target_uid in target_uids)
+        for namespace in ("compendium", "homebrew"):
+            block_uid = f"dmtools-{namespace}-entity-database"
+            if not self.project.blocks.contains(block_uid):
+                continue
+            store = self.entity_database_store(namespace)
+            row = next(
+                (candidate for candidate in store.all_records() if candidate.uid == source_uid),
+                None,
+            )
+            if row is None:
+                continue
+            metadata = dict(row.source_metadata)
+            link_display = _link_display_name(display_fallback)
+            replacement_links = [
+                {
+                    "path": path,
+                    "target_uid": target.uid,
+                    "entity_type": target.entity_type,
+                    "source_namespace": target.source_namespace,
+                    "display_fallback": link_display,
+                }
+                for target in targets
+            ]
+            metadata["entity_references"] = [
+                reference
+                for reference in metadata.get("entity_references", ())
+                if reference.get("path") != path
+            ] + replacement_links
+            metadata["manual_entity_references"] = [
+                reference
+                for reference in metadata.get("manual_entity_references", ())
+                if reference.get("path") != path
+            ] + replacement_links
+            replacement = ImportedEntityRecord(
+                entity_type=row.entity_type,
+                uid=row.uid,
+                source_identity=row.source_identity,
+                display_name=row.name,
+                payload=row.payload,
+                source_metadata=metadata,
+                provenance=row.provenance,
+            )
+            store.commit_records((replacement,), duplicate_policy="replace")
+            if self.project_file is not None:
+                self.save_project()
+            return (source_uid,)
+        return ()
+
+    def mark_reference_intended(self, source_uid, path):
+        """Mark one unresolved reference as intentional without creating a link."""
+        from application.imports import ImportedEntityRecord
+
+        for namespace in ("compendium", "homebrew"):
+            block_uid = f"dmtools-{namespace}-entity-database"
+            if not self.project.blocks.contains(block_uid):
+                continue
+            store = self.entity_database_store(namespace)
+            row = next(
+                (candidate for candidate in store.all_records() if candidate.uid == source_uid),
+                None,
+            )
+            if row is None:
+                continue
+            metadata = dict(row.source_metadata)
+            diagnostics = list(metadata.get("reference_diagnostics", ()) or ())
+            matching = [diagnostic for diagnostic in diagnostics if diagnostic.get("path") == path]
+            if not matching:
+                return False
+            metadata["reference_diagnostics"] = [
+                diagnostic for diagnostic in diagnostics if diagnostic not in matching
+            ]
+            if not metadata["reference_diagnostics"]:
+                metadata.pop("reference_diagnostics")
+            ignored = list(metadata.get("ignored_reference_diagnostics", ()) or ())
+            ignored.extend(matching)
+            metadata["ignored_reference_diagnostics"] = ignored
+            replacement = ImportedEntityRecord(
+                entity_type=row.entity_type,
+                uid=row.uid,
+                source_identity=row.source_identity,
+                display_name=row.name,
+                payload=row.payload,
+                source_metadata=metadata,
+                provenance=row.provenance,
+            )
+            store.commit_records((replacement,), duplicate_policy="replace")
+            if self.project_file is not None:
+                self.save_project()
+            return True
+        return False
 
     def persist_imported_entities(
         self,
