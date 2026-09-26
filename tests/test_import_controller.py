@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 from projectfoundry import ArtifactStore, QtTaskRunner, Task, TaskRunner
 from PySide6.QtCore import QModelIndex, QTimer
+from PySide6.QtTest import QTest
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -17,7 +18,7 @@ from application.imports import EntityImportService, ImportPreview
 from application.project_controller import ProjectController
 from dialog.base.popup_editor import PopupEditorView
 from dialog.import_progress.factory import create_import_progress
-from dialog.import_progress.view import ImportProgressView
+from dialog.import_progress.view import ImportDetailsLog, ImportProgressView
 from dialog.import_preview.factory import create_import_preview
 from menu import setup_menu
 
@@ -385,6 +386,68 @@ def test_progress_dialog_does_not_append_counts_to_its_status():
 
     assert model.status == "Updating records"
     assert dialog.status_label.text() == "Updating records: 25 of 4000"
+
+
+def test_import_details_log_skips_unchanged_text_and_appends_new_text():
+    qt_app()
+    log = ImportDetailsLog()
+    log.resize(300, 80)
+    log.show()
+    QApplication.processEvents()
+
+    log.update_text("Preparing import...")
+    log.moveCursor(log.textCursor().MoveOperation.Start)
+    log.update_text("Preparing import...")
+
+    assert log.toPlainText() == "Preparing import..."
+    assert log.textCursor().position() == 0
+
+    log.update_text("Preparing import...\nReading records")
+
+    assert log.toPlainText() == "Preparing import...\nReading records"
+    assert log.textCursor().position() == 0
+
+
+def test_import_details_log_preserves_selection_when_appending():
+    qt_app()
+    log = ImportDetailsLog()
+    log.update_text("Preparing import...")
+    cursor = log.textCursor()
+    cursor.setPosition(0)
+    cursor.setPosition(9, cursor.MoveMode.KeepAnchor)
+    log.setTextCursor(cursor)
+
+    log.update_text("Preparing import...\nReading records")
+
+    assert log.textCursor().selectedText() == "Preparing"
+    assert log.textCursor().selectionStart() == 0
+    assert log.textCursor().selectionEnd() == 9
+
+
+def test_import_details_log_follows_bottom_until_user_scrolls_and_returns():
+    qt_app()
+    log = ImportDetailsLog()
+    log.setMaximumHeight(50)
+    log.show()
+    QApplication.processEvents()
+
+    log.update_text("\n".join(f"Status {index}" for index in range(20)))
+    QTest.qWait(20)
+    scrollbar = log.verticalScrollBar()
+    assert scrollbar.value() == scrollbar.maximum()
+
+    scrollbar.setValue(max(scrollbar.minimum(), scrollbar.maximum() // 2))
+    assert log._follow_bottom is False
+    old_value = scrollbar.value()
+    log.update_text(log.toPlainText() + "\nStatus 20")
+    QTest.qWait(20)
+    assert scrollbar.value() == old_value
+
+    scrollbar.setValue(scrollbar.maximum())
+    assert log._follow_bottom is True
+    log.update_text(log.toPlainText() + "\nStatus 21")
+    QTest.qWait(20)
+    assert scrollbar.value() == scrollbar.maximum()
 
 
 def test_progress_cancel_stops_import_before_preview_or_commit(tmp_path):

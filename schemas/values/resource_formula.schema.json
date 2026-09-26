@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/resource_formula.schema.json",
+    "title": "D&D 5e Resource Formula",
+    "description": "A formula used to calculate a class resource maximum.",
+    "$comment": "version 0.1.0",
+    "anyOf": [
+        {
+            "type": "string",
+            "enum": [
+                "class_level",
+                "proficiency_bonus",
+                "ability_modifier"
+            ]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}

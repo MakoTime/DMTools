@@ -11,15 +11,6 @@ class BackgroundAdaptor:
         "nature", "perception", "performance", "persuasion", "religion",
         "sleight_of_hand", "stealth", "survival",
     }
-    TOOLS = {
-        "alchemist_supplies", "brewer_supplies", "calligrapher_supplies",
-        "carpenter_tools", "cartographer_tools", "cobbler_tools", "cook_utensils",
-        "glassblower_tools", "jeweler_tools", "leatherworker_tools", "mason_tools",
-        "painter_supplies", "potter_tools", "smith_tools", "tinker_tools",
-        "weaver_tools", "woodcarver_tools", "disguise_kit", "forgery_kit",
-        "herbalism_kit", "navigator_tools", "poisoner_kit", "thieves_tools",
-    }
-
     def adapt(self, source: dict[str, Any]) -> dict[str, Any]:
         traits = source.get("traits", [])
         text = [value for trait in traits for value in trait.get("text", []) if value]
@@ -54,9 +45,16 @@ class BackgroundAdaptor:
                 continue
             for part in re.split(r",\s*|\s+and\s+", match.group(1)):
                 tool = self.normalize(part)
-                if tool in self.TOOLS:
+                if self.is_tool(tool):
                     values.append(tool)
         return list(dict.fromkeys(values)) or None
+
+    @staticmethod
+    def is_tool(value: str) -> bool:
+        return any(
+            term in value
+            for term in ("tool", "instrument", "kit", "supplies", "utensils", "gaming_set")
+        )
 
     def features(self, traits: list[dict[str, Any]]) -> list[dict[str, str]] | None:
         features = []
@@ -79,4 +77,4 @@ class BackgroundAdaptor:
         return None
 
     def normalize(self, value: str) -> str:
-        return re.sub(r"\s+", "_", value.strip().lower())
+        return re.sub(r"[^a-z0-9]+", "_", value.strip().lower()).strip("_")

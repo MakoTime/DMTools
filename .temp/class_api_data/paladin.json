@@ -1,0 +1,1388 @@
+{
+  "class_levels": [
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "The presence of strong evil registers on your senses like a noxious odor, and powerful good rings like heavenly music in your ears. As an action, you can open your awareness to detect such forces. Until the end of your next turn, you know the location of any celestial, fiend, or undead within 60 feet of you that is not behind total cover. You know the type (celestial, fiend, or undead) of any being whose presence you sense, but not its identity. Within the same radius, you also detect the presence of any place or object that has been consecrated or desecrated, as with the hallow spell.",
+            "You can use this feature a number of times equal to 1 + your Charisma modifier. When you finish a long rest, you regain all expended uses."
+          ],
+          "index": "divine-sense",
+          "level": 1,
+          "name": "Divine Sense",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/divine-sense"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Your blessed touch can heal wounds. You have a pool of healing power that replenishes when you take a long rest. With that pool, you can restore a total number of hit points equal to your paladin level x 5.",
+            "As an action, you can touch a creature and draw power from the pool to restore a number of hit points to that creature, up to the maximum amount remaining in your pool.",
+            "Alternatively, you can expend 5 hit points from your pool of healing to cure the target of one disease or neutralize one poison affecting it. You can cure multiple diseases and neutralize multiple poisons with a single use of Lay on Hands, expending hit points separately for each one.",
+            "This feature has no effect on undead and constructs."
+          ],
+          "index": "lay-on-hands",
+          "level": 1,
+          "name": "Lay on Hands",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/lay-on-hands"
+        }
+      ],
+      "index": "paladin-1",
+      "level": 1,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/1"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "At 2nd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "subfeature_options": {
+              "choose": 1,
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  {
+                    "item": {
+                      "class": {
+                        "index": "paladin",
+                        "name": "Paladin",
+                        "url": "/api/2014/classes/paladin"
+                      },
+                      "desc": [
+                        "While you are wearing armor, you gain a +1 bonus to AC."
+                      ],
+                      "index": "fighting-style-defense",
+                      "level": 2,
+                      "name": "Fighting Style: Defense",
+                      "parent": {
+                        "class": {
+                          "index": "paladin",
+                          "name": "Paladin",
+                          "url": "/api/2014/classes/paladin"
+                        },
+                        "desc": [
+                          "At 2nd level, you adopt a style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+                        ],
+                        "feature_specific": {
+                          "invocations": [],
+                          "subfeature_options": {
+                            "choose": 1,
+                            "from": {
+                              "option_set_type": "options_array",
+                              "options": [
+                                {
+                                  "item": {
+                                    "index": "fighting-style-defense",
+                                    "name": "Fighting Style: Defense",
+                                    "url": "/api/2014/features/fighting-style-defense"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "paladin",
+                                      "name": "Paladin",
+                                      "url": "/api/2014/classes/paladin"
+                                    },
+                                    "desc": [
+                                      "When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                                    ],
+                                    "index": "fighting-style-dueling",
+                                    "level": 2,
+                                    "name": "Fighting Style: Dueling",
+                                    "parent": {
+                                      "index": "paladin-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/paladin-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/fighting-style-dueling"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "paladin",
+                                      "name": "Paladin",
+                                      "url": "/api/2014/classes/paladin"
+                                    },
+                                    "desc": [
+                                      "When you roll a 1 or 2 on a damage die for an attack you make with a melee weapon that you are wielding with two hands, you can reroll the die and must use the new roll. The weapon must have the two-handed or versatile property for you to gain this benefit."
+                                    ],
+                                    "index": "fighting-style-great-weapon-fighting",
+                                    "level": 2,
+                                    "name": "Fighting Style: Great Weapon Fighting",
+                                    "parent": {
+                                      "index": "paladin-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/paladin-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/fighting-style-great-weapon-fighting"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "paladin",
+                                      "name": "Paladin",
+                                      "url": "/api/2014/classes/paladin"
+                                    },
+                                    "desc": [
+                                      "When a creature you can see attacks a target other than you that is within 5 feet of you, you can use your reaction to impose disadvantage on the attack roll. You must be wielding a shield."
+                                    ],
+                                    "index": "fighting-style-protection",
+                                    "level": 2,
+                                    "name": "Fighting Style: Protection",
+                                    "parent": {
+                                      "index": "paladin-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/paladin-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/fighting-style-protection"
+                                  },
+                                  "option_type": "reference"
+                                }
+                              ]
+                            },
+                            "type": "feature"
+                          }
+                        },
+                        "index": "paladin-fighting-style",
+                        "level": 2,
+                        "name": "Fighting Style",
+                        "prerequisites": [],
+                        "updated_at": "2026-04-01T20:35:37.430Z",
+                        "url": "/api/2014/features/paladin-fighting-style"
+                      },
+                      "prerequisites": [],
+                      "updated_at": "2026-04-01T20:35:37.430Z",
+                      "url": "/api/2014/features/fighting-style-defense"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "fighting-style-dueling",
+                      "name": "Fighting Style: Dueling",
+                      "url": "/api/2014/features/fighting-style-dueling"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "fighting-style-great-weapon-fighting",
+                      "name": "Fighting Style: Great Weapon Fighting",
+                      "url": "/api/2014/features/fighting-style-great-weapon-fighting"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "fighting-style-protection",
+                      "name": "Fighting Style: Protection",
+                      "url": "/api/2014/features/fighting-style-protection"
+                    },
+                    "option_type": "reference"
+                  }
+                ]
+              },
+              "type": "feature"
+            }
+          },
+          "index": "paladin-fighting-style",
+          "level": 2,
+          "name": "Fighting Style",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-fighting-style"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "By 2nd level, you have learned to draw on divine magic through meditation and prayer to cast spells as a cleric does."
+          ],
+          "index": "spellcasting-paladin",
+          "level": 2,
+          "name": "Spellcasting: Paladin",
+          "prerequisites": [],
+          "reference": "/api/2014/classes/paladin/spellcasting",
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/spellcasting-paladin"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Starting at 2nd level, when you hit a creature with a melee weapon attack, you can expend one spell slot to deal radiant damage to the target, in addition to the weapon's damage. The extra damage is 2d8 for a 1st-level spell slot, plus 1d8 for each spell level higher than 1st, to a maximum of 5d8. The damage increases by 1d8 if the target is an undead or a fiend."
+          ],
+          "index": "divine-smite",
+          "level": 2,
+          "name": "Divine Smite",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/divine-smite"
+        }
+      ],
+      "index": "paladin-2",
+      "level": 2,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 2,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/2"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "By 3rd level, the divine magic flowing through you makes you immune to disease."
+          ],
+          "index": "divine-health",
+          "level": 3,
+          "name": "Divine Health",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/divine-health"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.",
+            "Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."
+          ],
+          "index": "sacred-oath",
+          "level": 3,
+          "name": "Sacred Oath",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/sacred-oath"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Each oath has a list of associated spells. You gain access to these spells at the levels specified in the oath description. Once you gain access to an oath spell, you always have it prepared. Oath spells don't count against the number of spells you can prepare each day.",
+            "If you gain an oath spell that doesn't appear on the paladin spell list, the spell is nonetheless a paladin spell for you."
+          ],
+          "index": "oath-spells",
+          "level": 3,
+          "name": "Oath Spells",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/oath-spells"
+        },
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Your oath allows you to channel divine energy to fuel magical effects. Each Channel Divinity option provided by your oath explains how to use it.",
+            "When you use your Channel Divinity, you choose which option to use. You must then finish a short or long rest to use your Channel Divinity again.",
+            "Some Channel Divinity effects require saving throws. When you use such an effect from this class, the DC equals your paladin spell save DC."
+          ],
+          "index": "channel-divinity",
+          "level": 3,
+          "name": "Channel Divinity",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/channel-divinity"
+        }
+      ],
+      "index": "paladin-3",
+      "level": 3,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 3,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/3"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "paladin-ability-score-improvement-1",
+          "level": 4,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-ability-score-improvement-1"
+        }
+      ],
+      "index": "paladin-4",
+      "level": 4,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 3,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/4"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          ],
+          "index": "paladin-extra-attack",
+          "level": 5,
+          "name": "Extra Attack",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-extra-attack"
+        }
+      ],
+      "index": "paladin-5",
+      "level": 5,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/5"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Starting at 6th level, whenever you or a friendly creature within 10 feet of you must make a saving throw, the creature gains a bonus to the saving throw equal to your Charisma modifier (with a minimum bonus of +1). You must be conscious to grant this bonus.",
+            "At 18th level, the range of this aura increases to 30 feet."
+          ],
+          "index": "aura-of-protection",
+          "level": 6,
+          "name": "Aura of Protection",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/aura-of-protection"
+        }
+      ],
+      "index": "paladin-6",
+      "level": 6,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/6"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.",
+            "Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."
+          ],
+          "index": "sacred-oath-improvement-1",
+          "level": 7,
+          "name": "Sacred Oath feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/sacred-oath-improvement-1"
+        }
+      ],
+      "index": "paladin-7",
+      "level": 7,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/7"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "paladin-ability-score-improvement-2",
+          "level": 8,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-ability-score-improvement-2"
+        }
+      ],
+      "index": "paladin-8",
+      "level": 8,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/8"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [],
+      "index": "paladin-9",
+      "level": 9,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/9"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Starting at 10th level, you and friendly creatures within 10 feet of you can't be frightened while you are conscious.",
+            "At 18th level, the range of this aura increases to 30 feet."
+          ],
+          "index": "aura-of-courage",
+          "level": 10,
+          "name": "Aura of Courage",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/aura-of-courage"
+        }
+      ],
+      "index": "paladin-10",
+      "level": 10,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/10"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "By 11th level, you are so suffused with righteous might that all your melee weapon strikes carry divine power with them. Whenever you hit a creature with a melee weapon, the creature takes an extra 1d8 radiant damage. If you also use your Divine Smite with an attack, you add this damage to the extra damage of your Divine Smite."
+          ],
+          "index": "improved-divine-smite",
+          "level": 11,
+          "name": "Improved Divine Smite",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/improved-divine-smite"
+        }
+      ],
+      "index": "paladin-11",
+      "level": 11,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/11"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "paladin-ability-score-improvement-3",
+          "level": 12,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-ability-score-improvement-3"
+        }
+      ],
+      "index": "paladin-12",
+      "level": 12,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/12"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [],
+      "index": "paladin-13",
+      "level": 13,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 1,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/13"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "Beginning at 14th level, you can use your action to end one spell on yourself or on one willing creature that you touch.",
+            "You can use this feature a number of times equal to your Charisma modifier (a minimum of once). You regain expended uses when you finish a long rest."
+          ],
+          "index": "cleansing-touch",
+          "level": 14,
+          "name": "Cleansing Touch",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/cleansing-touch"
+        }
+      ],
+      "index": "paladin-14",
+      "level": 14,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 1,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/14"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.",
+            "Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."
+          ],
+          "index": "sacred-oath-improvement-2",
+          "level": 15,
+          "name": "Sacred Oath feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/sacred-oath-improvement-2"
+        }
+      ],
+      "index": "paladin-15",
+      "level": 15,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/15"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "paladin-ability-score-improvement-4",
+          "level": 16,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-ability-score-improvement-4"
+        }
+      ],
+      "index": "paladin-16",
+      "level": 16,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/16"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 10
+      },
+      "features": [],
+      "index": "paladin-17",
+      "level": 17,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 1
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/17"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "At 18th level, the range of your auras increase to 30 feet."
+          ],
+          "index": "aura-improvements",
+          "level": 18,
+          "name": "Aura improvements",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/aura-improvements"
+        }
+      ],
+      "index": "paladin-18",
+      "level": 18,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 1
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/18"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "paladin-ability-score-improvement-5",
+          "level": 19,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/paladin-ability-score-improvement-5"
+        }
+      ],
+      "index": "paladin-19",
+      "level": 19,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 2
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/19"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "paladin",
+        "name": "Paladin",
+        "url": "/api/2014/classes/paladin"
+      },
+      "class_specific": {
+        "aura_range": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "paladin",
+            "name": "Paladin",
+            "url": "/api/2014/classes/paladin"
+          },
+          "desc": [
+            "When you reach 3rd level, you swear the oath that binds you as a paladin forever. Up to this time you have been in a preparatory stage, committed to the path but not yet sworn to it. Now you choose an oath, such as the Oath of Devotion.",
+            "Your choice grants you features at 3rd level and again at 7th, 15th, and 20th level. Those features include oath spells and the Channel Divinity feature."
+          ],
+          "index": "sacred-oath-improvement-3",
+          "level": 20,
+          "name": "Sacred Oath feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/sacred-oath-improvement-3"
+        }
+      ],
+      "index": "paladin-20",
+      "level": 20,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 2
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/paladin/levels/20"
+    }
+  ],
+  "hit_die": 10,
+  "index": "paladin",
+  "multi_classing": {
+    "prerequisites": [
+      {
+        "ability_score": {
+          "index": "str",
+          "name": "STR",
+          "url": "/api/2014/ability-scores/str"
+        },
+        "minimum_score": 13
+      },
+      {
+        "ability_score": {
+          "index": "cha",
+          "name": "CHA",
+          "url": "/api/2014/ability-scores/cha"
+        },
+        "minimum_score": 13
+      }
+    ],
+    "proficiencies": [
+      {
+        "index": "light-armor",
+        "name": "Light Armor",
+        "url": "/api/2014/proficiencies/light-armor"
+      },
+      {
+        "index": "medium-armor",
+        "name": "Medium Armor",
+        "url": "/api/2014/proficiencies/medium-armor"
+      },
+      {
+        "index": "shields",
+        "name": "Shields",
+        "url": "/api/2014/proficiencies/shields"
+      },
+      {
+        "index": "simple-weapons",
+        "name": "Simple Weapons",
+        "url": "/api/2014/proficiencies/simple-weapons"
+      },
+      {
+        "index": "martial-weapons",
+        "name": "Martial Weapons",
+        "url": "/api/2014/proficiencies/martial-weapons"
+      }
+    ]
+  },
+  "name": "Paladin",
+  "proficiencies": [
+    {
+      "index": "all-armor",
+      "name": "All armor",
+      "url": "/api/2014/proficiencies/all-armor"
+    },
+    {
+      "index": "shields",
+      "name": "Shields",
+      "url": "/api/2014/proficiencies/shields"
+    },
+    {
+      "index": "simple-weapons",
+      "name": "Simple Weapons",
+      "url": "/api/2014/proficiencies/simple-weapons"
+    },
+    {
+      "index": "martial-weapons",
+      "name": "Martial Weapons",
+      "url": "/api/2014/proficiencies/martial-weapons"
+    },
+    {
+      "index": "saving-throw-wis",
+      "name": "Saving Throw: WIS",
+      "url": "/api/2014/proficiencies/saving-throw-wis"
+    },
+    {
+      "index": "saving-throw-cha",
+      "name": "Saving Throw: CHA",
+      "url": "/api/2014/proficiencies/saving-throw-cha"
+    }
+  ],
+  "proficiency_choices": [
+    {
+      "choose": 2,
+      "desc": "Choose two from Athletics, Insight, Intimidation, Medicine, Persuasion, and Religion",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "item": {
+              "index": "skill-athletics",
+              "name": "Skill: Athletics",
+              "url": "/api/2014/proficiencies/skill-athletics"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-insight",
+              "name": "Skill: Insight",
+              "url": "/api/2014/proficiencies/skill-insight"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-intimidation",
+              "name": "Skill: Intimidation",
+              "url": "/api/2014/proficiencies/skill-intimidation"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-medicine",
+              "name": "Skill: Medicine",
+              "url": "/api/2014/proficiencies/skill-medicine"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-persuasion",
+              "name": "Skill: Persuasion",
+              "url": "/api/2014/proficiencies/skill-persuasion"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-religion",
+              "name": "Skill: Religion",
+              "url": "/api/2014/proficiencies/skill-religion"
+            },
+            "option_type": "reference"
+          }
+        ]
+      },
+      "type": "proficiencies"
+    }
+  ],
+  "saving_throws": [
+    {
+      "index": "wis",
+      "name": "WIS",
+      "url": "/api/2014/ability-scores/wis"
+    },
+    {
+      "index": "cha",
+      "name": "CHA",
+      "url": "/api/2014/ability-scores/cha"
+    }
+  ],
+  "spellcasting": {
+    "info": [
+      {
+        "desc": [
+          "The Paladin table shows how many spell slots you have to cast your spells. To cast one of your paladin spells of 1st level or higher, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.",
+          "You prepare the list of paladin spells that are available for you to cast, choosing from the paladin spell list. When you do so, choose a number of paladin spells equal to your Charisma modifier + half your paladin level, rounded down (minimum of one spell). The spells must be of a level for which you have spell slots.",
+          "For example, if you are a 5th-level paladin, you have four 1st-level and two 2nd-level spell slots. With a Charisma of 14, your list of prepared spells can include four spells of 1st or 2nd level, in any combination. If you prepare the 1st-level spell cure wounds, you can cast it using a 1st-level or a 2nd- level slot. Casting the spell doesn't remove it from your list of prepared spells.",
+          "You can change your list of prepared spells when you finish a long rest. Preparing a new list of paladin spells requires time spent in prayer and meditation: at least 1 minute per spell level for each spell on your list."
+        ],
+        "name": "Preparing and Casting Spells"
+      },
+      {
+        "desc": [
+          "Charisma is your spellcasting ability for your paladin spells, since their power derives from the strength of your convictions. You use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a paladin spell you cast and when making an attack roll with one.",
+          "Spell save DC = 8 + your proficiency bonus + your Charisma modifier.",
+          "Spell attack modifier = your proficiency bonus + your Charisma modifier."
+        ],
+        "name": "Spellcasting Ability"
+      },
+      {
+        "desc": [
+          "You can use a holy symbol as a spellcasting focus for your paladin spells."
+        ],
+        "name": "Spellcasting Focus"
+      }
+    ],
+    "level": 2,
+    "spellcasting_ability": {
+      "index": "cha",
+      "name": "CHA",
+      "url": "/api/2014/ability-scores/cha"
+    }
+  },
+  "spells": "/api/2014/classes/paladin/spells",
+  "starting_equipment": [
+    {
+      "equipment": {
+        "index": "chain-mail",
+        "name": "Chain Mail",
+        "url": "/api/2014/equipment/chain-mail"
+      },
+      "quantity": 1
+    }
+  ],
+  "starting_equipment_options": [
+    {
+      "choose": 1,
+      "desc": "(a) a martial weapon and a shield or (b) two martial weapons",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "items": [
+              {
+                "choice": {
+                  "choose": 1,
+                  "desc": "a martial weapon",
+                  "from": {
+                    "equipment_category": {
+                      "index": "martial-weapons",
+                      "name": "Martial Weapons",
+                      "url": "/api/2014/equipment-categories/martial-weapons"
+                    },
+                    "option_set_type": "equipment_category"
+                  },
+                  "type": "equipment"
+                },
+                "option_type": "choice"
+              },
+              {
+                "count": 1,
+                "of": {
+                  "index": "shield",
+                  "name": "Shield",
+                  "url": "/api/2014/equipment/shield"
+                },
+                "option_type": "counted_reference"
+              }
+            ],
+            "option_type": "multiple"
+          },
+          {
+            "choice": {
+              "choose": 2,
+              "desc": "two martial weapons",
+              "from": {
+                "equipment_category": {
+                  "index": "martial-weapons",
+                  "name": "Martial Weapons",
+                  "url": "/api/2014/equipment-categories/martial-weapons"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) five javelins or (b) any simple melee weapon",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 5,
+            "of": {
+              "index": "javelin",
+              "name": "Javelin",
+              "url": "/api/2014/equipment/javelin"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "any simple weapon",
+              "from": {
+                "equipment_category": {
+                  "index": "simple-weapons",
+                  "name": "Simple Weapons",
+                  "url": "/api/2014/equipment-categories/simple-weapons"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) a priest’s pack or (b) an explorer’s pack",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "priests-pack",
+              "name": "Priest's Pack",
+              "url": "/api/2014/equipment/priests-pack"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "count": 1,
+            "of": {
+              "index": "explorers-pack",
+              "name": "Explorer's Pack",
+              "url": "/api/2014/equipment/explorers-pack"
+            },
+            "option_type": "counted_reference"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "holy symbol",
+      "from": {
+        "equipment_category": {
+          "index": "holy-symbols",
+          "name": "Holy Symbols",
+          "url": "/api/2014/equipment-categories/holy-symbols"
+        },
+        "option_set_type": "equipment_category"
+      },
+      "type": "equipment"
+    }
+  ],
+  "subclasses": [
+    {
+      "index": "devotion",
+      "name": "Devotion",
+      "url": "/api/2014/subclasses/devotion"
+    }
+  ],
+  "updated_at": "2026-04-01T20:35:36.453Z",
+  "url": "/api/2014/classes/paladin"
+}

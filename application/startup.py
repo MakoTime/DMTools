@@ -7,6 +7,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 
 from application import ProjectController
+from common import dev_mode
 from application.controllers.entity_controller import EntityTreeController
 from application.controllers.import_controller import EntityImportController
 from application.display_space import DisplaySpaceController
@@ -80,6 +81,7 @@ class ApplicationLauncher:
 
     def __init__(self, argv=None):
         self.argv = list(sys.argv if argv is None else argv)
+        dev_mode.set_enabled("--dev" in self.argv)
         self.app = QApplication(self.argv)
         self.file_window = load_file_window()
         self.project_windows = []

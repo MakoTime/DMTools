@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import QApplication, QMainWindow, QMdiArea, QWidget
 
 from application.display_space import DisplaySpaceController
+from common import dev_mode
 from menu import setup_menu
 
 
@@ -23,6 +24,23 @@ def test_display_space_menu_has_arrangement_actions():
     assert window.rearrange_grid_action.text() == "Rearrange grid"
     assert window.minimize_all_action.isEnabled()
     assert window.rearrange_grid_action.isEnabled()
+
+
+def test_development_menu_toggles_global_dev_mode():
+    qt_app()
+    dev_mode.set_enabled(False)
+    window = QMainWindow()
+    window.menuFile = window.menuBar().addMenu("File")
+    window.menuEdit = window.menuBar().addMenu("Edit")
+
+    setup_menu(window)
+
+    assert window.development_menu.title() == "Development"
+    assert not window.dev_mode_action.isChecked()
+    window.dev_mode_action.trigger()
+    assert dev_mode.is_enabled()
+    window.dev_mode_action.trigger()
+    assert not dev_mode.is_enabled()
 
 
 def test_display_space_grid_and_minimize_keep_windows_reachable():

@@ -119,7 +119,6 @@ class ImportProgressModel:
             self._phase_index = phase_index
             if not self._activity or self._activity[-1] != status:
                 self._activity.append(status)
-                self._activity = self._activity[-8:]
 
     def _record_progress(self, current, total, set_progress):
         with self._progress_lock:

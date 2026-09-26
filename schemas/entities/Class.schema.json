@@ -58,6 +58,9 @@
         "skill_choices": {
             "$ref": "../components/skill_choice.schema.json"
         },
+        "tool_choices": {
+            "$ref": "../components/tool_choice.schema.json"
+        },
         "features": {
             "type": "array",
             "items": {
@@ -96,6 +99,13 @@
         },
         "spellcasting": {
             "$ref": "../components/spellcasting.schema.json"
+        },
+        "resources": {
+            "type": "array",
+            "items": {
+                "$ref": "../components/class_resource.schema.json"
+            },
+            "uniqueItems": true
         },
         "subclass_level": {
             "description": "Class level at which a subclass is chosen.",

@@ -28,7 +28,7 @@ CR_XP = {
 ENTITY_TEMPLATE_FIELDS = {
     "spell": ("level", "school", "casting_time", "target", "components", "material", "duration", "ritual", "concentration", "effects", "description", "higher_level", "classes"),
     "item": ("category", "weapon", "armor", "magic_item", "weight", "cost", "features", "description"),
-    "class": ("hit_dice", "primary_abilities", "saving_throws", "armor_proficiencies", "weapon_proficiencies", "tool_proficiencies", "skill_choices", "spellcasting", "level_progression", "features", "description"),
+    "class": ("hit_dice", "primary_abilities", "saving_throws", "armor_proficiencies", "weapon_proficiencies", "tool_proficiencies", "skill_choices", "tool_choices", "spellcasting", "level_progression", "features", "description"),
     "subclass": ("class_name", "level_progression", "features", "description"),
     "race": ("size", "movement", "ability_score_increases", "senses", "skill_proficiencies", "languages", "features", "description"),
     "feat": ("prerequisite", "ability_score_increases", "weapon_proficiencies", "features", "description"),
@@ -378,6 +378,7 @@ def render_class_template(
         ("Weapon Proficiencies", view.get("weapon_proficiencies")),
         ("Tool Proficiencies", view.get("tool_proficiencies")),
         ("Skill Choices", view.get("skill_choices")),
+        ("Tool Choices", view.get("tool_choices")),
     ):
         if value not in (None, [], {}, ""):
             lines.extend((f"**{label}:** {_render_value(value)}", ""))
@@ -714,10 +715,10 @@ def _render_attack_save(value: Any) -> str:
     result = f"{_label(value.get('ability', ''))} saving throw"
     if value.get("dc") is not None:
         result += f" (DC {value['dc']})"
-       
-    failure = value.get("failure") 
+
+    failure = value.get("failure")
     if failure is not None:
-        result += f"; On a failed save: " + ", ".join(_render_effect(item) for item in failure)
+        result += "; failure: " + ", ".join(_render_effect(item) for item in failure)
     success = value.get("success")
     if success is not None:
         halved = all(

@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/class_resource_level.schema.json",
+    "title": "D&D 5e Class Resource Level",
+    "description": "A class resource maximum at a specific class level.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": ["level"],
+    "properties": {
+        "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 20
+        },
+        "maximum": {
+            "$ref": "../values/resource_amount.schema.json"
+        },
+        "value": {
+            "$ref": "../values/resource_amount.schema.json"
+        },
+        "dice": {
+            "$ref": "../values/dice.schema.json"
+        }
+    },
+    "oneOf": [
+        {"required": ["maximum"]},
+        {"required": ["value"]},
+        {"required": ["dice"]}
+    ],
+    "additionalProperties": false
+}

@@ -72,17 +72,17 @@ class SpellAdaptor:
             return int(level)
         except (TypeError, ValueError):
             return None
-        
+
     def school(self, school_str: str) -> str | None:
         if not school_str:
             return None
         return SCHOOL_MAP.get(school_str.upper(), school_str.lower())
-    
+
     def ritual(self, ritual_str: str) -> bool | None:
         if not ritual_str:
             return None
         return RITUAL_MAP.get(ritual_str.upper())
-    
+
     def casting_time(self, casting_time_str: str) -> dict[str, Any] | list[dict[str, Any]] | None:
         if not casting_time_str:
             return None
@@ -263,11 +263,19 @@ class SpellAdaptor:
             if condition_match.group("alternative"):
                 conditions.append(condition_match.group("alternative").lower())
 
+        disintegration = [
+            {"description": sentence.strip()}
+            for sentence in re.split(r"(?<=[.!?])\s+", paragraph)
+            if re.search(r"disintegrat", sentence, re.IGNORECASE)
+        ]
+
         if save is not None:
             failure = saved_damage
             if conditions:
                 failure = [{"condition": condition} for condition in conditions]
                 failure.extend(saved_damage)
+            if disintegration:
+                failure = [*failure, *disintegration]
 
             attack_save: dict[str, Any] = {
                 "ability": save.group("ability").lower(),
@@ -287,10 +295,10 @@ class SpellAdaptor:
 
         if conditions:
             return guaranteed_damage + [{"condition": condition} for condition in conditions]
-        return damage_effects
+        return damage_effects or disintegration
 
     def modifier(self, value: str | None) -> dict[str, int]:
-        return {"modifier": int(value)} if value else {}
+        return {"modifier": int(value.replace(" ", ""))} if value else {}
 
     def roll_table(self, text: list[str]) -> dict[str, Any] | None:
         entries = []
@@ -372,7 +380,7 @@ class SpellAdaptor:
             REGULAR = 0
             CONDITION = 1
             CONDITION_DESCRIPTION = 2
-        
+
         state = description_states.REGULAR
         for line in text:
             match state:
@@ -421,12 +429,12 @@ class SpellAdaptor:
                         state = description_states.REGULAR
                 case _:
                     remaining_text.append(line)
-                    
+
         description_str = "\n".join(remaining_text)
         conditions = {k: '\n'.join(v) for k, v in conditions.items()}
 
         return conditions, description_str
-    
+
     def first_word_in_conditions(self, line: str):
         if line is None:
             return None, False
@@ -435,7 +443,7 @@ class SpellAdaptor:
         if first_word in CONDITIONS:
             return first_word, True
         return first_word, False
-    
+
 
     def source(self, text: list[str]):
         last_line = text[-1] if text else None

@@ -27,6 +27,11 @@ class HomebrewEditorModel(HomebrewDraft, EditorModel):
         )
 
 
+@dataclass
+class HomebrewClassEditorModel(HomebrewDraft, EditorModel):
+    """Temporary adaptive editor state for Homebrew class entities."""
+
+
 def create_homebrew_editor_model(entity_type, draft=None):
     entity_type = canonical_entity_type(entity_type)
     if entity_type not in ENTITY_REGISTRY:

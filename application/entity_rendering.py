@@ -31,7 +31,7 @@ ENTITY_PRESENTATION_CONTRACT = {
     "class": (
         "name", "hit_dice", "primary_abilities", "saving_throws",
         "armor_proficiencies", "weapon_proficiencies", "tool_proficiencies",
-        "skill_choices", "spellcasting", "subclass_level", "features",
+        "skill_choices", "tool_choices", "spellcasting", "subclass_level", "features",
         "description", "tags", "source",
     ),
     "subclass": ("name", "class_name", "features", "description", "source"),

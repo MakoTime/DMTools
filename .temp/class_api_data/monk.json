@@ -1,0 +1,2221 @@
+{
+  "class_levels": [
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 0,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 4
+        },
+        "unarmored_movement": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Beginning at 1st level, while you are wearing no armor and not wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier."
+          ],
+          "index": "monk-unarmored-defense",
+          "level": 1,
+          "name": "Unarmored Defense",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-unarmored-defense"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "At 1st level, your practice of martial arts gives you mastery of combat styles that use unarmed strikes and monk weapons, which are shortswords and any simple melee weapons that don't have the two- handed or heavy property.",
+            "You gain the following benefits while you are unarmed or wielding only monk weapons and you aren't wearing armor or wielding a shield:",
+            "- You can use Dexterity instead of Strength for the attack and damage rolls of your unarmed strikes and monk weapons.",
+            "- You can roll a d4 in place of the normal damage of your unarmed strike or monk weapon. This die changes as you gain monk levels, as shown in the Martial Arts column of Table: The Monk.",
+            "- When you use the Attack action with an unarmed strike or a monk weapon on your turn, you can make one unarmed strike as a bonus action. For example, if you take the Attack action and attack with a quarterstaff, you can also make an unarmed strike as a bonus action, assuming you haven't already taken a bonus action this turn.",
+            "Certain monasteries use specialized forms of the monk weapons. For example, you might use a club that is two lengths of wood connected by a short chain (called a nunchaku) or a sickle with a shorter, straighter blade (called a kama). Whatever name you use for a monk weapon, you can use the game statistics provided for the weapon."
+          ],
+          "index": "martial-arts",
+          "level": 1,
+          "name": "Martial Arts",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/martial-arts"
+        }
+      ],
+      "index": "monk-1",
+      "level": 1,
+      "prof_bonus": 2,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/1"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 2,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 4
+        },
+        "unarmored_movement": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 2nd level, your training allows you to harness the mystic energy of ki. Your access to this energy is represented by a number of ki points. Your monk level determines the number of points you have, as shown in the Ki Points column of Table: The Monk.",
+            "You can spend these points to fuel various ki features. You start knowing three such features: Flurry of Blows, Patient Defense, and Step of the Wind. You learn more ki features as you gain levels in this class.",
+            "When you spend a ki point, it is unavailable until you finish a short or long rest, at the end of which you draw all of your expended ki back into yourself. You must spend at least 30 minutes of the rest meditating to regain your ki points.",
+            "Some of your ki features require your target to make a saving throw to resist the feature's effects. The saving throw DC is calculated as follows:",
+            "Ki save DC = 8 + your proficiency bonus + your Wisdom modifier"
+          ],
+          "index": "ki",
+          "level": 2,
+          "name": "Ki",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ki"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Immediately after you take the Attack action on your turn, you can spend 1 ki point to make two unarmed strikes as a bonus action."
+          ],
+          "index": "flurry-of-blows",
+          "level": 2,
+          "name": "Flurry of Blows",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/flurry-of-blows"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "You can spend 1 ki point to take the Dodge action as a bonus action on your turn."
+          ],
+          "index": "patient-defense",
+          "level": 2,
+          "name": "Patient Defense",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/patient-defense"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "You can spend 1 ki point to take the Disengage or Dash action as a bonus action on your turn, and your jump distance is doubled for the turn."
+          ],
+          "index": "step-of-the-wind",
+          "level": 2,
+          "name": "Step of the Wind",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/step-of-the-wind"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk.",
+            "At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+          ],
+          "index": "unarmored-movement-1",
+          "level": 2,
+          "name": "Unarmored Movement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/unarmored-movement-1"
+        }
+      ],
+      "index": "monk-2",
+      "level": 2,
+      "prof_bonus": 2,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/2"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 3,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 4
+        },
+        "unarmored_movement": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+          ],
+          "index": "monastic-tradition",
+          "level": 3,
+          "name": "Monastic Tradition",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monastic-tradition"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 3rd level, you can use your reaction to deflect or catch the missile when you are hit by a ranged weapon attack. When you do so, the damage you take from the attack is reduced by 1d10 + your Dexterity modifier + your monk level.",
+            "If you reduce the damage to 0, you can catch the missile if it is small enough for you to hold in one hand and you have at least one hand free. If you catch a missile in this way, you can spend 1 ki point to make a ranged attack with the weapon or piece of ammunition you just caught, as part of the same reaction. You make this attack with proficiency, regardless of your weapon proficiencies, and the missile counts as a monk weapon for the attack, which has a normal range of 20 feet and a long range of 60 feet."
+          ],
+          "index": "deflect-missiles",
+          "level": 3,
+          "name": "Deflect Missiles",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/deflect-missiles"
+        }
+      ],
+      "index": "monk-3",
+      "level": 3,
+      "prof_bonus": 2,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/3"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 4,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 4
+        },
+        "unarmored_movement": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "monk-ability-score-improvement-1",
+          "level": 4,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-ability-score-improvement-1"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Beginning at 4th level, you can use your reaction when you fall to reduce any falling damage you take by an amount equal to five times your monk level."
+          ],
+          "index": "slow-fall",
+          "level": 4,
+          "name": "Slow Fall",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/slow-fall"
+        }
+      ],
+      "index": "monk-4",
+      "level": 4,
+      "prof_bonus": 2,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/4"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 5,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 10
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          ],
+          "index": "monk-extra-attack",
+          "level": 5,
+          "name": "Extra Attack",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-extra-attack"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 5th level, you can interfere with the flow of ki in an opponent's body. When you hit another creature with a melee weapon attack, you can spend 1 ki point to attempt a stunning strike. The target must succeed on a Constitution saving throw or be stunned until the end of your next turn."
+          ],
+          "index": "stunning-strike",
+          "level": 5,
+          "name": "Stunning Strike",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/stunning-strike"
+        }
+      ],
+      "index": "monk-5",
+      "level": 5,
+      "prof_bonus": 3,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/5"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 6,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 15
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 6th level, your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage."
+          ],
+          "index": "ki-empowered-strikes",
+          "level": 6,
+          "name": "Ki Empowered Strikes",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ki-empowered-strikes"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+          ],
+          "index": "monastic-tradition-improvement-1",
+          "level": 6,
+          "name": "Monastic Tradition feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monastic-tradition-improvement-1"
+        }
+      ],
+      "index": "monk-6",
+      "level": 6,
+      "prof_bonus": 3,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/6"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 7,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 15
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "At 7th level, your instinctive agility lets you dodge out of the way of certain area effects, such as a blue dragon's lightning breath or a fireball spell. When you are subjected to an effect that allows you to make a Dexterity saving throw to take only half damage, you instead take no damage if you succeed on the saving throw, and only half damage if you fail."
+          ],
+          "index": "monk-evasion",
+          "level": 7,
+          "name": "Evasion",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-evasion"
+        },
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 7th level, you can use your action to end one effect on yourself that is causing you to be charmed or frightened."
+          ],
+          "index": "stillness-of-mind",
+          "level": 7,
+          "name": "Stillness of Mind",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/stillness-of-mind"
+        }
+      ],
+      "index": "monk-7",
+      "level": 7,
+      "prof_bonus": 3,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/7"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 8,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 15
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "monk-ability-score-improvement-2",
+          "level": 8,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-ability-score-improvement-2"
+        }
+      ],
+      "index": "monk-8",
+      "level": 8,
+      "prof_bonus": 3,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/8"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 9,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 15
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 2nd level, your speed increases by 10 feet while you are not wearing armor or wielding a shield. This bonus increases when you reach certain monk levels, as shown in Table: The Monk.",
+            "At 9th level, you gain the ability to move along vertical surfaces and across liquids on your turn without falling during the move."
+          ],
+          "index": "unarmored-movement-2",
+          "level": 9,
+          "name": "Unarmored Movement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/unarmored-movement-2"
+        }
+      ],
+      "index": "monk-9",
+      "level": 9,
+      "prof_bonus": 4,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/9"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 10,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 6
+        },
+        "unarmored_movement": 20
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "At 10th level, your mastery of the ki flowing through you makes you immune to disease and poison."
+          ],
+          "index": "purity-of-body",
+          "level": 10,
+          "name": "Purity of Body",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/purity-of-body"
+        }
+      ],
+      "index": "monk-10",
+      "level": 10,
+      "prof_bonus": 4,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/10"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 11,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 20
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+          ],
+          "index": "monastic-tradition-improvement-2",
+          "level": 11,
+          "name": "Monastic Tradition feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monastic-tradition-improvement-2"
+        }
+      ],
+      "index": "monk-11",
+      "level": 11,
+      "prof_bonus": 4,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/11"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 12,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 20
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "monk-ability-score-improvement-3",
+          "level": 12,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-ability-score-improvement-3"
+        }
+      ],
+      "index": "monk-12",
+      "level": 12,
+      "prof_bonus": 4,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/12"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 13,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 20
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Starting at 13th level, you learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say."
+          ],
+          "index": "tongue-of-the-sun-and-moon",
+          "level": 13,
+          "name": "Tongue of the Sun and Moon",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/tongue-of-the-sun-and-moon"
+        }
+      ],
+      "index": "monk-13",
+      "level": 13,
+      "prof_bonus": 5,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/13"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 14,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 25
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Beginning at 14th level, your mastery of ki grants you proficiency in all saving throws.",
+            "Additionally, whenever you make a saving throw and fail, you can spend 1 ki point to reroll it and take the second result."
+          ],
+          "index": "diamond-soul",
+          "level": 14,
+          "name": "Diamond Soul",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/diamond-soul"
+        }
+      ],
+      "index": "monk-14",
+      "level": 14,
+      "prof_bonus": 5,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/14"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 15,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 25
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "At 15th level, your ki sustains you so that you suffer none of the frailty of old age, and you can't be aged magically. You can still die of old age, however. In addition, you no longer need food or water."
+          ],
+          "index": "monk-timeless-body",
+          "level": 15,
+          "name": "Timeless Body",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-timeless-body"
+        }
+      ],
+      "index": "monk-15",
+      "level": 15,
+      "prof_bonus": 5,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/15"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 16,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 8
+        },
+        "unarmored_movement": 25
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "monk-ability-score-improvement-4",
+          "level": 16,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-ability-score-improvement-4"
+        }
+      ],
+      "index": "monk-16",
+      "level": 16,
+      "prof_bonus": 5,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/16"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 17,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 10
+        },
+        "unarmored_movement": 25
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 3rd level, you commit yourself to a monastic tradition, such as the Way of the Open Hand. Your tradition grants you features at 3rd level and again at 6th, 11th, and 17th level."
+          ],
+          "index": "monastic-tradition-improvement-3",
+          "level": 17,
+          "name": "Monastic Tradition feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monastic-tradition-improvement-3"
+        }
+      ],
+      "index": "monk-17",
+      "level": 17,
+      "prof_bonus": 6,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/17"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 18,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 10
+        },
+        "unarmored_movement": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "Beginning at 18th level, you can use your action to spend 4 ki points to become invisible for 1 minute. During that time, you also have resistance to all damage but force damage.",
+            "Additionally, you can spend 8 ki points to cast the astral projection spell, without needing material components. When you do so, you can't take any other creatures with you."
+          ],
+          "index": "empty-body",
+          "level": 18,
+          "name": "Empty Body",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/empty-body"
+        }
+      ],
+      "index": "monk-18",
+      "level": 18,
+      "prof_bonus": 6,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/18"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 19,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 10
+        },
+        "unarmored_movement": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "monk-ability-score-improvement-5",
+          "level": 19,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/monk-ability-score-improvement-5"
+        }
+      ],
+      "index": "monk-19",
+      "level": 19,
+      "prof_bonus": 6,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/19"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "monk",
+        "name": "Monk",
+        "url": "/api/2014/classes/monk"
+      },
+      "class_specific": {
+        "ki_points": 20,
+        "martial_arts": {
+          "dice_count": 1,
+          "dice_value": 10
+        },
+        "unarmored_movement": 30
+      },
+      "features": [
+        {
+          "class": {
+            "index": "monk",
+            "name": "Monk",
+            "url": "/api/2014/classes/monk"
+          },
+          "desc": [
+            "At 20th level, when you roll for initiative and have no ki points remaining, you regain 4 ki points."
+          ],
+          "index": "perfect-self",
+          "level": 20,
+          "name": "Perfect Self",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/perfect-self"
+        }
+      ],
+      "index": "monk-20",
+      "level": 20,
+      "prof_bonus": 6,
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/monk/levels/20"
+    }
+  ],
+  "hit_die": 8,
+  "index": "monk",
+  "multi_classing": {
+    "prerequisites": [
+      {
+        "ability_score": {
+          "index": "dex",
+          "name": "DEX",
+          "url": "/api/2014/ability-scores/dex"
+        },
+        "minimum_score": 13
+      },
+      {
+        "ability_score": {
+          "index": "wis",
+          "name": "WIS",
+          "url": "/api/2014/ability-scores/wis"
+        },
+        "minimum_score": 13
+      }
+    ],
+    "proficiencies": [
+      {
+        "index": "simple-weapons",
+        "name": "Simple Weapons",
+        "url": "/api/2014/proficiencies/simple-weapons"
+      },
+      {
+        "index": "shortswords",
+        "name": "Shortswords",
+        "url": "/api/2014/proficiencies/shortswords"
+      }
+    ]
+  },
+  "name": "Monk",
+  "proficiencies": [
+    {
+      "index": "simple-weapons",
+      "name": "Simple Weapons",
+      "url": "/api/2014/proficiencies/simple-weapons"
+    },
+    {
+      "index": "shortswords",
+      "name": "Shortswords",
+      "url": "/api/2014/proficiencies/shortswords"
+    },
+    {
+      "index": "saving-throw-dex",
+      "name": "Saving Throw: DEX",
+      "url": "/api/2014/proficiencies/saving-throw-dex"
+    },
+    {
+      "index": "saving-throw-str",
+      "name": "Saving Throw: STR",
+      "url": "/api/2014/proficiencies/saving-throw-str"
+    }
+  ],
+  "proficiency_choices": [
+    {
+      "choose": 2,
+      "desc": "Choose two from Acrobatics, Athletics, History, Insight, Religion, and Stealth",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "item": {
+              "index": "skill-acrobatics",
+              "name": "Skill: Acrobatics",
+              "url": "/api/2014/proficiencies/skill-acrobatics"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-athletics",
+              "name": "Skill: Athletics",
+              "url": "/api/2014/proficiencies/skill-athletics"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-history",
+              "name": "Skill: History",
+              "url": "/api/2014/proficiencies/skill-history"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-insight",
+              "name": "Skill: Insight",
+              "url": "/api/2014/proficiencies/skill-insight"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-religion",
+              "name": "Skill: Religion",
+              "url": "/api/2014/proficiencies/skill-religion"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-stealth",
+              "name": "Skill: Stealth",
+              "url": "/api/2014/proficiencies/skill-stealth"
+            },
+            "option_type": "reference"
+          }
+        ]
+      },
+      "type": "proficiencies"
+    },
+    {
+      "choose": 1,
+      "desc": "Choose one type of artisan’s tools or one musical instrument",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "artisan's tools",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "alchemists-supplies",
+                      "name": "Alchemist's Supplies",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 50,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "alchemists-supplies",
+                        "name": "Alchemist's Supplies",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/alchemists-supplies",
+                        "weight": 8
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/alchemists-supplies"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "brewers-supplies",
+                      "name": "Brewer's Supplies",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 20,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "brewers-supplies",
+                        "name": "Brewer's Supplies",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/brewers-supplies",
+                        "weight": 9
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/brewers-supplies"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "calligraphers-supplies",
+                      "name": "Calligrapher's Supplies",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 10,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "calligraphers-supplies",
+                        "name": "Calligrapher's Supplies",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/calligraphers-supplies",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/calligraphers-supplies"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "carpenters-tools",
+                      "name": "Carpenter's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 8,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "carpenters-tools",
+                        "name": "Carpenter's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/carpenters-tools",
+                        "weight": 6
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/carpenters-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "cartographers-tools",
+                      "name": "Cartographer's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 15,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "cartographers-tools",
+                        "name": "Cartographer's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/cartographers-tools",
+                        "weight": 6
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/cartographers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "cobblers-tools",
+                      "name": "Cobbler's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 5,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "cobblers-tools",
+                        "name": "Cobbler's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/cobblers-tools",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/cobblers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "cooks-utensils",
+                      "name": "Cook's utensils",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 1,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "cooks-utensils",
+                        "name": "Cook's utensils",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/cooks-utensils",
+                        "weight": 8
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/cooks-utensils"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "glassblowers-tools",
+                      "name": "Glassblower's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 30,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "glassblowers-tools",
+                        "name": "Glassblower's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/glassblowers-tools",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/glassblowers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "jewelers-tools",
+                      "name": "Jeweler's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 25,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "jewelers-tools",
+                        "name": "Jeweler's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/jewelers-tools",
+                        "weight": 2
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/jewelers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "leatherworkers-tools",
+                      "name": "Leatherworker's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 5,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "leatherworkers-tools",
+                        "name": "Leatherworker's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/leatherworkers-tools",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/leatherworkers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "masons-tools",
+                      "name": "Mason's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 10,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "masons-tools",
+                        "name": "Mason's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/masons-tools",
+                        "weight": 8
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/masons-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "painters-supplies",
+                      "name": "Painter's Supplies",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 10,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "painters-supplies",
+                        "name": "Painter's Supplies",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/painters-supplies",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/painters-supplies"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "potters-tools",
+                      "name": "Potter's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 10,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "potters-tools",
+                        "name": "Potter's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/potters-tools",
+                        "weight": 3
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/potters-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "smiths-tools",
+                      "name": "Smith's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 20,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "smiths-tools",
+                        "name": "Smith's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/smiths-tools",
+                        "weight": 8
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/smiths-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "tinkers-tools",
+                      "name": "Tinker's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 50,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "tinkers-tools",
+                        "name": "Tinker's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/tinkers-tools",
+                        "weight": 10
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/tinkers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "weavers-tools",
+                      "name": "Weaver's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 1,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "weavers-tools",
+                        "name": "Weaver's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.117Z",
+                        "url": "/api/2014/equipment/weavers-tools",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/weavers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "woodcarvers-tools",
+                      "name": "Woodcarver's Tools",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 1,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "These special tools include the items needed to pursue a craft or trade. The table shows examples of the most common types of tools, each providing items related to a single craft. Proficiency with a set of artisan's tools lets you add your proficiency bonus to any ability checks you make using the tools in your craft. Each type of artisan's tools requires a separate proficiency."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "tools",
+                            "name": "Tools",
+                            "url": "/api/2014/equipment-categories/tools"
+                          },
+                          {
+                            "index": "artisans-tools",
+                            "name": "Artisan's Tools",
+                            "url": "/api/2014/equipment-categories/artisans-tools"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "tools",
+                          "name": "Tools",
+                          "url": "/api/2014/equipment-categories/tools"
+                        },
+                        "index": "woodcarvers-tools",
+                        "name": "Woodcarver's Tools",
+                        "properties": [],
+                        "special": [],
+                        "tool_category": "Artisan's Tools",
+                        "updated_at": "2026-09-23T20:15:25.118Z",
+                        "url": "/api/2014/equipment/woodcarvers-tools",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/woodcarvers-tools"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "disguise-kit",
+                      "name": "Disguise Kit",
+                      "races": [],
+                      "reference": {
+                        "index": "disguise-kit",
+                        "name": "Disguise Kit",
+                        "url": "/api/2014/equipment/disguise-kit"
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/disguise-kit"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "classes": [],
+                      "index": "forgery-kit",
+                      "name": "Forgery Kit",
+                      "races": [],
+                      "reference": {
+                        "contents": [],
+                        "cost": {
+                          "quantity": 15,
+                          "unit": "gp"
+                        },
+                        "desc": [
+                          "This small box contains a variety of papers and parchments, pens and inks, seals and sealing wax, gold and silver leaf, and other supplies necessary to create convincing forgeries of physical documents. Proficiency with this kit lets you add your proficiency bonus to any ability checks you make to create a physical forgery of a document."
+                        ],
+                        "equipment_categories": [
+                          {
+                            "index": "adventuring-gear",
+                            "name": "Adventuring Gear",
+                            "url": "/api/2014/equipment-categories/adventuring-gear"
+                          },
+                          {
+                            "index": "kits",
+                            "name": "Kits",
+                            "url": "/api/2014/equipment-categories/kits"
+                          }
+                        ],
+                        "equipment_category": {
+                          "index": "adventuring-gear",
+                          "name": "Adventuring Gear",
+                          "url": "/api/2014/equipment-categories/adventuring-gear"
+                        },
+                        "gear_category": {
+                          "index": "kits",
+                          "name": "Kits",
+                          "url": "/api/2014/equipment-categories/kits"
+                        },
+                        "index": "forgery-kit",
+                        "name": "Forgery Kit",
+                        "properties": [],
+                        "special": [],
+                        "updated_at": "2026-09-23T20:15:25.116Z",
+                        "url": "/api/2014/equipment/forgery-kit",
+                        "weight": 5
+                      },
+                      "type": "Artisan's Tools",
+                      "updated_at": "2026-04-01T20:35:38.536Z",
+                      "url": "/api/2014/proficiencies/forgery-kit"
+                    },
+                    "option_type": "reference"
+                  }
+                ]
+              },
+              "type": "proficiencies"
+            },
+            "option_type": "choice"
+          },
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "musical instrument",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  {
+                    "item": {
+                      "index": "bagpipes",
+                      "name": "Bagpipes",
+                      "url": "/api/2014/proficiencies/bagpipes"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "drum",
+                      "name": "Drum",
+                      "url": "/api/2014/proficiencies/drum"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "dulcimer",
+                      "name": "Dulcimer",
+                      "url": "/api/2014/proficiencies/dulcimer"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "flute",
+                      "name": "Flute",
+                      "url": "/api/2014/proficiencies/flute"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "lute",
+                      "name": "Lute",
+                      "url": "/api/2014/proficiencies/lute"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "lyre",
+                      "name": "Lyre",
+                      "url": "/api/2014/proficiencies/lyre"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "horn",
+                      "name": "Horn",
+                      "url": "/api/2014/proficiencies/horn"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "pan-flute",
+                      "name": "Pan flute",
+                      "url": "/api/2014/proficiencies/pan-flute"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "shawm",
+                      "name": "Shawm",
+                      "url": "/api/2014/proficiencies/shawm"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "viol",
+                      "name": "Viol",
+                      "url": "/api/2014/proficiencies/viol"
+                    },
+                    "option_type": "reference"
+                  }
+                ]
+              },
+              "type": "proficiencies"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "proficiencies"
+    }
+  ],
+  "saving_throws": [
+    {
+      "index": "str",
+      "name": "STR",
+      "url": "/api/2014/ability-scores/str"
+    },
+    {
+      "index": "dex",
+      "name": "DEX",
+      "url": "/api/2014/ability-scores/dex"
+    }
+  ],
+  "starting_equipment": [
+    {
+      "equipment": {
+        "category_range": "Simple Ranged",
+        "contents": [],
+        "cost": {
+          "quantity": 5,
+          "unit": "cp"
+        },
+        "damage": {
+          "damage_dice": "1d4",
+          "damage_type": {
+            "index": "piercing",
+            "name": "Piercing",
+            "url": "/api/2014/damage-types/piercing"
+          }
+        },
+        "desc": [],
+        "equipment_categories": [
+          {
+            "index": "weapon",
+            "name": "Weapon",
+            "url": "/api/2014/equipment-categories/weapon"
+          },
+          {
+            "index": "simple-weapons",
+            "name": "Simple Weapons",
+            "url": "/api/2014/equipment-categories/simple-weapons"
+          },
+          {
+            "index": "ranged-weapons",
+            "name": "Ranged Weapons",
+            "url": "/api/2014/equipment-categories/ranged-weapons"
+          },
+          {
+            "index": "simple-ranged-weapons",
+            "name": "Simple Ranged Weapons",
+            "url": "/api/2014/equipment-categories/simple-ranged-weapons"
+          }
+        ],
+        "equipment_category": {
+          "index": "weapon",
+          "name": "Weapon",
+          "url": "/api/2014/equipment-categories/weapon"
+        },
+        "index": "dart",
+        "name": "Dart",
+        "properties": [
+          {
+            "index": "finesse",
+            "name": "Finesse",
+            "url": "/api/2014/weapon-properties/finesse"
+          },
+          {
+            "index": "thrown",
+            "name": "Thrown",
+            "url": "/api/2014/weapon-properties/thrown"
+          }
+        ],
+        "range": {
+          "long": 60,
+          "normal": 20
+        },
+        "special": [],
+        "throw_range": {
+          "long": 60,
+          "normal": 20
+        },
+        "updated_at": "2026-09-23T20:15:25.114Z",
+        "url": "/api/2014/equipment/dart",
+        "weapon_category": "Simple",
+        "weapon_range": "Ranged",
+        "weight": 0.25
+      },
+      "quantity": 10
+    }
+  ],
+  "starting_equipment_options": [
+    {
+      "choose": 1,
+      "desc": "(a) a shortsword or (b) any simple weapon",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "shortsword",
+              "name": "Shortsword",
+              "url": "/api/2014/equipment/shortsword"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "any simple weapon",
+              "from": {
+                "equipment_category": {
+                  "index": "simple-weapons",
+                  "name": "Simple Weapons",
+                  "url": "/api/2014/equipment-categories/simple-weapons"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) a dungeoneer’s pack or (b) an explorer’s pack",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "dungeoneers-pack",
+              "name": "Dungeoneer's Pack",
+              "url": "/api/2014/equipment/dungeoneers-pack"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "count": 1,
+            "of": {
+              "index": "explorers-pack",
+              "name": "Explorer's Pack",
+              "url": "/api/2014/equipment/explorers-pack"
+            },
+            "option_type": "counted_reference"
+          }
+        ]
+      },
+      "type": "equipment"
+    }
+  ],
+  "subclasses": [
+    {
+      "index": "open-hand",
+      "name": "Open Hand",
+      "url": "/api/2014/subclasses/open-hand"
+    }
+  ],
+  "updated_at": "2026-04-01T20:35:36.453Z",
+  "url": "/api/2014/classes/monk"
+}

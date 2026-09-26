@@ -1,0 +1,50 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "components/class_resource.schema.json",
+    "title": "D&D 5e Class Resource",
+    "description": "A class resource or progression that starts by level 3 and grows thereafter.",
+    "$comment": "version 0.1.0",
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "maximum_formula": {
+            "$ref": "../values/resource_formula.schema.json"
+        },
+        "ability": {
+            "$ref": "../values/ability_score.schema.json"
+        },
+        "minimum_level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3
+        },
+        "levels": {
+            "type": "array",
+            "minItems": 2,
+            "contains": {
+                "properties": {
+                    "level": {
+                        "maximum": 3
+                    }
+                }
+            },
+            "items": {
+                "$ref": "class_resource_level.schema.json"
+            }
+        },
+        "recharge": {
+            "$ref": "../values/recharge.schema.json"
+        }
+    },
+    "anyOf": [
+        {"required": ["maximum_formula"]},
+        {"required": ["levels"]}
+    ],
+    "additionalProperties": false
+}

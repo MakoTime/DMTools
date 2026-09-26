@@ -1,6 +1,7 @@
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMessageBox
 
+from common import dev_mode
 from dialog.manual_references import create_manual_references_dialog
 from dialog.purge_data.factory import create_purge_data_dialog
 
@@ -16,6 +17,7 @@ def setup_menu(
 	file_menu = main_window.menuFile
 	edit_menu = main_window.menuEdit
 	data_menu = main_window.menuBar().addMenu("Data")
+	development_menu = main_window.menuBar().addMenu("Development")
 	display_space = getattr(main_window, "display_space_controller", None)
 
 	open_action = QAction("Open Project", main_window)
@@ -71,6 +73,10 @@ def setup_menu(
 	redo_action = edit_menu.addAction("Redo")
 	undo_action.setEnabled(False)
 	redo_action.setEnabled(False)
+	dev_mode_action = development_menu.addAction("Developer mode")
+	dev_mode_action.setCheckable(True)
+	dev_mode_action.setChecked(dev_mode.is_enabled())
+	dev_mode_action.toggled.connect(dev_mode.set_enabled)
 	normalize_references_action = data_menu.addAction("Normalise References")
 	normalize_references_action.setEnabled(project_controller is not None)
 	if project_controller is not None:
@@ -151,6 +157,8 @@ def setup_menu(
 	main_window.undo_action = undo_action
 	main_window.redo_action = redo_action
 	main_window.data_menu = data_menu
+	main_window.development_menu = development_menu
+	main_window.dev_mode_action = dev_mode_action
 	main_window.normalize_references_action = normalize_references_action
 	main_window.manual_references_action = manual_references_action
 	main_window.manual_references_dialog = None
@@ -174,6 +182,7 @@ def setup_menu(
 		"exit": exit_action,
 		"undo": undo_action,
 		"redo": redo_action,
+		"dev_mode": dev_mode_action,
 		"normalize_references": normalize_references_action,
 		"purge_compendium": purge_compendium_action,
 		"purge_homebrew": purge_homebrew_action,

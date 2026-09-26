@@ -14,7 +14,12 @@ class EntityInspectionController:
     """Open and reuse modeless entity inspections in one MDI area."""
 
     def __init__(
-        self, project_controller, mdi_area: QMdiArea, *, on_edit=None, on_rule=None
+        self,
+        project_controller,
+        mdi_area: QMdiArea,
+        *,
+        on_edit=None,
+        on_rule=None,
     ):
         self.project_controller = project_controller
         self.mdi_area = mdi_area

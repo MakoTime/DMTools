@@ -81,17 +81,18 @@ def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
         "name": get_name(element),
         "status": "success",
         "raw": raw,
+        "source_metadata": {"xml_source": raw},
         "data": adapted,
     }
     if tag == "class":
-        result["source_metadata"] = {
+        result["source_metadata"].update({
             "subclass_feature_levels": ClassAdaptor().subclass_feature_levels(raw),
             "subclass_progression": ClassAdaptor().subclass_progression(raw),
             "presentation_progression": {
                 "cantrips_known": ClassAdaptor().cantrips_known(raw),
                 "resources": ClassAdaptor().resource_progression(raw),
             },
-        }
+        })
     return result
 
 
