@@ -44,7 +44,6 @@ def test_project_owns_ordered_compendium_and_homebrew_hierarchies():
     controller = ProjectController()
 
     assert [node.name for node in controller.tree_manager.root_nodes] == [
-        "Databases",
         "Compendium",
         "Homebrew",
         "Collections",

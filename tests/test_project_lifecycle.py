@@ -8,7 +8,6 @@ from application.imports import EntityImportService
 from application.project_controller import ProjectController
 from application.project_tree import ProjectTreeMutationService
 from application.project_serializer import ProjectSerializer
-from objects.database_object import DatabaseObject
 from objects.json_object import JSONBlock
 
 
@@ -64,20 +63,19 @@ def test_legacy_project_requires_explicit_import(tmp_path):
 def test_projectfoundry_tree_hierarchy_round_trips_by_uid(tmp_path):
     source = ProjectController()
     project_file = source.create_project(tmp_path / "campaign")
-    database = DatabaseObject("Rules")
-    database.add_to_tree(source.tree_manager, source.tree_manager.root_nodes[0])
-    source.register_database(database)
+    record = EntityImportService().preview_xml(ITEM_XML).records[0]
+    source.commit_imported_entities((record,))
     source.save_project()
 
     target = ProjectController()
     target.load_project(project_file)
 
-    database_node = next(
-        node for node in target.project.nodes.values() if node.object_uid == database.guid
+    entity_node = target.project.nodes.get(
+        f"dmtools-compendium-entity-{record.uid}"
     )
-    assert database_node.object_uid == database.guid
-    assert target.project.nodes.get(database_node.parent_uid).name == "Databases"
-    assert target.project.blocks.get(database.guid).name == "Rules"
+    assert entity_node.entity_uid == record.uid
+    assert target.project.nodes.get(entity_node.parent_uid).name == "Item"
+    assert target.entity_database_store("compendium").get(record.uid).name == "Backpack"
 
     source.close()
     target.close()
@@ -108,7 +106,6 @@ def test_conversion_fixture_round_trips_roots_database_objects_and_editor_metada
 
     document = json.loads(project_file.read_text(encoding="utf-8"))
     assert {root["name"] for root in document["roots"]} >= {
-        "Databases",
         "Compendium",
         "Homebrew",
         "Collections",

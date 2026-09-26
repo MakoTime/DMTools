@@ -89,6 +89,27 @@ class EntityImportService:
             status_callback,
         )
 
+    def preview_api(
+        self,
+        records,
+        *,
+        source_name="5eSRD Online",
+        duplicate_policy="reject",
+        existing_source_identities=(),
+        existing_entities=(),
+    ) -> ImportPreview:
+        """Validate records adapted from an online API response."""
+        return self._preview_results(
+            list(records),
+            source_name,
+            duplicate_policy,
+            existing_source_identities,
+            existing_entities,
+            None,
+            None,
+            None,
+        )
+
     @staticmethod
     def commit(
         preview: ImportPreview,

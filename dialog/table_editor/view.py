@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QTableView, QVBoxLayout
 
 from dialog.base.widget_editor import WidgetEditorView
-from dialog.database.model import DataFrameModel
+from .data_frame_model import DataFrameModel
 
 from .model import TableEditorModel
 

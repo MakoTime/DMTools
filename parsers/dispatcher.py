@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Callable, Type
 
 from pydantic import BaseModel
@@ -14,8 +13,6 @@ from models.item import Item
 from models.monster import Monster
 from models.race import Race
 from models.spell import Spell
-from models.subclass import Subclass
-from schemas.validator import validate
 
 from .background_adaptor import BackgroundAdaptor
 from .background_parser import parse_background
@@ -33,9 +30,6 @@ from .race_adaptor import RaceAdaptor
 from .race_parser import parse_race
 from .spell_adaptor import SpellAdaptor
 from .spell_parser import parse_spell
-
-
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 
 @dataclass(frozen=True)
@@ -82,23 +76,12 @@ def dispatch_element(element: dict[str, Any]) -> dict[str, Any]:
         handler = ABILITY_HANDLER
         result_tag = "ability"
     adapted = handler.adaptor.adapt(raw)
-    model = handler.model.model_validate(adapted)
-    serialized = model.model_dump(
-        mode="json",
-        by_alias=True,
-        exclude_none=True,
-    )
-    validate(
-        PROJECT_ROOT / "schemas" / "entities" / handler.schema,
-        serialized,
-        PROJECT_ROOT / "schemas",
-    )
     result = {
         "tag": result_tag,
         "name": get_name(element),
         "status": "success",
         "raw": raw,
-        "data": serialized,
+        "data": adapted,
     }
     if tag == "class":
         result["source_metadata"] = {
@@ -148,18 +131,11 @@ def dispatch_subclasses(element: dict[str, Any]) -> list[dict[str, Any]]:
     records = []
     for data in ClassAdaptor().subclasses(source):
         try:
-            model = Subclass.model_validate(data)
-            serialized = model.model_dump(mode="json", by_alias=True, exclude_none=True)
-            validate(
-                PROJECT_ROOT / "schemas" / "entities" / "Subclass.schema.json",
-                serialized,
-                PROJECT_ROOT / "schemas",
-            )
             records.append({
                 "tag": "subclass",
                 "name": data["name"],
                 "status": "success",
-                "data": serialized,
+                "data": data,
             })
         except Exception as error:
             records.append({

@@ -381,6 +381,18 @@ def render_class_template(
     ):
         if value not in (None, [], {}, ""):
             lines.extend((f"**{label}:** {_render_value(value)}", ""))
+    spellcasting = view.get("spellcasting")
+    if isinstance(spellcasting, dict):
+        lines.extend(("## Spellcasting Details", ""))
+        for label, value in (
+            ("Ability", _label(spellcasting.get("ability")) if spellcasting.get("ability") else None),
+            ("Progression", _label(spellcasting.get("progression")) if spellcasting.get("progression") else None),
+            ("Ritual Casting", "Yes" if spellcasting.get("ritual") else None),
+            ("Prepared Spells", "Yes" if spellcasting.get("prepared") else None),
+            ("Spells", spellcasting.get("spells")),
+        ):
+            if value not in (None, [], {}, "", False):
+                lines.extend((f"**{label}:** {_render_value(value)}", ""))
     lines.extend(_feature_blocks(ordered_features))
     return "\n".join(lines).rstrip() + "\n"
 
@@ -489,12 +501,20 @@ def render_race_template(
         value = view.get(field)
         if value not in (None, [], {}, ""):
             lines.extend((f"**{label}** {_render_value(value)}", ""))
+    if view.get("spell_grants"):
+        lines.extend((f"**Spell Grants** {_render_value(view['spell_grants'])}", ""))
+    if view.get("feats"):
+        lines.extend((f"**Feats** {_render_value(view['feats'])}", ""))
     if view.get("description"):
         lines.extend(("## Description", "", str(view["description"]), ""))
     features = [feature for feature in view.get("features", ()) if isinstance(feature, dict)]
     if features:
         lines.extend(("## Racial Traits", ""))
         lines.extend(_feature_blocks(features))
+    actions = [action for action in view.get("actions", ()) if isinstance(action, dict)]
+    if actions:
+        lines.extend(("## Racial Actions", ""))
+        lines.extend(_feature_blocks(actions))
     return "\n".join(lines).rstrip() + "\n"
 
 

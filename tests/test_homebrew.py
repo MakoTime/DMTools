@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from projectfoundry import ArtifactStore
 from PySide6.QtWidgets import QApplication, QPushButton
@@ -69,6 +71,74 @@ def test_homebrew_copy_rejects_homebrew_source(tmp_path):
 
     with pytest.raises(ValueError, match="Only Compendium"):
         controller.copy_entity_to_homebrew(copied.uid)
+
+
+def test_purge_entity_data_can_limit_entity_types(tmp_path):
+    controller, item = controller_with_item(tmp_path)
+    node_uid = f"dmtools-compendium-entity-{item.uid}"
+    assert controller.project.nodes.contains(node_uid)
+    from components.tree.roots.entity_roots import compendium_root
+    from components.tree.model import TreeNode
+
+    legacy_node = TreeNode("Backpack", uid="legacy-node")
+    legacy_node.namespace = "compendium"
+    legacy_node.entity_uid = item.uid
+    compendium_root.category("item").add_child(legacy_node)
+    assert controller.purge_entity_data("compendium", {"item"}) == 1
+    assert controller.entity_database_store("compendium").get(item.uid) is None
+    assert not controller.project.nodes.contains(node_uid)
+    assert legacy_node not in compendium_root.category("item").children
+
+
+def test_purge_removes_reloaded_node_from_project_tree_model(tmp_path):
+    qt_app()
+    controller, item = controller_with_item(tmp_path)
+    project_file = controller.save_project()
+
+    reopened = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    reopened.load_project(project_file)
+    node_uid = f"dmtools-compendium-entity-{item.uid}"
+    node = reopened.project.nodes.get(node_uid)
+
+    assert reopened.project_tree_model.project is reopened.project
+    assert reopened.project_tree_model.root_data is reopened.project.tree.root_nodes
+    assert node.parent_uid
+    assert node in reopened.project.nodes.get(node.parent_uid).children
+
+    assert reopened.purge_entity_data("compendium", {"item"}) == 1
+
+    assert reopened.entity_database_store("compendium").get(item.uid) is None
+    assert not reopened.project.nodes.contains(node_uid)
+    assert all(
+        child.uid != node_uid
+        for root in reopened.project.tree.root_nodes
+        for child in root.iter_descendants()
+    )
+    assert all(
+        child.uid != node_uid
+        for root in reopened.project_tree_model.root_data
+        for child in root.iter_descendants()
+    )
+
+
+def test_purge_persists_removed_entity_and_tree_node(tmp_path):
+    qt_app()
+    controller, item = controller_with_item(tmp_path)
+    project_file = controller.save_project()
+    controller.save_entity_namespace_json("compendium")
+    data_file = project_file.parent / "data" / "compendium.json"
+    assert item.uid in data_file.read_text(encoding="utf-8")
+
+    assert controller.purge_entity_data("compendium") == 1
+
+    assert item.uid not in data_file.read_text(encoding="utf-8")
+    saved = project_file.read_text(encoding="utf-8")
+    assert f"dmtools-compendium-entity-{item.uid}" not in saved
+    framework = json.loads(saved)["framework"]
+    assert all(
+        node["node_uid"] != f"dmtools-compendium-entity-{item.uid}"
+        for node in framework["tree"]
+    )
 
 
 def test_homebrew_metadata_validation_and_reopen(tmp_path):

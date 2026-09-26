@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from .components import Feature, Movement, Source, SpellGrant, WeaponProficiency
+from .components import Action, Feature, Movement, Source, SpellGrant, WeaponProficiency
 
 
 class AbilityScoreIncrease(BaseModel):
@@ -19,6 +19,8 @@ class Race(BaseModel):
     movement: list[Movement] | None = None
     ability_score_increases: list[AbilityScoreIncrease] | None = None
     features: list[Feature] | None = None
+    actions: list[Action] | None = None
+    feats: list[str] | None = None
     skill_proficiencies: list[str] | None = None
     languages: list[str] | None = None
     senses: list[dict[str, Any]] | None = None

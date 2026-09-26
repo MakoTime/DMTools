@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from .components import Feature, WeaponProficiency
+from .components import Feature, SpellGrant, WeaponProficiency
 
 
 class SkillChoice(BaseModel):
@@ -15,6 +15,9 @@ class SkillChoice(BaseModel):
 class Spellcasting(BaseModel):
     ability: str
     progression: str
+    ritual: bool = False
+    prepared: bool = False
+    spells: SpellGrant | None = None
 
 
 class Class(BaseModel):

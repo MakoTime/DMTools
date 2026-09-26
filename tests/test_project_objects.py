@@ -157,9 +157,10 @@ def test_shopkeeper_block_uses_validated_uid_relationships_and_round_trips():
     controller = ProjectController()
     database = DatabaseObject("Items")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
-    controller.register_database(database)
+    controller.refresh_project_tree()
     query = QueryObject("Stock", sql="SELECT 1")
-    controller.register_query(database, query)
+    database.add_query_object(query)
+    controller.refresh_project_tree()
     shopkeeper = ShopkeeperObject(
         "General Store",
         database_guid=database.guid,
@@ -206,19 +207,21 @@ def test_project_controller_owns_a_projectfoundry_project():
     original_project = controller.project
 
     assert controller.project_tree_manager is controller.project.tree
+    assert controller.project_tree_model.project is controller.project
+    assert controller.project_tree_model.root_data is controller.project.tree.root_nodes
     assert controller.tree_manager is not controller.project_tree_manager
     assert controller.tree_manager.root_nodes[0].uid
     assert controller.project_tree_model.rowCount() == len(
-        controller.tree_manager.root_nodes
-    ) - 1
+        controller.project_tree_manager.root_nodes
+    )
     assert [
         controller.project_tree_model.data(
             controller.project_tree_model.index(row, 0)
         )
         for row in range(controller.project_tree_model.rowCount())
-    ] == ["Compendium", "Homebrew", "Collections"]
-    assert [node.uid for node in controller.project_tree_manager.root_nodes] == [
-        node.uid for node in controller.tree_manager.root_nodes
+    ] == ["Databases", "Compendium", "Homebrew", "Collections"]
+    assert [node.uid for node in controller.project_tree_model.root_data] == [
+        node.uid for node in controller.project_tree_manager.root_nodes
     ]
 
     controller.refresh_project_tree()
@@ -227,7 +230,7 @@ def test_project_controller_owns_a_projectfoundry_project():
             controller.project_tree_model.index(row, 0)
         )
         for row in range(controller.project_tree_model.rowCount())
-    ] == ["Compendium", "Homebrew", "Collections"]
+    ] == ["Databases", "Compendium", "Homebrew", "Collections"]
 
     controller.new_project()
 
@@ -251,7 +254,7 @@ def test_project_context_and_service_follow_create_save_replace_and_load(tmp_pat
 
     database = DatabaseObject("Rules")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
-    controller.register_database(database)
+    controller.refresh_project_tree()
     controller.project.rename_block(database.guid, "Renamed Rules")
     assert context.dirty is True
     controller.save_project()
@@ -273,15 +276,16 @@ def test_project_context_and_service_follow_create_save_replace_and_load(tmp_pat
     assert controller.project.blocks.contains(database.guid)
 
 
-def test_project_controller_registers_and_unregisters_database_block():
+def test_legacy_database_tree_projects_and_removes_database_block():
     controller = ProjectController()
     database = DatabaseObject("Rules")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
 
-    controller.register_database(database)
+    controller.refresh_project_tree()
     assert controller.project.resolve_block(database.guid) is database.block_object
 
-    controller.unregister_database(database)
+    database.remove_from_tree()
+    controller.refresh_project_tree()
     assert not controller.project.blocks.contains(database.guid)
 
 
@@ -289,7 +293,7 @@ def test_tree_model_renames_registered_blocks_through_project(tmp_path):
     controller = ProjectController()
     database = DatabaseObject("Rules", tmp_path / "rules.sqlite")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
-    controller.register_database(database)
+    controller.refresh_project_tree()
     index = controller.tree_model.index(
         controller.tree_model.root_data[0].children.index(database.node),
         0,
@@ -306,13 +310,17 @@ def test_project_controller_routes_query_lifecycle():
     controller = ProjectController()
     database = DatabaseObject("Rules")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
-    controller.register_database(database)
+    controller.refresh_project_tree()
     query = QueryObject("All rules", sql="SELECT 1")
 
-    controller.register_query(database, query)
+    database.add_query_object(query)
+    controller.refresh_project_tree()
     assert controller.project.block_child_uids(database.guid) == (query.guid,)
 
-    controller.unregister_query(database, query)
+    database.query_objects.remove(query)
+    query.remove_from_tree()
+    database._changed()
+    controller.refresh_project_tree()
     assert controller.project.block_child_uids(database.guid) == ()
 
 
@@ -320,9 +328,10 @@ def test_project_controller_updates_query_block_data():
     controller = ProjectController()
     database = DatabaseObject("Rules")
     database.add_to_tree(controller.tree_manager, controller.tree_manager.root_nodes[0])
-    controller.register_database(database)
+    controller.refresh_project_tree()
     query = QueryObject("All rules", sql="SELECT 1")
-    controller.register_query(database, query)
+    database.add_query_object(query)
+    controller.refresh_project_tree()
 
     controller.update_query(
         database,

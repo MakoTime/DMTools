@@ -758,7 +758,12 @@ def test_bard_uses_phb_table_then_class_feature_order():
                     {"name": "Bardic Inspiration", "description": "Inspiration."},
                     {"name": "Jack of All Trades", "description": "Versatility."},
                 ],
-                "spellcasting": {"ability": "charisma", "progression": "full"},
+                "spellcasting": {
+                    "ability": "charisma",
+                    "progression": "full",
+                    "ritual": True,
+                    "prepared": True,
+                },
             },
         )
     )
@@ -767,6 +772,11 @@ def test_bard_uses_phb_table_then_class_feature_order():
     assert rendered.index("### Hit Points") < rendered.index("### Spellcasting")
     assert rendered.index("### Spellcasting") < rendered.index("### Bardic Inspiration")
     assert rendered.index("### Bardic Inspiration") < rendered.index("### Jack of All Trades")
+    assert "## Spellcasting Details" in rendered
+    assert "**Ability:** Charisma" in rendered
+    assert "**Progression:** Full" in rendered
+    assert "**Ritual Casting:** Yes" in rendered
+    assert "**Prepared Spells:** Yes" in rendered
 
 
 def test_bard_does_not_repeat_aggregate_description_or_supplementary_features():

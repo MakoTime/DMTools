@@ -3,10 +3,7 @@ from pathlib import Path
 
 from application.project_version import CURRENT_PROJECT_VERSION, upgrade_project_data
 from components.tree.model import TreeNode
-from components.tree.roots.db_root import database_root
 from components.tree.roots.root_objects import root_objects
-from objects.database_object import DatabaseObject
-from objects.query_object import QueryObject
 from objects.json_object import JSONDataObject
 from objects.table_object import TableDataObject
 from objects.shopkeeper_object import ShopkeeperObject
@@ -17,8 +14,6 @@ PROJECT_FILE = "project.json"
 OBJECT_TYPES = {
     JSONDataObject.type_name: JSONDataObject,
     TableDataObject.type_name: TableDataObject,
-    DatabaseObject.type_name: DatabaseObject,
-    QueryObject.type_name: QueryObject,
     ShopkeeperObject.type_name: ShopkeeperObject,
 }
 
@@ -127,9 +122,7 @@ class ProjectSerializer:
         if object_type == "folder":
             node = root_objects.node_for_uid(item.get("uid"))
             if node is None:
-                node = database_root if item.get("name") == database_root.name else TreeNode(
-                    name=item.get("name", "Folder"), uid=item.get("uid")
-                )
+                node = TreeNode(name=item.get("name", "Folder"), uid=item.get("uid"))
             for field in (
                 "node_type",
                 "namespace",
@@ -159,10 +152,6 @@ class ProjectSerializer:
         item = self._with_external_payload(item, project_directory)
         object_base = object_class.from_json(item, project_directory)
         object_base.add_to_tree(tree_manager, parent)
-        if parent is not None and object_type == QueryObject.type_name:
-            parent_object = parent.node_object
-            if isinstance(parent_object, DatabaseObject):
-                parent_object.query_objects.append(object_base)
         for child_item in item.get("children", []):
             self._deserialize_node(
                 child_item, project_directory, tree_manager, object_base.node

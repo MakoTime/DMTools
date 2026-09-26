@@ -78,7 +78,11 @@ class EntityTreeController:
         entity_uid = getattr(node, "entity_uid", None)
         if not entity_uid:
             return None
-        entity = self.project_controller.resolve_entity(entity_uid)
+        try:
+            entity = self.project_controller.resolve_entity(entity_uid)
+        except ValueError:
+            self.project_controller.refresh_project_tree()
+            return None
         if entity is None:
             return None
         return self._open_entity(entity)

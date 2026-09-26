@@ -7,7 +7,6 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 
 from application import ProjectController
-from application.controllers.db_controller import DataBaseController
 from application.controllers.entity_controller import EntityTreeController
 from application.controllers.import_controller import EntityImportController
 from application.display_space import DisplaySpaceController
@@ -35,7 +34,6 @@ def load_main_window(project_file):
 
     controller = ProjectController()
     window.treeWidget.setModel(controller.project_tree_model)
-    database_controller = DataBaseController(window.treeWidget, parent=window)
     controller.load_project(project_file)
     display_space_controller = DisplaySpaceController(window.sceneViewer, parent=window)
     window.display_space_controller = display_space_controller
@@ -57,7 +55,6 @@ def load_main_window(project_file):
         lambda checked=False: controller.save_project_as(window)
     )
     window.project_controller = controller
-    window.database_controller = database_controller
     window.import_controller = import_controller
     window.entity_controller = entity_controller
     return window
@@ -109,4 +106,10 @@ class ApplicationLauncher:
 
     def run(self):
         self.file_window.show()
-        return self.app.exec()
+        try:
+            return self.app.exec()
+        finally:
+            for window in self.project_windows:
+                controller = getattr(window, "project_controller", None)
+                if controller is not None:
+                    controller.close()

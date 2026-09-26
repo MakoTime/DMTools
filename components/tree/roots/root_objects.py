@@ -1,6 +1,5 @@
 from ..model import TreeNode
 from .collections_root import collections_root
-from .db_root import database_root
 from .entity_roots import compendium_root, homebrew_root
 
 
@@ -8,18 +7,16 @@ class RootObjects:
     """Singleton registry for nodes displayed at the tree root."""
 
     def __init__(self):
-        self.nodes = [database_root, compendium_root, homebrew_root, collections_root]
+        self.nodes = [compendium_root, homebrew_root, collections_root]
         self._protected_nodes = set(self.nodes)
 
     def reset(self):
         """Restore persistent roots and empty their project-owned contents."""
-        database_root.children.clear()
-        database_root.child_uids.clear()
         compendium_root.reset()
         homebrew_root.reset()
         collections_root.children.clear()
         collections_root.child_uids.clear()
-        self.nodes = [database_root, compendium_root, homebrew_root, collections_root]
+        self.nodes = [compendium_root, homebrew_root, collections_root]
         return self.nodes
 
     def node_for_uid(self, uid):
@@ -76,16 +73,6 @@ class RootObjects:
 
     def get_visible_nodes(self):
         """Return roots intended for the main project tree."""
-        return [node for node in self.nodes if node is not database_root]
-
-    # def _ensure_special_roots_last(self):
-    #     """Keep persistent category roots ordered before WorldConfig."""
-    #     from .world_config_root import world_config
-
-    #     for node in (database_root, world_config.node):
-    #         if node in self.nodes:
-    #             self.nodes.remove(node)
-    #     self.nodes.extend((database_root, world_config.node))
-
+        return list(self.nodes)
 
 root_objects = RootObjects()

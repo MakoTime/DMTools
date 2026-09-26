@@ -2,7 +2,6 @@
 
 from projectfoundry.tree import TreeNode
 
-from components.tree.roots.db_root import database_root
 from components.tree.roots.entity_roots import category_entity_type
 
 
@@ -70,6 +69,20 @@ class ProtectedTreeNode(TreeNode):
 def rebuild_project_tree(project, legacy_roots):
     """Incrementally synchronize compatibility nodes into the canonical tree."""
     registered_blocks = {block.guid for block in project.blocks.values()}
+    mirrored_legacy_blocks = set()
+
+    legacy_root_names = {root.name for root in legacy_roots}
+    for root_name in legacy_root_names:
+        matching_roots = [
+            node
+            for node in project.tree.root_nodes
+            if node.name == root_name and node.parent_uid is None
+        ]
+        for duplicate in matching_roots[1:]:
+            duplicate_children = tuple(duplicate.children)
+            project.remove_node(duplicate.uid)
+            for child in duplicate_children:
+                _restore_subtree(project, child, matching_roots[0].uid)
 
     def ensure_node(legacy_node, *, object_uid=None, parent_uid=None):
         if project.nodes.contains(legacy_node.uid):
@@ -82,17 +95,31 @@ def rebuild_project_tree(project, legacy_roots):
             node.node_object = legacy_node.node_object
             node.object_uid = object_uid
         else:
-            node_class = (
-                ProtectedTreeNode
-                if getattr(legacy_node, "protected", False)
-                else TreeNode
+            node = next(
+                (
+                    candidate
+                    for candidate in project.tree.root_nodes
+                    if parent_uid is None
+                    and candidate.name == legacy_node.name
+                    and candidate.parent_uid is None
+                ),
+                None,
             )
-            node = node_class(
-                legacy_node.name,
-                node_object=legacy_node.node_object,
-                uid=legacy_node.uid,
-            )
-            project.add_node(node, object_uid=object_uid, parent_uid=parent_uid)
+            if node is None:
+                node_class = (
+                    ProtectedTreeNode
+                    if getattr(legacy_node, "protected", False)
+                    else TreeNode
+                )
+                node = node_class(
+                    legacy_node.name,
+                    node_object=legacy_node.node_object,
+                    uid=legacy_node.uid,
+                )
+                project.add_node(node, object_uid=object_uid, parent_uid=parent_uid)
+            else:
+                node.node_object = legacy_node.node_object
+                node.object_uid = object_uid
         for field in (
             "node_type",
             "namespace",
@@ -114,6 +141,8 @@ def rebuild_project_tree(project, legacy_roots):
         if block is not None and block.guid not in registered_blocks:
             project.add_block(block)
             registered_blocks.add(block.guid)
+        if block is not None:
+            mirrored_legacy_blocks.add(block.guid)
         if block is not None and parent_block_uid is not None:
             project.connect_blocks(parent_block_uid, block.guid)
         node = ensure_node(
@@ -143,11 +172,9 @@ def rebuild_project_tree(project, legacy_roots):
         elif block_type == "shopkeeper":
             database_uid = block.block_data.database_uid
             database_node_uid = f"{database_uid}-node"
-            parent_uid = (
-                database_node_uid
-                if database_uid and project.nodes.contains(database_node_uid)
-                else database_root.uid
-            )
+            if not database_uid or not project.nodes.contains(database_node_uid):
+                continue
+            parent_uid = database_node_uid
         else:
             continue
         node_uid = f"{block.guid}-node"
@@ -162,3 +189,10 @@ def rebuild_project_tree(project, legacy_roots):
                 parent_uid=parent_uid,
             )
     return roots
+
+
+def _restore_subtree(project, node, parent_uid):
+    children = tuple(node.children)
+    project.add_node(node, object_uid=node.object_uid, parent_uid=parent_uid)
+    for child in children:
+        _restore_subtree(project, child, node.uid)

@@ -84,6 +84,14 @@ class ImportProgressModel:
             if parameter.kind
             in (parameter.POSITIONAL_ONLY, parameter.POSITIONAL_OR_KEYWORD)
         )
+        if len(positional) >= 3:
+            return self.work(
+                lambda current, total: self._record_progress(
+                    current, total, set_progress
+                ),
+                self._cancelled.is_set,
+                self._record_status,
+            )
         if len(positional) >= 2:
             return self.work(
                 lambda current, total: self._record_progress(

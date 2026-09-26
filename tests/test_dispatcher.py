@@ -80,7 +80,7 @@ class TestDispatcher(unittest.TestCase):
         self.assertEqual(results[1]["data"]["name"], "Custom Lineage")
         self.assertEqual(results[2]["name"], "Future Entity")
 
-    def test_dispatch_root_reports_record_failures_without_aborting(self):
+    def test_dispatch_root_preserves_records_for_shared_validation(self):
         root = parse_xml(
             """
             <compendium>
@@ -92,7 +92,8 @@ class TestDispatcher(unittest.TestCase):
 
         results = dispatch_root(root)
 
-        self.assertEqual(results[0]["status"], "failed")
+        self.assertEqual(results[0]["status"], "success")
+        self.assertEqual(results[0]["data"]["name"], "Broken Spell")
         self.assertEqual(results[1]["status"], "success")
 
     def test_dispatches_subclasses_from_class_features(self):

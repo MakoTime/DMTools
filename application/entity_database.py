@@ -646,6 +646,23 @@ class EntityDatabaseStore:
                 raise ValueError(f"Unknown {self.namespace} entity UID: {entity_uid}")
         self._sync_block_metadata()
 
+    def purge(self, entity_types=None):
+        """Delete all rows in this namespace, optionally limited by type."""
+        parameters = []
+        where = ""
+        if entity_types:
+            values = tuple(sorted(set(entity_types)))
+            placeholders = ", ".join("?" for _value in values)
+            where = f" WHERE entity_type IN ({placeholders})"
+            parameters.extend(values)
+        with closing(self.connect()) as connection, connection:
+            rows = connection.execute(
+                f"SELECT uid FROM entities{where}", parameters
+            ).fetchall()
+            connection.execute(f"DELETE FROM entities{where}", parameters)
+        self._sync_block_metadata()
+        return tuple(row[0] for row in rows)
+
     def _validate_record_namespace(self, record):
         if not isinstance(record, ImportedEntityRecord):
             raise TypeError("Entity database accepts ImportedEntityRecord values")

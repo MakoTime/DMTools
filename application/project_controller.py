@@ -18,13 +18,27 @@ from application.project_lifecycle import ProjectLifecycleService
 from application.project_tree import ProjectTreeMutationService
 from application.legacy_tree_projection import LegacyTreeProjectionAdapter
 from components.tree import TreeManager, TreeModel
-from components.tree.roots.db_root import database_root
 from components.tree.roots.entity_roots import (
     compendium_root,
     custom_rule_values,
     homebrew_root,
 )
 from components.tree.roots.root_objects import root_objects
+
+
+def _node_entity_uid(node, namespace):
+    node_namespace = getattr(node, "namespace", None)
+    if node_namespace not in (None, namespace):
+        return None
+    entity_uid = getattr(node, "entity_uid", None)
+    if entity_uid is not None:
+        return entity_uid
+    object_uid = getattr(node, "object_uid", None)
+    if object_uid is not None:
+        return object_uid
+    prefix = f"dmtools-{namespace}-entity-"
+    node_uid = getattr(node, "uid", "")
+    return node_uid[len(prefix) :] if node_uid.startswith(prefix) else None
 
 
 class ProjectController:
@@ -47,8 +61,6 @@ class ProjectController:
         self.tree_mutations = ProjectTreeMutationService(self.project)
         self.tree_projection = LegacyTreeProjectionAdapter(self.project)
         self.framework_registry = SerializerRegistry()
-        self.framework_registry.register_block("database", self._database_block_from_record)
-        self.framework_registry.register_block("query", self._query_block_from_record)
         self.framework_registry.register_block("json", self._json_block_from_record)
         self.framework_registry.register_block("table", self._table_block_from_record)
         self.framework_registry.register_block(
@@ -70,7 +82,7 @@ class ProjectController:
         self.project_tree_manager = self.project.tree
         self.project_tree_model = ProjectTreeModel(
             self.project_tree_manager.root_nodes,
-            project=None,
+            project=self.project,
         )
         self.tree_manager = TreeManager()
         self.tree_manager.root_nodes = root_objects.get_nodes()
@@ -82,6 +94,7 @@ class ProjectController:
         self.project_file = None
         self._duplicate_name_dialog = duplicate_name_dialog
         self._project_replacement_callbacks = []
+        self._closed = False
         self.refresh_project_tree()
 
     def add_project_replacement_callback(self, callback):
@@ -91,33 +104,6 @@ class ProjectController:
     def _notify_project_replacement(self):
         for callback in tuple(self._project_replacement_callbacks):
             callback()
-
-    @staticmethod
-    def _database_block_from_record(record):
-        from objects.database_object import DatabaseBlock
-
-        data = record.get("data", {})
-        return DatabaseBlock(
-            record["name"],
-            database_path=data.get("database_path"),
-            queries=data.get("queries", []),
-            guid=record["block_uid"],
-        )
-
-    @staticmethod
-    def _query_block_from_record(record):
-        from objects.query_object import QueryBlock
-
-        data = record.get("data", {})
-        return QueryBlock(
-            record["name"],
-            database_guid=data.get("database_guid"),
-            sql=data.get("sql", ""),
-            table_name=data.get("table_name", ""),
-            filters=data.get("filters", []),
-            lookup=data.get("lookup", {}),
-            guid=record["block_uid"],
-        )
 
     @staticmethod
     def _json_block_from_record(record):
@@ -808,6 +794,51 @@ class ProjectController:
         self.project.remove_node(node_uid)
         self.project_tree_model.refresh()
 
+    def purge_entity_data(self, namespace, entity_types=None):
+        """Delete selected entity rows and remove their project references."""
+        if namespace not in {"compendium", "homebrew"}:
+            raise ValueError(f"Unsupported entity namespace: {namespace}")
+        block_uid = f"dmtools-{namespace}-entity-database"
+        if not self.project.blocks.contains(block_uid):
+            return 0
+        removed_uids = self.entity_database_store(namespace).purge(entity_types)
+        removed = set(removed_uids)
+        for node in tuple(self.project.nodes.values()):
+            if (
+                _node_entity_uid(node, namespace) in removed
+            ):
+                self.project.remove_node(node.uid)
+        self._remove_legacy_entity_nodes(namespace, removed)
+        for block in self.project.blocks.values():
+            if getattr(block, "type_name", None) != "collection":
+                continue
+            members = block.block_data.entity_uids
+            filtered = [uid for uid in members if uid not in removed]
+            if filtered != members:
+                block.block_data.entity_uids = filtered
+                block.mark_changed()
+        self.refresh_project_tree()
+        if self.project_file is not None:
+            self.save_entity_namespace_json(namespace)
+            self.save_project()
+        return len(removed_uids)
+
+    def _remove_legacy_entity_nodes(self, namespace, entity_uids):
+        """Remove stale entity nodes from the compatibility tree projection."""
+        roots = (compendium_root, homebrew_root)
+        for root in roots:
+            if getattr(root, "namespace", None) != namespace:
+                continue
+            pending = list(root.children)
+            while pending:
+                node = pending.pop()
+                pending.extend(node.children)
+                if (
+                    _node_entity_uid(node, namespace) in entity_uids
+                    and node.parent is not None
+                ):
+                    node.parent.remove_child(node)
+
     def copy_entity_to_homebrew(self, entity_uid):
         """Create a new Homebrew record linked to, but separate from, its source."""
         from application.homebrew import HomebrewDraft
@@ -842,10 +873,7 @@ class ProjectController:
             if not self.project.blocks.contains(data.database_uid):
                 raise ValueError("Shopkeeper database UID is not in the active project")
             database = self.project.blocks.get(data.database_uid)
-            if getattr(database, "type_name", None) not in {
-                "database",
-                "entity_database",
-            }:
+            if getattr(database, "type_name", None) != "entity_database":
                 raise ValueError("Shopkeeper database UID is not a database")
         for query_uid in data.query_uids:
             if not self.project.blocks.contains(query_uid):
@@ -892,82 +920,12 @@ class ProjectController:
             raise TypeError(f"Block is not a table: {table_uid}")
         return self.project.load_block_artifact(table_uid, block.load_artifact)
 
-    def register_database(self, database_object):
-        """Register a DMTools database block in the active project."""
-        block = database_object.block_object
-        if getattr(block, "_project", None) not in (None, self.project):
-            raise ValueError("Database belongs to another project")
-        self.project.add_block(block)
-        database_object._project_controller = self
-        self.refresh_project_tree()
-        return database_object
-
-    def unregister_database(self, database_object):
-        """Remove a database block from the active project if present."""
-        self.refresh_project_tree()
-        if self.project.blocks.contains(database_object.guid):
-            self.project.remove_block(database_object.guid)
-        database_object._project_controller = None
-
-    def register_query(self, database_object, query_object):
-        """Attach and register a saved query through the active project."""
-        database_object.add_query_object(query_object)
-        self.refresh_project_tree()
-        return query_object
-
-    def unregister_query(self, database_object, query_object):
-        """Remove a saved query relationship from the active project."""
-        database_object.query_objects = [
-            query for query in database_object.query_objects if query is not query_object
-        ]
-        query_object.remove_from_tree()
-        database_object._changed()
-        self.refresh_project_tree()
-        if self.project.blocks.contains(query_object.guid):
-            self.project.remove_block(query_object.guid)
-
-    def update_query(
-        self,
-        database_object,
-        query_object,
-        *,
-        sql,
-        table_name,
-        filters,
-        lookup,
-        name=None,
-    ):
-        """Apply validated query editor state to a registered query."""
-        if name is not None:
-            query_object._on_name_changed(name)
-            query_object.block_object.name = name
-        query_object.sql = sql
-        query_object.table_name = table_name
-        query_object.filters = list(filters)
-        query_object.lookup = lookup
-        query_object.block_object.block_data.sql = sql
-        query_object.block_object.block_data.table_name = table_name
-        query_object.block_object.block_data.filters = [
-            condition if isinstance(condition, dict) else condition.__dict__
-            for condition in query_object.filters
-        ]
-        query_object.block_object.block_data.lookup = (
-            lookup if isinstance(lookup, dict) else lookup.__dict__
-        )
-        query_object.block_object.mark_changed()
-        database_object._changed()
-        self.refresh_project_tree()
-        return query_object
-
     def refresh_project_tree(self):
         self._refresh_homebrew_rules()
-        project_roots = self.tree_projection.refresh()
+        self.tree_projection.refresh()
         self._migrate_subclass_nodes()
-        self.project_tree_model.root_data = [
-            node
-            for node in project_roots
-            if node.uid != database_root.uid
-        ]
+        self.project_tree_model.project = self.project
+        self.project_tree_model.root_data = self.project.tree.root_nodes
         self.project_tree_model.refresh()
 
     def _refresh_homebrew_rules(self):
@@ -1039,6 +997,9 @@ class ProjectController:
 
     def close(self):
         """Release ProjectFoundry-owned runtime resources."""
+        if self._closed:
+            return
+        self._closed = True
         self.task_runner.shutdown()
         self._close_active_project()
 

@@ -1,6 +1,14 @@
+import json
 from pathlib import Path
 
-from PySide6.QtWidgets import QHBoxLayout, QPushButton, QTextBrowser, QVBoxLayout
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QPlainTextEdit,
+    QPushButton,
+    QSplitter,
+    QTextBrowser,
+    QVBoxLayout,
+)
 
 from application.entity_rendering import render_entity_html
 from common.icons import get_icon
@@ -26,6 +34,9 @@ class EntityDetailMdiView(WidgetEditorView):
         super().__init__(model, parent=parent, on_close=on_close)
         self.setWindowTitle(model.title)
         self.resize(720, 620)
+        self.raw_view = QPlainTextEdit(self)
+        self.raw_view.setReadOnly(True)
+        self.raw_view.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.browser = QTextBrowser(self)
         self.browser.setOpenLinks(False)
         self.browser.setOpenExternalLinks(False)
@@ -39,9 +50,16 @@ class EntityDetailMdiView(WidgetEditorView):
                 stylesheet.read_text(encoding="utf-8")
             )
         entity = model.entity
+        self.raw_view.setPlainText(self._raw_json(entity))
         self.browser.setHtml(render_entity_html(entity))
         model.release_entity()
         toolbar = QHBoxLayout()
+        self.raw_button = QPushButton("Raw JSON", self)
+        self.raw_button.setCheckable(True)
+        self.raw_button.setChecked(True)
+        self.raw_button.setToolTip("Show or hide the imported source JSON")
+        self.raw_button.toggled.connect(self.raw_view.setVisible)
+        toolbar.addWidget(self.raw_button)
         toolbar.addStretch(1)
         if on_edit is not None:
             edit_button = QPushButton(self)
@@ -59,12 +77,23 @@ class EntityDetailMdiView(WidgetEditorView):
             self.resolve_button = None
         layout = QVBoxLayout(self)
         layout.addLayout(toolbar)
-        layout.addWidget(self.browser, 1)
+        splitter = QSplitter(self)
+        splitter.addWidget(self.raw_view)
+        splitter.addWidget(self.browser)
+        splitter.setSizes((360, 640))
+        layout.addWidget(splitter, 1)
+
+    @staticmethod
+    def _raw_json(entity):
+        metadata = getattr(entity, "source_metadata", {}) or {}
+        source = metadata.get("api_source") or getattr(entity, "payload", {})
+        return json.dumps(source, indent=2, ensure_ascii=False, sort_keys=True)
 
     def refresh_entity(self, entity):
         """Replace derived presentation after the canonical record changes."""
         self.model._entity = entity
         self.setWindowTitle(self.model.title)
+        self.raw_view.setPlainText(self._raw_json(entity))
         self.browser.setHtml(render_entity_html(entity))
         if self.resolve_button is not None:
             self.resolve_button.setVisible(

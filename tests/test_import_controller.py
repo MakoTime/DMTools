@@ -3,7 +3,7 @@ from threading import Event, get_ident
 from types import SimpleNamespace
 
 from projectfoundry import ArtifactStore, QtTaskRunner, Task, TaskRunner
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QModelIndex, QTimer
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
@@ -47,10 +47,41 @@ class PreviewDialog:
         return self.result
 
 
+class FakeSrdClient:
+    def __init__(self, resources_by_collection):
+        self.resources_by_collection = resources_by_collection
+
+    def fetch_collection_resources(
+        self,
+        collection,
+        *,
+        query=None,
+        is_cancelled=None,
+        progress_callback=None,
+    ):
+        del query
+        resources = self.resources_by_collection[collection]
+        if progress_callback is not None:
+            progress_callback(len(resources), len(resources))
+        if is_cancelled is not None and is_cancelled():
+            return []
+        return resources
+
+
 def project_controller(tmp_path):
     controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
     controller.project_file = tmp_path / "project.json"
     return controller
+
+
+def tree_model_names(model, parent=None):
+    parent = QModelIndex() if parent is None else parent
+    names = []
+    for row in range(model.rowCount(parent)):
+        index = model.index(row, 0, parent)
+        names.append(model.data(index))
+        names.extend(tree_model_names(model, index))
+    return names
 
 
 def test_import_file_selection_cancel_does_not_mutate_project(tmp_path):
@@ -119,6 +150,113 @@ def test_accepted_xml_import_commits_and_registers_category_node(tmp_path):
         (tmp_path / "project.json").read_text(encoding="utf-8")
     )
     assert manifest["data_files"]["compendium"] == "data/compendium.json"
+
+
+def test_api_import_reaches_persistence_and_project_save(tmp_path):
+    qt_app()
+    controller = project_controller(tmp_path)
+    resources = {
+        "equipment": [{
+            "collection": "equipment",
+            "payload": {
+                "index": "handaxe",
+                "name": "Handaxe",
+                "equipment_category": {"name": "Weapon"},
+                "weapon_category": "Simple",
+                "weapon_range": "Melee",
+                "damage": {
+                    "damage_dice": "1d6",
+                    "damage_type": {"name": "Slashing"},
+                },
+                "range": {"normal": 5},
+                "cost": {"quantity": 5, "unit": "gp"},
+                "weight": 2,
+                "url": "/api/2014/equipment/handaxe",
+            },
+            "parent": None,
+        }]
+    }
+    import_controller = EntityImportController(
+        controller,
+        srd_client=FakeSrdClient(resources),
+        preview_factory=lambda preview, **kwargs: PreviewDialog(
+            preview, QDialog.DialogCode.Accepted
+        ),
+        error_reporter=lambda message: (_ for _ in ()).throw(AssertionError(message)),
+    )
+
+    assert import_controller.import_srd_collection("equipment") == 1
+
+    row = controller.entity_database_store("compendium").query(
+        "item", value="Handaxe"
+    )[0]
+    assert controller.project.nodes.contains(
+        f"dmtools-compendium-entity-{row.uid}"
+    )
+    assert "Handaxe" in tree_model_names(controller.project_tree_model)
+    compendium_data = json.loads(
+        (tmp_path / "data" / "compendium.json").read_text(encoding="utf-8")
+    )
+    assert compendium_data[row.uid]["payload"]["name"] == "Handaxe"
+    manifest = json.loads((tmp_path / "project.json").read_text(encoding="utf-8"))
+    assert manifest["data_files"]["compendium"] == "data/compendium.json"
+
+
+def test_api_import_reaches_commit_for_multiple_collections(tmp_path):
+    qt_app()
+    controller = project_controller(tmp_path)
+    resources = {
+        "equipment": [{
+            "collection": "equipment",
+            "payload": {
+                "index": "rope",
+                "name": "Rope",
+                "equipment_category": {"name": "Adventuring Gear"},
+                "desc": ["A length of rope."],
+                "cost": {"quantity": 1, "unit": "gp"},
+                "weight": 10,
+                "url": "/api/2014/equipment/rope",
+            },
+            "parent": None,
+        }],
+        "backgrounds": [{
+            "collection": "backgrounds",
+            "payload": {
+                "index": "acolyte",
+                "name": "Acolyte",
+                "desc": ["You have spent your life in service."],
+                "starting_proficiencies": [],
+                "url": "/api/2014/backgrounds/acolyte",
+            },
+            "parent": None,
+        }],
+    }
+    import_controller = EntityImportController(
+        controller,
+        srd_client=FakeSrdClient(resources),
+        preview_factory=lambda preview, **kwargs: PreviewDialog(
+            preview, QDialog.DialogCode.Accepted
+        ),
+        error_reporter=lambda message: (_ for _ in ()).throw(AssertionError(message)),
+    )
+
+    assert import_controller.import_srd(
+        collections=("equipment", "backgrounds")
+    ) == 2
+
+    store = controller.entity_database_store("compendium")
+    assert [row.name for row in store.query("item", operator="all")] == ["Rope"]
+    assert [row.name for row in store.query("background", operator="all")] == [
+        "Acolyte"
+    ]
+    assert all(
+        controller.project.nodes.contains(f"dmtools-compendium-entity-{row.uid}")
+        for entity_type in ("item", "background")
+        for row in store.query(entity_type, operator="all")
+    )
+    tree_names = tree_model_names(controller.project_tree_model)
+    assert "Rope" in tree_names
+    assert "Acolyte" in tree_names
 
 
 def test_preview_rejection_does_not_create_entity_database(tmp_path):
