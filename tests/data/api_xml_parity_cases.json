@@ -1,0 +1,135 @@
+[
+  {
+    "collection": "monsters",
+    "payload": {
+      "index": "goblin",
+      "name": "Goblin",
+      "size": "Small",
+      "type": "humanoid",
+      "subtype": "goblinoid",
+      "alignment": "neutral evil",
+      "armor_class": [{"value": 15, "type": "armor", "desc": "Leather armor, shield"}],
+      "hit_points": 7,
+      "hit_dice": "2d6",
+      "speed": {"walk": "30 ft."},
+      "strength": 8,
+      "dexterity": 14,
+      "constitution": 10,
+      "intelligence": 10,
+      "wisdom": 8,
+      "charisma": 8,
+      "proficiencies": [],
+      "damage_vulnerabilities": [],
+      "damage_resistances": [],
+      "damage_immunities": [],
+      "condition_immunities": [],
+      "senses": {"darkvision": "60 ft.", "passive_perception": 9},
+      "languages": "Common, Goblin",
+      "challenge_rating": 0.25,
+      "proficiency_bonus": 2,
+      "special_abilities": [{"name": "Nimble Escape", "desc": "The goblin can take the Disengage or Hide action as a bonus action on each of its turns."}],
+      "actions": [{"name": "Scimitar", "desc": "Melee Weapon Attack."}],
+      "reactions": [],
+      "legendary_actions": [],
+      "environment": ["forest", "grassland"]
+    }
+  },
+  {
+    "collection": "spells",
+    "payload": {
+      "index": "fireball",
+      "name": "Fireball",
+      "desc": ["A bright streak flashes from your pointing finger to a point you choose within range."],
+      "higher_level": [],
+      "level": 3,
+      "school": {"name": "Evocation"},
+      "classes": [{"name": "Sorcerer"}, {"name": "Wizard"}],
+      "casting_time": "1 action",
+      "range": "150 feet",
+      "components": ["V", "S", "M"],
+      "material": "a tiny ball of bat guano and sulfur",
+      "duration": "Instantaneous",
+      "ritual": false,
+      "concentration": false
+    }
+  },
+  {
+    "collection": "classes",
+    "payload": {
+      "index": "bard",
+      "name": "Bard",
+      "hit_die": 8,
+      "proficiencies": [{"name": "Light armor"}, {"name": "Simple weapons"}, {"name": "Hand crossbows"}, {"name": "Longswords"}, {"name": "Rapiers"}, {"name": "Shortswords"}],
+      "saving_throws": [{"name": "DEX"}, {"name": "CHA"}],
+      "proficiency_choices": [{"choose": 3, "from": {"options": [{"string": "Acrobatics"}, {"string": "Performance"}, {"string": "Persuasion"}]}}],
+      "desc": ["As a bard, you gain the following class features."],
+      "class_levels": [],
+      "multi_classing": {"prerequisites": [{"ability_score": {"name": "Charisma"}}]},
+      "spellcasting": {"spellcasting_ability": {"name": "Charisma"}}
+    }
+  },
+  {
+    "collection": "races",
+    "payload": {
+      "index": "human",
+      "name": "Human",
+      "size": "Medium",
+      "speed": 30,
+      "ability_bonuses": [],
+      "languages": [{"name": "Common"}],
+      "starting_proficiencies": [],
+      "traits": [],
+      "subraces": [],
+      "age": "Humans reach adulthood in their late teens.",
+      "alignment": "Humans tend toward no particular alignment.",
+      "language_desc": "You can speak, read, and write Common and one extra language.",
+      "url": "/api/2014/races/human"
+    }
+  },
+  {
+    "collection": "backgrounds",
+    "payload": {
+      "index": "acolyte",
+      "name": "Acolyte",
+      "desc": ["You have spent your life in the service of a temple."],
+      "starting_proficiencies": [{"name": "Insight"}, {"name": "Religion"}],
+      "starting_equipment": [],
+      "feature": {"name": "Shelter of the Faithful", "desc": ["As an acolyte, you command the respect of those who share your faith."]}
+    }
+  },
+  {
+    "collection": "feats",
+    "payload": {
+      "index": "grappler",
+      "name": "Grappler",
+      "desc": ["Always on the lookout for danger, you gain the following benefits."],
+      "prerequisites": [],
+      "ability_score_bonuses": 0,
+      "proficiencies": []
+    }
+  },
+  {
+    "collection": "equipment",
+    "payload": {
+      "index": "backpack",
+      "name": "Backpack",
+      "equipment_category": {"name": "Adventuring Gear"},
+      "weight": 5,
+      "cost": {"quantity": 2, "unit": "gp"},
+      "desc": ["A backpack can hold one cubic foot or 30 pounds of gear."],
+      "special": []
+    }
+  },
+  {
+    "collection": "subclasses",
+    "payload": {
+      "index": "college-of-lore",
+      "name": "College of Lore",
+      "class": {"name": "Bard"},
+      "desc": ["Bards of the College of Lore know something about most things."],
+      "subclass_levels": [],
+      "spells": [],
+      "subclass_flavor": "Bard College"
+    }
+  }
+]
