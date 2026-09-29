@@ -30,6 +30,7 @@ class EntityDetailMdiView(WidgetEditorView):
         on_link=None,
         on_rule=None,
         on_edit=None,
+        on_class_progression=None,
         on_resolve=None,
     ):
         super().__init__(model, parent=parent, on_close=on_close)
@@ -78,6 +79,12 @@ class EntityDetailMdiView(WidgetEditorView):
             edit_button.setToolTip("Edit Homebrew data")
             edit_button.clicked.connect(lambda: on_edit(entity))
             toolbar.addWidget(edit_button)
+        if on_class_progression is not None and getattr(entity, "entity_type", None) == "class":
+            progression_button = QPushButton(self)
+            progression_button.setIcon(get_icon("grid"))
+            progression_button.setToolTip("Edit class progression table")
+            progression_button.clicked.connect(lambda: on_class_progression(entity))
+            toolbar.addWidget(progression_button)
         if on_resolve is not None and getattr(entity, "source_metadata", {}).get(
             "reference_diagnostics"
         ):

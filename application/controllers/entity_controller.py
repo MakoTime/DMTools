@@ -86,6 +86,7 @@ class EntityTreeController:
                 project_controller,
                 mdi_area,
                 on_edit=self._open_homebrew_editor,
+                on_class_progression=self._open_class_progression_editor,
                 on_rule=self._open_rule_value,
             )
         if hasattr(tree_view, "doubleClicked"):
@@ -425,6 +426,25 @@ class EntityTreeController:
         subwindow.resize(680, 560)
         subwindow.show()
         return subwindow
+
+    def _open_class_progression_editor(self, entity):
+        from dialog.progression_editor import create_progression_editor
+
+        def commit(configuration):
+            updated = self.project_controller.update_class_progression(
+                entity.uid, configuration
+            )
+            if self.inspection_controller is not None:
+                self.inspection_controller.refresh(entity.uid)
+            return updated
+
+        view = create_progression_editor(
+            entity.payload,
+            parent=getattr(self.parent, "sceneViewer", None),
+            on_apply=commit,
+        )
+        view.show()
+        return view
 
     def _clone_homebrew_source(self, source_uid):
         clone = self.project_controller.copy_entity_to_homebrew(source_uid)

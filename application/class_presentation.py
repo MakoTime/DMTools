@@ -3,6 +3,8 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from application.progression_table import custom_progression_rows
+
 
 SPELL_LEVEL_COLUMNS = tuple(str(level) for level in range(1, 10))
 
@@ -37,6 +39,17 @@ def class_progression_rows(
     payload: Mapping[str, Any], metadata: Mapping[str, Any] | None = None
 ) -> list[dict[str, Any]]:
     """Build PHB-style class rows from canonical data plus optional display metadata."""
+    custom_rows = custom_progression_rows(payload)
+    if custom_rows is not None:
+        base_payload = dict(payload)
+        base_payload.pop("presentation_progression", None)
+        base_rows = class_progression_rows(base_payload, metadata)
+        generated = {"level", "proficiency_bonus", "features"}
+        for base_row, custom_row in zip(base_rows, custom_rows):
+            for key, value in custom_row.items():
+                if key not in generated:
+                    base_row[key] = value
+        return base_rows
     features_by_level: dict[int, list[str]] = {}
     for feature in payload.get("features", ()):
         if not isinstance(feature, Mapping) or not isinstance(feature.get("level"), int):

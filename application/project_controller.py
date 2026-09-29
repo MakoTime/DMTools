@@ -848,6 +848,53 @@ class ProjectController:
                 return row
         raise ValueError(f"Unknown active-project entity UID: {entity_uid}")
 
+    def update_class_progression(self, entity_uid, configuration):
+        """Persist one accepted progression draft without changing other JSON."""
+        from copy import deepcopy
+
+        from application.imports import ImportedEntityRecord
+        from application.progression_table import CONFIG_KEY, table_configuration
+
+        normalized = table_configuration(configuration)
+        if normalized is None:
+            raise ValueError("Invalid class progression configuration")
+        row = self.resolve_entity(entity_uid)
+        if row.entity_type != "class":
+            raise ValueError("Progression tables can only be configured for classes")
+        payload = deepcopy(row.payload)
+        payload[CONFIG_KEY] = normalized
+        replacement = ImportedEntityRecord(
+            entity_type=row.entity_type,
+            uid=row.uid,
+            source_identity=row.source_identity,
+            display_name=row.name,
+            payload=payload,
+            source_metadata=deepcopy(row.source_metadata),
+            provenance=row.provenance,
+        )
+        store = self.entity_database_store(row.source_namespace)
+        store.commit_records((replacement,), duplicate_policy="replace")
+        try:
+            if self.project_file is not None:
+                self.save_project()
+        except Exception:
+            store.commit_records(
+                (
+                    ImportedEntityRecord(
+                        entity_type=row.entity_type,
+                        uid=row.uid,
+                        source_identity=row.source_identity,
+                        display_name=row.name,
+                        payload=row.payload,
+                        source_metadata=row.source_metadata,
+                        provenance=row.provenance,
+                    ),
+                ),
+                duplicate_policy="replace",
+            )
+            raise
+        return self.resolve_entity(entity_uid)
+
     def resolve_entity_reference(self, reference):
         """Resolve and validate one canonical entity reference."""
         if reference.source_namespace == "collection":

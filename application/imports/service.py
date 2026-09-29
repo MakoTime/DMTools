@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 import json
 from collections.abc import Callable, Collection
 from pathlib import Path
@@ -141,6 +142,11 @@ class EntityImportService:
         issues = []
         record_indexes = {}
         existing = set(existing_source_identities)
+        existing_by_identity = {
+            getattr(entity, "source_identity", None): entity
+            for entity in existing_entities
+            if getattr(entity, "source_identity", None)
+        }
         total = len(results)
         for index, result in enumerate(results):
             if is_cancelled is not None and is_cancelled():
@@ -176,6 +182,25 @@ class EntityImportService:
                     source_metadata=dict(result.get("source_metadata", {})),
                     provenance=result.get("provenance", provenance),
                 )
+                previous = existing_by_identity.get(record.source_identity)
+                previous_payload = getattr(previous, "payload", {})
+                custom_table = previous_payload.get("presentation_progression")
+                if (
+                    isinstance(previous_payload, dict)
+                    and isinstance(custom_table, dict)
+                    and isinstance(custom_table.get("columns"), list)
+                ):
+                    preserved_payload = dict(record.payload)
+                    preserved_payload["presentation_progression"] = deepcopy(custom_table)
+                    record = ImportedEntityRecord(
+                        entity_type=record.entity_type,
+                        uid=record.uid,
+                        source_identity=record.source_identity,
+                        display_name=record.display_name,
+                        payload=preserved_payload,
+                        source_metadata=record.source_metadata,
+                        provenance=record.provenance,
+                    )
             except Exception as error:  # noqa: BLE001 - preserve record-level validation errors
                 issues.append(
                     ImportIssue(
