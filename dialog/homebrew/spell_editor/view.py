@@ -6,14 +6,11 @@ from PySide6.QtWidgets import (
     QDialogButtonBox,
     QFormLayout,
     QGroupBox,
-    QHBoxLayout,
     QLabel,
     QLineEdit,
     QPushButton,
     QSpinBox,
     QSplitter,
-    QTableWidget,
-    QTableWidgetItem,
     QTabWidget,
     QTextEdit,
     QTextBrowser,
@@ -30,7 +27,7 @@ from .subdialogs.factory import (
     create_grants_dialog,
     create_roll_table_dialog,
 )
-from .subdialogs.view import CastingTimeDialog, DurationDialog, TargetDialog
+from .subdialogs.view import CastingTimeDialog, DurationDialog, TargetDialog, effect_summary
 from .model import SpellPropertyEditorModel
 
 
@@ -93,8 +90,15 @@ class SpellPropertyEditorView(PopupEditorView):
     )
     COMPONENTS = ("verbal", "somatic", "material")
 
-    def __init__(self, model: SpellPropertyEditorModel, parent=None, on_apply=None):
+    def __init__(
+        self,
+        model: SpellPropertyEditorModel,
+        parent=None,
+        on_apply=None,
+        on_clone=None,
+    ):
         super().__init__(model, parent=parent, on_apply=on_apply)
+        self.on_clone = on_clone
         self.setWindowTitle("Spell Properties")
         self.resize(720, 620)
         payload = model.payload
@@ -107,10 +111,19 @@ class SpellPropertyEditorView(PopupEditorView):
         editor_panel = QWidget(self)
         editor_layout = QVBoxLayout(editor_panel)
         editor_layout.addWidget(tabs)
-        editor_layout.addWidget(self.create_button_box(
+        buttons = self.create_button_box(
             QDialogButtonBox.StandardButton.Cancel
             | QDialogButtonBox.StandardButton.Ok
-        ))
+        )
+        if self.model.source_entity_uid and self.on_clone is not None:
+            clone_button = buttons.addButton(
+                "Clone Again to Homebrew",
+                QDialogButtonBox.ButtonRole.ActionRole,
+            )
+            clone_button.clicked.connect(
+                lambda: self.on_clone(self.model.source_entity_uid)
+            )
+        editor_layout.addWidget(buttons)
         self.preview = QTextBrowser(self)
         self.preview.setOpenLinks(False)
         splitter = QSplitter(self)
@@ -294,9 +307,15 @@ class SpellPropertyEditorView(PopupEditorView):
         if not value:
             return "Not set"
         if isinstance(value, list):
-            return f"{len(value)} entries"
+            summaries = [effect_summary(item) for item in value]
+            text = "; ".join(summaries[:2])
+            if len(summaries) > 2:
+                text += f"; +{len(summaries) - 2} more"
+            return text
         if isinstance(value, dict):
-            return "Configured"
+            if "entries" in value:
+                return f"{len(value['entries'])} outcomes"
+            return effect_summary(value)
         return str(value)
 
     def _edit_effects(self):
@@ -348,11 +367,27 @@ class SpellPropertyEditorView(PopupEditorView):
         payload = dict(self.model.payload)
         payload["name"] = self.name_edit.text()
         payload["description"] = self.description_edit.toPlainText()
-        payload["higher_level"] = self.higher_level_edit.toPlainText() or None
+        higher_level = self.higher_level_edit.toPlainText()
+        if higher_level:
+            payload["higher_level"] = higher_level
+        else:
+            payload.pop("higher_level", None)
         payload["level"] = self.level_spin.value()
-        payload["school"] = self.school_combo.currentText() or None
-        payload["classes"] = self.classes_combo.values() or None
-        payload["tags"] = [value.strip() for value in self.tags_edit.text().split(",") if value.strip()] or None
+        school = self.school_combo.currentText()
+        if school:
+            payload["school"] = school
+        else:
+            payload.pop("school", None)
+        classes = self.classes_combo.values()
+        if classes:
+            payload["classes"] = classes
+        else:
+            payload.pop("classes", None)
+        tags = [value.strip() for value in self.tags_edit.text().split(",") if value.strip()]
+        if tags:
+            payload["tags"] = tags
+        else:
+            payload.pop("tags", None)
         payload["components"] = self.components_combo.values()
         payload["ritual"] = self.ritual_check.isChecked()
         payload["concentration"] = self.concentration_check.isChecked()
@@ -360,25 +395,32 @@ class SpellPropertyEditorView(PopupEditorView):
         if self.casting_amount.value():
             casting_time["amount"] = self.casting_amount.value()
         payload["casting_time"] = casting_time
-        target = {"targeting": self.targeting_combo.currentText()}
-        if self.target_description.text():
-            target["description"] = self.target_description.text()
+        target = dict(payload.get("target") or {})
+        target["targeting"] = self.targeting_combo.currentText()
+        description = self.target_description.text()
+        if description:
+            target["description"] = description
+        else:
+            target.pop("description", None)
         if self.targeting_combo.currentText() == "range":
             target["range"] = {
                 "amount": self.target_range_amount.value(),
                 "unit": self.target_range_unit.text() or "feet",
             }
+        else:
+            target.pop("range", None)
         payload["target"] = target
         duration = {"duration": self.duration_unit.currentText()}
         if self.duration_amount.value():
             duration["amount"] = self.duration_amount.value()
         payload["duration"] = duration
         if "material" in payload["components"]:
-            material = {"description": self.material_description.text()}
+            material = {
+                "description": self.material_description.text(),
+                "consumed": self.material_consumed.isChecked(),
+            }
             if self.material_cost.value():
                 material["cost"] = self.material_cost.value()
-            if self.material_consumed.isChecked():
-                material["consumed"] = True
             payload["material"] = material
         else:
             payload.pop("material", None)

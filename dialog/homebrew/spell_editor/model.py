@@ -1,6 +1,5 @@
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any
 
 from application.homebrew import HomebrewDraft
 from dialog.base.editor import EditorModel

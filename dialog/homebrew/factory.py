@@ -29,6 +29,7 @@ def create_homebrew_mdi_view(
             parent=parent,
             draft=draft,
             on_apply=on_accept,
+            on_clone=on_clone,
         )
     model = create_homebrew_editor_model(entity_type, draft=draft)
     return HomebrewEditorMdiView(

@@ -20,7 +20,38 @@ from PySide6.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
+    QWidget,
 )
+
+
+def effect_summary(value):
+    if not isinstance(value, dict):
+        return str(value)
+    if "damage" in value:
+        damage = value["damage"]
+        roll = damage.get("roll") or {}
+        dice = f"{roll.get('count', 1)}d{roll.get('dice')}" if "dice" in roll else "modifier"
+        return f"{damage.get('type', 'damage')} {dice} damage"
+    if "attack_save" in value:
+        save = value["attack_save"]
+        parts = [f"{save.get('ability', 'ability')} save"]
+        for name in ("success", "failure"):
+            if save.get(name):
+                parts.append(f"{len(save[name])} on {name}")
+        return ", ".join(parts)
+    if "attack_hit" in value:
+        attack = value["attack_hit"]
+        return f"{attack.get('type', 'attack')} attack"
+    if "condition" in value:
+        return f"condition: {value['condition']}"
+    if "description" in value:
+        return value["description"] or "description"
+    for key in ("healing", "max_hit_points", "temporary_hit_points", "exhaustion"):
+        if key in value:
+            return key.replace("_", " ")
+    if "grants" in value:
+        return f"{len(value['grants'])} grants"
+    return next(iter(value), "effect")
 
 
 class SpellChildDialog(QDialog):
@@ -36,6 +67,7 @@ class SpellChildDialog(QDialog):
         self.buttons.clicked.connect(self._clicked)
         self.on_apply = on_apply
         self.editor_model = editor_model
+        self._apply_started = False
 
     def show_child(self, dialog):
         children = getattr(self, "_child_dialogs", None)
@@ -57,6 +89,9 @@ class SpellChildDialog(QDialog):
 
     def _clicked(self, button):
         if self.buttons.buttonRole(button) == QDialogButtonBox.ButtonRole.AcceptRole:
+            if self._apply_started:
+                return
+            self._apply_started = True
             self.apply_values()
             if self.editor_model is not None:
                 self.editor_model.value = self.value
@@ -161,11 +196,12 @@ class MaterialDialog(SpellChildDialog):
         layout.addWidget(self.buttons)
 
     def apply_values(self):
-        self.value = {"description": self.description.text()}
+        self.value = {
+            "description": self.description.text(),
+            "consumed": self.consumed.isChecked(),
+        }
         if self.cost.value():
             self.value["cost"] = self.cost.value()
-        if self.consumed.isChecked():
-            self.value["consumed"] = True
 
 
 class TargetDialog(SpellChildDialog):
@@ -392,9 +428,16 @@ class EffectDialog(SpellChildDialog):
         self.damage_type = QComboBox()
         self.damage_type.addItems(self.DAMAGE_TYPES)
         self.damage_type.setCurrentText((value.get("damage") or {}).get("type", ""))
+        self.damage_modifier = QSpinBox()
+        self.damage_modifier.setRange(-9999, 9999)
+        self.damage_modifier.setValue((value.get("damage") or {}).get("modifier", 0))
+        self.damage_ability = QComboBox()
+        self.damage_ability.setEditable(True)
+        self.damage_ability.addItems(self.ABILITIES)
+        self.damage_ability.setCurrentText((value.get("damage") or {}).get("ability", ""))
         roll = (value.get("damage") or {}).get("roll", value.get("healing", {}))
         self.roll_mode = QComboBox()
-        self.roll_mode.addItems(("dice", "modifier"))
+        self.roll_mode.addItems(("dice", "modifier", "ability"))
         self.roll_dice = QComboBox()
         self.roll_dice.setEditable(True)
         self.roll_dice.addItems(self.DICE)
@@ -404,8 +447,16 @@ class EffectDialog(SpellChildDialog):
         self.roll_modifier = QSpinBox()
         self.roll_modifier.setRange(-9999, 9999)
         self.roll_modifier.setValue(roll.get("modifier", 0) if isinstance(roll, dict) else 0)
+        self.roll_ability = QComboBox()
+        self.roll_ability.setEditable(True)
+        self.roll_ability.addItems(self.ABILITIES)
+        self.roll_ability.setCurrentText(
+            roll.get("ability", "") if isinstance(roll, dict) else ""
+        )
         if isinstance(roll, dict) and "modifier" in roll:
             self.roll_mode.setCurrentText("modifier")
+        elif isinstance(roll, dict) and "ability" in roll:
+            self.roll_mode.setCurrentText("ability")
         self.ability = QComboBox()
         self.ability.setEditable(True)
         self.ability.addItems(self.ABILITIES)
@@ -417,6 +468,11 @@ class EffectDialog(SpellChildDialog):
         self.attack_type.setEditable(True)
         self.attack_type.addItems(self.ATTACK_TYPES)
         self.attack_type.setCurrentText((value.get("attack_hit") or {}).get("type", ""))
+        self.attack_bonus = QSpinBox()
+        self.attack_bonus.setRange(-9999, 9999)
+        self.attack_bonus.setValue((value.get("attack_hit") or {}).get("bonus", 0))
+        attack_save = value.get("attack_save") or {}
+        self.imported_save_dc = attack_save.get("dc")
         self.attack_hit_effects = deepcopy(
             (value.get("attack_hit") or {}).get("effects", [])
         )
@@ -445,8 +501,12 @@ class EffectDialog(SpellChildDialog):
             "roll_dice": (QLabel("Dice"), self.roll_dice),
             "roll_count": (QLabel("Count"), self.roll_count),
             "roll_modifier": (QLabel("Modifier"), self.roll_modifier),
+            "roll_ability": (QLabel("Roll ability"), self.roll_ability),
+            "damage_modifier": (QLabel("Damage modifier"), self.damage_modifier),
+            "damage_ability": (QLabel("Damage ability"), self.damage_ability),
             "ability": (QLabel("Ability"), self.ability),
             "attack_type": (QLabel("Attack type"), self.attack_type),
+            "attack_bonus": (QLabel("Attack bonus"), self.attack_bonus),
         }
         for label, widget in self._fields.values():
             form.addRow(label, widget)
@@ -475,8 +535,12 @@ class EffectDialog(SpellChildDialog):
             "roll_dice": False,
             "roll_count": False,
             "roll_modifier": False,
+            "roll_ability": False,
+            "damage_modifier": kind == "damage",
+            "damage_ability": kind == "damage",
             "ability": kind in {"ability_score", "attack_save"},
             "attack_type": kind == "attack_hit",
+            "attack_bonus": kind == "attack_hit",
         }
         for name, (label, widget) in self._fields.items():
             label.setVisible(visible[name])
@@ -489,7 +553,13 @@ class EffectDialog(SpellChildDialog):
 
     @staticmethod
     def _nested_summary(values):
-        return "Not set" if not values else f"{len(values)} effect(s)"
+        if not values:
+            return "Not set"
+        summaries = [effect_summary(value) for value in values]
+        text = "; ".join(summaries[:2])
+        if len(summaries) > 2:
+            text += f"; +{len(summaries) - 2} more"
+        return text
 
     def _edit_effect_list(self, values, button, setter):
         from .factory import create_effects_dialog
@@ -541,10 +611,15 @@ class EffectDialog(SpellChildDialog):
         self._fields["roll_count"][1].setVisible(dice_mode)
         self._fields["roll_modifier"][0].setVisible(active and not dice_mode)
         self._fields["roll_modifier"][1].setVisible(active and not dice_mode)
+        ability_mode = active and self.roll_mode.currentText() == "ability"
+        self._fields["roll_ability"][0].setVisible(ability_mode)
+        self._fields["roll_ability"][1].setVisible(ability_mode)
 
     def _roll_value(self):
         if self.roll_mode.currentText() == "modifier":
             return {"modifier": self.roll_modifier.value()}
+        if self.roll_mode.currentText() == "ability":
+            return {"ability": self.roll_ability.currentText()}
         return {
             "count": self.roll_count.value(),
             "dice": int(self.roll_dice.currentText()),
@@ -554,24 +629,32 @@ class EffectDialog(SpellChildDialog):
         kind = self.type.currentText()
         self.value = {}
         if kind == "description":
-            self.value["description"] = self.description.text()
+            if self.description.text():
+                self.value["description"] = self.description.text()
         elif kind == "condition":
             self.value["condition"] = self.condition.text()
         elif kind == "damage":
             self.value["damage"] = {
                 "type": self.damage_type.currentText(),
                 "roll": self._roll_value(),
+                "modifier": self.damage_modifier.value(),
             }
+            if self.damage_ability.currentText():
+                self.value["damage"]["ability"] = self.damage_ability.currentText()
         elif kind in {"healing", "max_hit_points", "temporary_hit_points", "exhaustion"}:
             self.value[kind] = self._roll_value()
         elif kind == "ability_score":
             self.value["ability_score"] = {"ability": self.ability.currentText()}
         elif kind == "attack_hit":
             self.value[kind] = {"type": self.attack_type.currentText()}
+            if self.attack_bonus.value():
+                self.value[kind]["bonus"] = self.attack_bonus.value()
             if self.attack_hit_effects:
                 self.value[kind]["effects"] = self.attack_hit_effects
         elif kind == "attack_save":
             self.value[kind] = {"ability": self.ability.currentText()}
+            if self.imported_save_dc is not None:
+                self.value[kind]["dc"] = self.imported_save_dc
             if self.attack_save_success:
                 self.value[kind]["success"] = self.attack_save_success
             if self.attack_save_failure:
@@ -584,34 +667,101 @@ class EffectsDialog(SpellChildDialog):
     def __init__(self, values, parent=None, editor_model=None):
         super().__init__("Spell Effects", parent, editor_model=editor_model)
         self.values = deepcopy(values or [])
+        self.effect_editor = None
+        self._editing_path = None
+        self._editing_collection = None
         self.tree = QTreeWidget()
         self.tree.setHeaderLabels(("Effect", "Summary"))
         self.tree.header().setStretchLastSection(True)
         self._refresh()
         add = QPushButton("Add Effect")
+        self.child_collection = QComboBox()
+        self._selected_child_collection = None
+        self._refreshing_child_options = False
+        self.child_collection.setMinimumWidth(150)
+        self.add_child = QPushButton("Add Child Effect")
+        self.save_effect = QPushButton("Save Effect")
         edit = QPushButton("Edit Effect")
         remove = QPushButton("Remove Effect")
         add.clicked.connect(self._add)
+        self.add_child.clicked.connect(self._add_child)
+        self.save_effect.clicked.connect(self._save_effect)
+        self.child_collection.currentIndexChanged.connect(
+            lambda _index: (
+                setattr(
+                    self,
+                    "_selected_child_collection",
+                    self.child_collection.currentData(),
+                )
+                if not self._refreshing_child_options
+                else None
+            )
+        )
         edit.clicked.connect(self._edit)
         remove.clicked.connect(self._remove)
+        self.tree.currentItemChanged.connect(
+            lambda _current, _previous: self._refresh_child_options()
+        )
         row = QHBoxLayout()
         row.addWidget(add)
+        row.addWidget(self.child_collection)
+        row.addWidget(self.add_child)
+        row.addWidget(self.save_effect)
         row.addWidget(edit)
         row.addWidget(remove)
         layout = QVBoxLayout(self)
-        layout.addWidget(self.tree)
-        layout.addLayout(row)
+        panes = QHBoxLayout()
+        editor_panel = QWidget(self)
+        self.editor_layout = QVBoxLayout(editor_panel)
+        panes.addWidget(editor_panel, 1)
+        tree_panel = QWidget(self)
+        tree_layout = QVBoxLayout(tree_panel)
+        tree_layout.addWidget(self.tree)
+        tree_layout.addLayout(row)
+        panes.addWidget(tree_panel, 1)
+        layout.addLayout(panes)
         layout.addWidget(self.buttons)
+        self._refresh_child_options()
+        self.save_effect.setEnabled(False)
 
     def _refresh(self):
+        selected_path = None
+        if (
+            hasattr(self, "child_collection")
+            and self.child_collection.currentData() is not None
+        ):
+            self._selected_child_collection = self.child_collection.currentData()
+        if self.tree.currentItem() is not None:
+            selected_path = tuple(
+                self.tree.currentItem().data(0, Qt.ItemDataRole.UserRole)
+            )
         self.tree.clear()
         for row, value in enumerate(self.values):
             self._add_effect_node(None, value, (row,))
         self.tree.expandAll()
+        if selected_path is not None:
+            item = self._find_item(selected_path)
+            if item is not None:
+                self.tree.setCurrentItem(item)
+        self._refresh_child_options()
+
+    def _find_item(self, path):
+        items = [
+            self.tree.topLevelItem(index)
+            for index in range(self.tree.topLevelItemCount())
+        ]
+        while items:
+            item = items.pop()
+            if tuple(item.data(0, Qt.ItemDataRole.UserRole)) == path:
+                return item
+            items.extend(
+                item.child(index) for index in range(item.childCount())
+            )
+        return None
 
     def _add_effect_node(self, parent, value, path):
         effect_type = next(iter(value), "Effect")
-        summary = value.get("description") or value.get("condition") or "Configured"
+        summary = effect_summary(value)
         item = QTreeWidgetItem(parent or self.tree, (effect_type, str(summary)))
         item.setData(0, Qt.ItemDataRole.UserRole, path)
         if "attack_hit" in value:
@@ -646,9 +796,91 @@ class EffectsDialog(SpellChildDialog):
     def _add(self):
         from .factory import create_effect_dialog
 
-        dialog = create_effect_dialog(parent=self)
-        dialog.on_apply = lambda value: (self.values.append(value), self._refresh())
-        self.show_child(dialog)
+        self._editing_path = None
+        self._editing_collection = None
+        self._set_effect_editor(create_effect_dialog(parent=self))
+
+    def _nested_collections(self, value):
+        collections = []
+        if not isinstance(value, dict):
+            return collections
+        for parent_key, child_key, label in (
+            ("attack_hit", "effects", "Hit effects"),
+            ("attack_save", "success", "Save success"),
+            ("attack_save", "failure", "Save failure"),
+        ):
+            parent = value.get(parent_key)
+            if isinstance(parent, dict):
+                collections.append((label, parent_key, child_key))
+        return collections
+
+    def _refresh_child_options(self):
+        if not hasattr(self, "child_collection"):
+            return
+        selected_collection = (
+            self._selected_child_collection or self.child_collection.currentData()
+        )
+        self._refreshing_child_options = True
+        self.child_collection.clear()
+        item = self.tree.currentItem()
+        if item is None:
+            self._refreshing_child_options = False
+            self.add_child.setEnabled(False)
+            return
+        value = self._value_at_path(tuple(item.data(0, Qt.ItemDataRole.UserRole)))
+        for label, parent_key, child_key in self._nested_collections(value):
+            self.child_collection.addItem(label, (parent_key, child_key))
+        if selected_collection is not None:
+            index = self.child_collection.findData(selected_collection)
+            if index >= 0:
+                self.child_collection.setCurrentIndex(index)
+                self._selected_child_collection = self.child_collection.currentData()
+        self._refreshing_child_options = False
+        self.add_child.setEnabled(self.child_collection.count() > 0)
+
+    def _add_child(self):
+        item = self.tree.currentItem()
+        if item is None or self.child_collection.currentIndex() < 0:
+            return
+        path = tuple(item.data(0, Qt.ItemDataRole.UserRole))
+        parent_key, child_key = self.child_collection.currentData()
+        from .factory import create_effect_dialog
+
+        self._editing_path = None
+        self._editing_collection = (path, parent_key, child_key)
+        self._set_effect_editor(create_effect_dialog(parent=self))
+
+    def _set_effect_editor(self, editor):
+        if self.effect_editor is not None:
+            self.effect_editor.deleteLater()
+        self.effect_editor = editor
+        editor.setWindowFlags(Qt.WindowType.Widget)
+        editor.buttons.hide()
+        self.editor_layout.addWidget(editor)
+        editor.show()
+        self.save_effect.setEnabled(True)
+
+    def _save_effect(self):
+        if self.effect_editor is None:
+            return
+        self.effect_editor.apply_values()
+        value = self.effect_editor.value
+        if self._editing_collection is not None:
+            path, parent_key, child_key = self._editing_collection
+            collection = self._value_at_path(path).setdefault(parent_key, {}).setdefault(
+                child_key, []
+            )
+            collection.append(value)
+        elif self._editing_path is None:
+            self.values.append(value)
+        else:
+            self._set_value_at_path(self._editing_path, value)
+        self._refresh()
+        self._editing_path = None
+        self._editing_collection = None
+        self.effect_editor.deleteLater()
+        self.effect_editor = None
+        self.save_effect.setEnabled(False)
 
     def _edit(self):
         item = self.tree.currentItem()
@@ -660,9 +892,9 @@ class EffectsDialog(SpellChildDialog):
             return
         from .factory import create_effect_dialog
 
-        dialog = create_effect_dialog(value, self)
-        dialog.on_apply = lambda value: (self._set_value_at_path(path, value), self._refresh())
-        self.show_child(dialog)
+        self._editing_path = path
+        self._editing_collection = None
+        self._set_effect_editor(create_effect_dialog(value, self))
 
     def _remove(self):
         item = self.tree.currentItem()

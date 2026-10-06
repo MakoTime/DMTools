@@ -57,7 +57,7 @@ class HomebrewDraft:
                 "description": "Add a spell description.",
                 "level": 0,
                 "casting_time": {"unit": "action"},
-                "components": ["V"],
+                "components": ["verbal"],
                 "duration": {"duration": "instantaneous"},
             },
             "class": {"hit_dice": 1},

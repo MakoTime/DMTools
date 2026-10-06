@@ -308,7 +308,8 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         dialog.raise_()
         dialog.activateWindow()
 
-    def _apply_spell_properties(self, payload):
+    def _apply_spell_properties(self, model):
+        payload = model.payload
         self.model.payload = payload
         self.name_edit.setText(payload.get("name", self.name_edit.text()))
         self._build_property_table()
