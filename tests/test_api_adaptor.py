@@ -117,6 +117,47 @@ def test_srd_class_preserves_schema_supported_spellcasting_details():
     }
 
 
+def test_srd_class_separates_tool_and_instrument_proficiencies_from_weapons():
+    payload = SRDAdaptor().adapt("classes", {
+        "name": "Artificer",
+        "hit_die": 8,
+        "proficiencies": [
+            {"name": "Simple weapons"},
+            {"name": "Thieves' tools"},
+            {"name": "Musical instruments"},
+            {"name": "One type of artisan's tools"},
+        ],
+    })
+
+    assert payload["weapon_proficiencies"] == ["simple weapons"]
+    assert payload["tool_proficiencies"] == [
+        "thieves_tools",
+        "musical_instruments",
+        "one_type_of_artisan_s_tools",
+    ]
+
+
+def test_srd_warlock_adapts_eldritch_invocations_without_action_surge():
+    payload = SRDAdaptor().adapt("classes", {
+        "name": "Warlock",
+        "hit_die": 8,
+    })
+
+    assert payload["resources"] == [{
+        "name": "Invocations Known",
+        "levels": [
+            {"level": 2, "value": 2},
+            {"level": 5, "value": 3},
+            {"level": 7, "value": 4},
+            {"level": 9, "value": 5},
+            {"level": 12, "value": 6},
+            {"level": 15, "value": 7},
+            {"level": 18, "value": 8},
+        ],
+    }]
+    assert all(resource["name"] != "Action Surge" for resource in payload["resources"])
+
+
 def test_srd_class_excludes_api_subclass_placeholders_and_normalizes_spellcasting_name():
     payload = SRDAdaptor().adapt("classes", {
         "name": "Wizard",

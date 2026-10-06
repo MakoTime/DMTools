@@ -1,6 +1,7 @@
 PySide6
 pandas
 pytest
+pytest-timeout
 pysqlite3
 jsonschema
 pydantic

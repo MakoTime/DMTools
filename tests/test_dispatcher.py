@@ -61,6 +61,7 @@ class TestDispatcher(unittest.TestCase):
             result["source_metadata"]["presentation_progression"]["cantrips_known"]["10"],
             5,
         )
+        self.assertEqual(result["source_metadata"]["xml_source"], result["raw"])
 
     def test_dispatches_supported_entities_and_reports_unsupported(self):
         root = parse_xml(

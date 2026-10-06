@@ -107,7 +107,7 @@ DAMAGE = re.compile(
 
 DAMAGE_ROLL = re.compile(
     r"(?P<count>\d+)?d(?P<dice>\d+)"
-    r"(?P<modifier>[+-]\d+)?\s*"
+    r"\s*(?P<modifier>[+-]\s*\d+)?\s*"
     r"(?P<type>acid|bludgeoning|cold|fire|force|lightning|"
     r"necrotic|piercing|poison|psychic|radiant|slashing|thunder)"
     r"\s+damage",

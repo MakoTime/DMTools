@@ -31,7 +31,7 @@ ENTITY_PRESENTATION_CONTRACT = {
     "class": (
         "name", "hit_dice", "primary_abilities", "saving_throws",
         "armor_proficiencies", "weapon_proficiencies", "tool_proficiencies",
-        "skill_choices", "spellcasting", "subclass_level", "features",
+        "skill_choices", "tool_choices", "spellcasting", "subclass_level", "features",
         "description", "tags", "source",
     ),
     "subclass": ("name", "class_name", "features", "description", "source"),
@@ -101,6 +101,7 @@ def render_entity_markdown(entity) -> str:
             presentation_payload = _ordered_payload(
                 entity.entity_type, entity.payload, metadata
             )
+            presentation_payload.pop("presentation_progression", None)
             _remove_redundant_feature_sources(presentation_payload, entity, metadata)
             _append_markdown_value(lines, "Details", presentation_payload)
     references = metadata.get("entity_references", ())
@@ -296,9 +297,24 @@ def _with_progression_sections(
     enriched = dict(payload)
     features = [feature for feature in payload.get("features", ()) if isinstance(feature, dict)]
     if entity_type == "class":
-        enriched["level_progression"] = {
-            "table": class_progression_rows(payload, metadata),
+        section = {"table": class_progression_rows(payload, metadata)}
+        configuration = payload.get("presentation_progression")
+        labels = {
+            "level": "Level",
+            "proficiency_bonus": "Proficiency Bonus",
+            "features": "Features",
         }
+        if isinstance(configuration, Mapping):
+            labels.update({
+                str(column.get("key")): column.get("label")
+                for column in configuration.get("columns", ())
+                if isinstance(column, Mapping) and column.get("key")
+            })
+            for column in configuration.get("columns", ()):
+                if isinstance(column, Mapping) and column.get("visibility_mode") == "both":
+                    labels[f"{column['key']}_values"] = f"{column['label']} Values"
+        section["column_labels"] = labels
+        enriched["level_progression"] = section
         return enriched
     leveled = [feature for feature in features if isinstance(feature.get("level"), int)]
     if leveled:
@@ -343,7 +359,10 @@ def _append_markdown_value(lines: list[str], title: str, value: Any, level: int 
                     and str(key).casefold() in {"level_progression", "spell_slot_progression"}
                     and isinstance(child.get("table"), list)
                 ):
-                    _append_markdown_table(lines, title, child["table"], level)
+                    _append_markdown_table(
+                        lines, title, child["table"], level,
+                        column_labels=child.get("column_labels"),
+                    )
                     continue
                 normalized = _format_structured_value(str(key), child)
                 if normalized is not None:
@@ -529,7 +548,8 @@ def _display_label(value: Any) -> str:
 
 
 def _append_markdown_table(
-    lines: list[str], title: str, rows: list[Any], level: int
+    lines: list[str], title: str, rows: list[Any], level: int,
+    column_labels: Mapping[str, Any] | None = None,
 ):
     mappings = [row for row in rows if isinstance(row, dict)]
     if not mappings:
@@ -537,7 +557,7 @@ def _append_markdown_table(
         return
     lines.append(f"{'#' * level} {title}")
     columns = list(dict.fromkeys(key for row in mappings for key in row))
-    labels = _table_column_labels(title, columns)
+    labels = _table_column_labels(title, columns, column_labels)
     lines.append("| " + " | ".join(labels) + " |")
     lines.append("| " + " | ".join("---" for _ in columns) + " |")
     for row in mappings:
@@ -548,7 +568,9 @@ def _append_markdown_table(
         lines.append("| " + " | ".join(values) + " |")
 
 
-def _table_column_labels(title: str, columns: list[str]) -> list[str]:
+def _table_column_labels(
+    title: str, columns: list[str], column_labels: Mapping[str, Any] | None = None
+) -> list[str]:
     if title.casefold() != "level progression":
         return [str(column) for column in columns]
     labels = {
@@ -559,6 +581,9 @@ def _table_column_labels(title: str, columns: list[str]) -> list[str]:
     }
     result = []
     for column in columns:
+        if column_labels and column in column_labels:
+            result.append(str(column_labels[column]))
+            continue
         if column in labels:
             result.append(labels[column])
         else:

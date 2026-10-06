@@ -9,7 +9,13 @@
             "type": "string",
             "enum": [
                 "simple",
-                "martial"
+                "martial",
+                "simple_melee",
+                "simple_ranged",
+                "martial_melee",
+                "martial_ranged",
+                "melee",
+                "ranged"
             ]
         },
         {

@@ -145,9 +145,19 @@ def test_project_owns_ordered_compendium_and_homebrew_hierarchies():
     weapon_groups = compendium_root.rules.category("weapons").children[0]
     weapon_types = compendium_root.rules.category("weapons").children[1]
     weapon_tags = compendium_root.rules.category("weapons").children[2]
-    assert {"simple", "martial"}.issubset(
+    assert {
+        "simple",
+        "martial",
+        "simple_melee",
+        "simple_ranged",
+        "martial_melee",
+        "martial_ranged",
+        "melee",
+        "ranged",
+    }.issubset(
         node.value for node in weapon_groups.children
     )
+    assert next(node for node in weapon_groups.children if node.value == "simple").name == "Simple Weapons"
     assert weapon_types.children
     assert {"light", "versatile", "ammunition"}.issubset(
         node.value for node in weapon_tags.children

@@ -14,11 +14,18 @@ class EntityInspectionController:
     """Open and reuse modeless entity inspections in one MDI area."""
 
     def __init__(
-        self, project_controller, mdi_area: QMdiArea, *, on_edit=None, on_rule=None
+        self,
+        project_controller,
+        mdi_area: QMdiArea,
+        *,
+        on_edit=None,
+        on_class_progression=None,
+        on_rule=None,
     ):
         self.project_controller = project_controller
         self.mdi_area = mdi_area
         self.on_edit = on_edit
+        self.on_class_progression = on_class_progression
         self.on_rule = on_rule
         self.navigation = EntityNavigationController(
             project_controller,
@@ -107,6 +114,7 @@ class EntityInspectionController:
                 on_link=self.open_link,
                 on_rule=self.on_rule,
                 on_edit=self.on_edit,
+                on_class_progression=self.on_class_progression,
                 on_resolve=self.resolve_references,
             )
             window = self.mdi_area.addSubWindow(view)

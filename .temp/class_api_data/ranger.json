@@ -1,0 +1,1740 @@
+{
+  "class_levels": [
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 1,
+        "favored_terrain": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.",
+            "Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.",
+            "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.",
+            "When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.",
+            "You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          ],
+          "feature_specific": {
+            "enemy_type_options": {
+              "choose": 1,
+              "desc": "one enemy type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "aberrations",
+                  "beasts",
+                  "celestials",
+                  "constructs",
+                  "dragons",
+                  "elementals",
+                  "fey",
+                  "fiends",
+                  "giants",
+                  "monstrosities",
+                  "oozes",
+                  "plants",
+                  "undead",
+                  "humanoids"
+                ]
+              },
+              "type": "string"
+            },
+            "invocations": []
+          },
+          "index": "favored-enemy-1-type",
+          "level": 1,
+          "name": "Favored Enemy (1 type)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/favored-enemy-1-type"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.",
+            "While traveling for an hour or more in your favored terrain, you gain the following benefits:",
+            "- Difficult terrain doesn't slow your group's travel.",
+            "- Your group can't become lost except by magical means.",
+            "- Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.",
+            "- If you are traveling alone, you can move stealthily at a normal pace.",
+            "- When you forage, you find twice as much food as you normally would.",
+            "- While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.",
+            "You choose additional favored terrain types at 6th and 10th level."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "terrain_type_options": {
+              "choose": 1,
+              "desc": "one terrain type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "arctic",
+                  "coast",
+                  "desert",
+                  "forest",
+                  "grassland",
+                  "mountain",
+                  "swamp"
+                ]
+              },
+              "type": "string"
+            }
+          },
+          "index": "natural-explorer-1-terrain-type",
+          "level": 1,
+          "name": "Natural Explorer (1 terrain type)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/natural-explorer-1-terrain-type"
+        }
+      ],
+      "index": "ranger-1",
+      "level": 1,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 0
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/1"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 1,
+        "favored_terrain": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "subfeature_options": {
+              "choose": 1,
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  {
+                    "item": {
+                      "class": {
+                        "index": "ranger",
+                        "name": "Ranger",
+                        "url": "/api/2014/classes/ranger"
+                      },
+                      "desc": [
+                        "You gain a +2 bonus to attack rolls you make with ranged weapons."
+                      ],
+                      "index": "ranger-fighting-style-archery",
+                      "level": 2,
+                      "name": "Fighting Style: Archery",
+                      "parent": {
+                        "class": {
+                          "index": "ranger",
+                          "name": "Ranger",
+                          "url": "/api/2014/classes/ranger"
+                        },
+                        "desc": [
+                          "At 2nd level, you adopt a particular style of fighting as your specialty. Choose one of the following options. You can't take a Fighting Style option more than once, even if you later get to choose again."
+                        ],
+                        "feature_specific": {
+                          "invocations": [],
+                          "subfeature_options": {
+                            "choose": 1,
+                            "from": {
+                              "option_set_type": "options_array",
+                              "options": [
+                                {
+                                  "item": {
+                                    "index": "ranger-fighting-style-archery",
+                                    "name": "Fighting Style: Archery",
+                                    "url": "/api/2014/features/ranger-fighting-style-archery"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "ranger",
+                                      "name": "Ranger",
+                                      "url": "/api/2014/classes/ranger"
+                                    },
+                                    "desc": [
+                                      "While you are wearing armor, you gain a +1 bonus to AC."
+                                    ],
+                                    "index": "ranger-fighting-style-defense",
+                                    "level": 2,
+                                    "name": "Fighting Style: Defense",
+                                    "parent": {
+                                      "index": "ranger-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/ranger-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/ranger-fighting-style-defense"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "ranger",
+                                      "name": "Ranger",
+                                      "url": "/api/2014/classes/ranger"
+                                    },
+                                    "desc": [
+                                      "When you are wielding a melee weapon in one hand and no other weapons, you gain a +2 bonus to damage rolls with that weapon."
+                                    ],
+                                    "index": "ranger-fighting-style-dueling",
+                                    "level": 2,
+                                    "name": "Fighting Style: Dueling",
+                                    "parent": {
+                                      "index": "ranger-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/ranger-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/ranger-fighting-style-dueling"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "ranger",
+                                      "name": "Ranger",
+                                      "url": "/api/2014/classes/ranger"
+                                    },
+                                    "desc": [
+                                      "When you engage in two-weapon fighting, you can add your ability modifier to the damage of the second attack."
+                                    ],
+                                    "index": "ranger-fighting-style-two-weapon-fighting",
+                                    "level": 2,
+                                    "name": "Fighting Style: Two-Weapon Fighting",
+                                    "parent": {
+                                      "index": "ranger-fighting-style",
+                                      "name": "Fighting Style",
+                                      "url": "/api/2014/features/ranger-fighting-style"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/ranger-fighting-style-two-weapon-fighting"
+                                  },
+                                  "option_type": "reference"
+                                }
+                              ]
+                            },
+                            "type": "feature"
+                          }
+                        },
+                        "index": "ranger-fighting-style",
+                        "level": 2,
+                        "name": "Fighting Style",
+                        "prerequisites": [],
+                        "updated_at": "2026-04-01T20:35:37.430Z",
+                        "url": "/api/2014/features/ranger-fighting-style"
+                      },
+                      "prerequisites": [],
+                      "updated_at": "2026-04-01T20:35:37.430Z",
+                      "url": "/api/2014/features/ranger-fighting-style-archery"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "ranger-fighting-style-defense",
+                      "name": "Fighting Style: Defense",
+                      "url": "/api/2014/features/ranger-fighting-style-defense"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "ranger-fighting-style-dueling",
+                      "name": "Fighting Style: Dueling",
+                      "url": "/api/2014/features/ranger-fighting-style-dueling"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "ranger-fighting-style-two-weapon-fighting",
+                      "name": "Fighting Style: Two-Weapon Fighting",
+                      "url": "/api/2014/features/ranger-fighting-style-two-weapon-fighting"
+                    },
+                    "option_type": "reference"
+                  }
+                ]
+              },
+              "type": "feature"
+            }
+          },
+          "index": "ranger-fighting-style",
+          "level": 2,
+          "name": "Fighting Style",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-fighting-style"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "By the time you reach 2nd level, you have learned to use the magical essence of nature to cast spells, much as a druid does."
+          ],
+          "index": "spellcasting-ranger",
+          "level": 2,
+          "name": "Spellcasting: Ranger",
+          "prerequisites": [],
+          "reference": "/api/2014/classes/ranger/spellcasting",
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/spellcasting-ranger"
+        }
+      ],
+      "index": "ranger-2",
+      "level": 2,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 2,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 2
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/2"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 1,
+        "favored_terrain": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."
+          ],
+          "index": "ranger-archetype",
+          "level": 3,
+          "name": "Ranger Archetype",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-archetype"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Beginning at 3rd level, you can use your action and expend one ranger spell slot to focus your awareness on the region around you. For 1 minute per level of the spell slot you expend, you can sense whether the following types of creatures are present within 1 mile of you (or within up to 6 miles if you are in your favored terrain): aberrations, celestials, dragons, elementals, fey, fiends, and undead. This feature doesn't reveal the creatures' location or number."
+          ],
+          "index": "primeval-awareness",
+          "level": 3,
+          "name": "Primeval Awareness",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/primeval-awareness"
+        }
+      ],
+      "index": "ranger-3",
+      "level": 3,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 3,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 3
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/3"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 1,
+        "favored_terrain": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "ranger-ability-score-improvement-1",
+          "level": 4,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-ability-score-improvement-1"
+        }
+      ],
+      "index": "ranger-4",
+      "level": 4,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "spell_slots_level_1": 3,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 3
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/4"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 1,
+        "favored_terrain": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Beginning at 5th level, you can attack twice, instead of once, whenever you take the Attack action on your turn."
+          ],
+          "index": "ranger-extra-attack",
+          "level": 5,
+          "name": "Extra Attack",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-extra-attack"
+        }
+      ],
+      "index": "ranger-5",
+      "level": 5,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 4
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/5"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 2
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.",
+            "Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.",
+            "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.",
+            "When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.",
+            "You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          ],
+          "feature_specific": {
+            "enemy_type_options": {
+              "choose": 1,
+              "desc": "one enemy type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "aberrations",
+                  "beasts",
+                  "celestials",
+                  "constructs",
+                  "dragons",
+                  "elementals",
+                  "fey",
+                  "fiends",
+                  "giants",
+                  "monstrosities",
+                  "oozes",
+                  "plants",
+                  "undead",
+                  "humanoids"
+                ]
+              },
+              "type": "string"
+            },
+            "invocations": []
+          },
+          "index": "favored-enemy-2-types",
+          "level": 6,
+          "name": "Favored Enemy (2 types)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/favored-enemy-2-types"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.",
+            "While traveling for an hour or more in your favored terrain, you gain the following benefits:",
+            "- Difficult terrain doesn't slow your group's travel.",
+            "- Your group can't become lost except by magical means.",
+            "- Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.",
+            "- If you are traveling alone, you can move stealthily at a normal pace.",
+            "- When you forage, you find twice as much food as you normally would.",
+            "- While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.",
+            "You choose additional favored terrain types at 6th and 10th level."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "terrain_type_options": {
+              "choose": 1,
+              "desc": "one terrain type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "arctic",
+                  "coast",
+                  "desert",
+                  "forest",
+                  "grassland",
+                  "mountain",
+                  "swamp"
+                ]
+              },
+              "type": "string"
+            }
+          },
+          "index": "natural-explorer-2-terrain-types",
+          "level": 6,
+          "name": "Natural Explorer (2 terrain types)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/natural-explorer-2-terrain-types"
+        }
+      ],
+      "index": "ranger-6",
+      "level": 6,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 4
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/6"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 2
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."
+          ],
+          "index": "ranger-archetype-improvement-1",
+          "level": 7,
+          "name": "Ranger Archetype feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-archetype-improvement-1"
+        }
+      ],
+      "index": "ranger-7",
+      "level": 7,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 5
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/7"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 2
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "ranger-ability-score-improvement-2",
+          "level": 8,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-ability-score-improvement-2"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Starting at 8th level, moving through nonmagical difficult terrain costs you no extra movement. You can also pass through nonmagical plants without being slowed by them and without taking damage from them if they have thorns, spines, or a similar hazard.",
+            "In addition, you have advantage on saving throws against plants that are magically created or manipulated to impede movement, such those created by the entangle spell."
+          ],
+          "index": "ranger-lands-stride",
+          "level": 8,
+          "name": "Land's Stride",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-lands-stride"
+        }
+      ],
+      "index": "ranger-8",
+      "level": 8,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 5
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/8"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 2
+      },
+      "features": [],
+      "index": "ranger-9",
+      "level": 9,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 6
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/9"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "You are particularly familiar with one type of natural environment and are adept at traveling and surviving in such regions. Choose one type of favored terrain: arctic, coast, desert, forest, grassland, mountain, or swamp. When you make an Intelligence or Wisdom check related to your favored terrain, your proficiency bonus is doubled if you are using a skill that you're proficient in.",
+            "While traveling for an hour or more in your favored terrain, you gain the following benefits:",
+            "- Difficult terrain doesn't slow your group's travel.",
+            "- Your group can't become lost except by magical means.",
+            "- Even when you are engaged in another activity while traveling (such as foraging, navigating, or tracking), you remain alert to danger.",
+            "- If you are traveling alone, you can move stealthily at a normal pace.",
+            "- When you forage, you find twice as much food as you normally would.",
+            "- While tracking other creatures, you also learn their exact number, their sizes, and how long ago they passed through the area.",
+            "You choose additional favored terrain types at 6th and 10th level."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "terrain_type_options": {
+              "choose": 1,
+              "desc": "one terrain type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "arctic",
+                  "coast",
+                  "desert",
+                  "forest",
+                  "grassland",
+                  "mountain",
+                  "swamp"
+                ]
+              },
+              "type": "string"
+            }
+          },
+          "index": "natural-explorer-3-terrain-types",
+          "level": 10,
+          "name": "Natural Explorer (3 terrain types)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/natural-explorer-3-terrain-types"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Starting at 10th level, you can spend 1 minute creating camouflage for yourself. You must have access to fresh mud, dirt, plants, soot, and other naturally occurring materials with which to create your camouflage.",
+            "Once you are camouflaged in this way, you can try to hide by pressing yourself up against a solid surface, such as a tree or wall, that is at least as tall and wide as you are. You gain a +10 bonus to Dexterity (Stealth) checks as long as you remain there without moving or taking actions. Once you move or take an action or a reaction, you must camouflage yourself again to gain this benefit."
+          ],
+          "index": "hide-in-plain-sight",
+          "level": 10,
+          "name": "Hide in Plain Sight",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/hide-in-plain-sight"
+        }
+      ],
+      "index": "ranger-10",
+      "level": 10,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 6
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/10"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."
+          ],
+          "index": "ranger-archetype-improvement-2",
+          "level": 11,
+          "name": "Ranger Archetype feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-archetype-improvement-2"
+        }
+      ],
+      "index": "ranger-11",
+      "level": 11,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 7
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/11"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "ranger-ability-score-improvement-3",
+          "level": 12,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-ability-score-improvement-3"
+        }
+      ],
+      "index": "ranger-12",
+      "level": 12,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spells_known": 7
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/12"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 2,
+        "favored_terrain": 3
+      },
+      "features": [],
+      "index": "ranger-13",
+      "level": 13,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 1,
+        "spell_slots_level_5": 0,
+        "spells_known": 8
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/13"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Beginning at 1st level, you have significant experience studying, tracking, hunting, and even talking to a certain type of enemy.",
+            "Choose a type of favored enemy: aberrations, beasts, celestials, constructs, dragons, elementals, fey, fiends, giants, monstrosities, oozes, plants, or undead. Alternatively, you can select two races of humanoid (such as gnolls and orcs) as favored enemies.",
+            "You have advantage on Wisdom (Survival) checks to track your favored enemies, as well as on Intelligence checks to recall information about them.",
+            "When you gain this feature, you also learn one language of your choice that is spoken by your favored enemies, if they speak one at all.",
+            "You choose one additional favored enemy, as well as an associated language, at 6th and 14th level. As you gain levels, your choices should reflect the types of monsters you have encountered on your adventures."
+          ],
+          "feature_specific": {
+            "enemy_type_options": {
+              "choose": 1,
+              "desc": "one enemy type",
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  "aberrations",
+                  "beasts",
+                  "celestials",
+                  "constructs",
+                  "dragons",
+                  "elementals",
+                  "fey",
+                  "fiends",
+                  "giants",
+                  "monstrosities",
+                  "oozes",
+                  "plants",
+                  "undead",
+                  "humanoids"
+                ]
+              },
+              "type": "string"
+            },
+            "invocations": []
+          },
+          "index": "favored-enemy-3-enemies",
+          "level": 14,
+          "name": "Favored Enemy (3 enemies)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/favored-enemy-3-enemies"
+        },
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "Starting at 14th level, you can use the Hide action as a bonus action on your turn. Also, you can't be tracked by nonmagical means, unless you choose to leave a trail."
+          ],
+          "index": "vanish",
+          "level": 14,
+          "name": "Vanish",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/vanish"
+        }
+      ],
+      "index": "ranger-14",
+      "level": 14,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 1,
+        "spell_slots_level_5": 0,
+        "spells_known": 8
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/14"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 3rd level, you choose an archetype that you strive to emulate, such as the Hunter. Your choice grants you features at 3rd level and again at 7th, 11th, and 15th level."
+          ],
+          "index": "ranger-archetype-improvement-3",
+          "level": 15,
+          "name": "Ranger Archetype feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-archetype-improvement-3"
+        }
+      ],
+      "index": "ranger-15",
+      "level": 15,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0,
+        "spells_known": 9
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/15"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "ranger-ability-score-improvement-4",
+          "level": 16,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-ability-score-improvement-4"
+        }
+      ],
+      "index": "ranger-16",
+      "level": 16,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0,
+        "spells_known": 9
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/16"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [],
+      "index": "ranger-17",
+      "level": 17,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 1,
+        "spells_known": 10
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/17"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 18th level, you gain preternatural senses that help you fight creatures you can't see. When you attack a creature you can't see, your inability to see it doesn't impose disadvantage on your attack rolls against it.",
+            "You are also aware of the location of any invisible creature within 30 feet of you, provided that the creature isn't hidden from you and you aren't blinded or deafened."
+          ],
+          "index": "feral-senses",
+          "level": 18,
+          "name": "Feral Senses",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/feral-senses"
+        }
+      ],
+      "index": "ranger-18",
+      "level": 18,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 1,
+        "spells_known": 10
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/18"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "ranger-ability-score-improvement-5",
+          "level": 19,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/ranger-ability-score-improvement-5"
+        }
+      ],
+      "index": "ranger-19",
+      "level": 19,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 2,
+        "spells_known": 11
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/19"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "ranger",
+        "name": "Ranger",
+        "url": "/api/2014/classes/ranger"
+      },
+      "class_specific": {
+        "favored_enemies": 3,
+        "favored_terrain": 3
+      },
+      "features": [
+        {
+          "class": {
+            "index": "ranger",
+            "name": "Ranger",
+            "url": "/api/2014/classes/ranger"
+          },
+          "desc": [
+            "At 20th level, you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies. You can choose to use this feature before or after the roll, but before any effects of the roll are applied."
+          ],
+          "index": "foe-slayer",
+          "level": 20,
+          "name": "Foe Slayer",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/foe-slayer"
+        }
+      ],
+      "index": "ranger-20",
+      "level": 20,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "spell_slots_level_1": 4,
+        "spell_slots_level_2": 3,
+        "spell_slots_level_3": 3,
+        "spell_slots_level_4": 3,
+        "spell_slots_level_5": 2,
+        "spells_known": 11
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/ranger/levels/20"
+    }
+  ],
+  "hit_die": 10,
+  "index": "ranger",
+  "multi_classing": {
+    "prerequisites": [
+      {
+        "ability_score": {
+          "index": "dex",
+          "name": "DEX",
+          "url": "/api/2014/ability-scores/dex"
+        },
+        "minimum_score": 13
+      },
+      {
+        "ability_score": {
+          "index": "wis",
+          "name": "WIS",
+          "url": "/api/2014/ability-scores/wis"
+        },
+        "minimum_score": 13
+      }
+    ],
+    "proficiencies": [
+      {
+        "index": "light-armor",
+        "name": "Light Armor",
+        "url": "/api/2014/proficiencies/light-armor"
+      },
+      {
+        "index": "medium-armor",
+        "name": "Medium Armor",
+        "url": "/api/2014/proficiencies/medium-armor"
+      },
+      {
+        "index": "shields",
+        "name": "Shields",
+        "url": "/api/2014/proficiencies/shields"
+      },
+      {
+        "index": "simple-weapons",
+        "name": "Simple Weapons",
+        "url": "/api/2014/proficiencies/simple-weapons"
+      },
+      {
+        "index": "martial-weapons",
+        "name": "Martial Weapons",
+        "url": "/api/2014/proficiencies/martial-weapons"
+      }
+    ],
+    "proficiency_choices": [
+      {
+        "choose": 1,
+        "from": {
+          "option_set_type": "options_array",
+          "options": [
+            {
+              "item": {
+                "index": "skill-animal-handling",
+                "name": "Skill: Animal Handling",
+                "url": "/api/2014/proficiencies/skill-animal-handling"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-athletics",
+                "name": "Skill: Athletics",
+                "url": "/api/2014/proficiencies/skill-athletics"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-insight",
+                "name": "Skill: Insight",
+                "url": "/api/2014/proficiencies/skill-insight"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-investigation",
+                "name": "Skill: Investigation",
+                "url": "/api/2014/proficiencies/skill-investigation"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-nature",
+                "name": "Skill: Nature",
+                "url": "/api/2014/proficiencies/skill-nature"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-perception",
+                "name": "Skill: Perception",
+                "url": "/api/2014/proficiencies/skill-perception"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-stealth",
+                "name": "Skill: Stealth",
+                "url": "/api/2014/proficiencies/skill-stealth"
+              },
+              "option_type": "reference"
+            },
+            {
+              "item": {
+                "index": "skill-survival",
+                "name": "Skill: Survival",
+                "url": "/api/2014/proficiencies/skill-survival"
+              },
+              "option_type": "reference"
+            }
+          ]
+        },
+        "type": "proficiencies"
+      }
+    ]
+  },
+  "name": "Ranger",
+  "proficiencies": [
+    {
+      "index": "light-armor",
+      "name": "Light Armor",
+      "url": "/api/2014/proficiencies/light-armor"
+    },
+    {
+      "index": "medium-armor",
+      "name": "Medium Armor",
+      "url": "/api/2014/proficiencies/medium-armor"
+    },
+    {
+      "index": "shields",
+      "name": "Shields",
+      "url": "/api/2014/proficiencies/shields"
+    },
+    {
+      "index": "simple-weapons",
+      "name": "Simple Weapons",
+      "url": "/api/2014/proficiencies/simple-weapons"
+    },
+    {
+      "index": "martial-weapons",
+      "name": "Martial Weapons",
+      "url": "/api/2014/proficiencies/martial-weapons"
+    },
+    {
+      "index": "saving-throw-dex",
+      "name": "Saving Throw: DEX",
+      "url": "/api/2014/proficiencies/saving-throw-dex"
+    },
+    {
+      "index": "saving-throw-str",
+      "name": "Saving Throw: STR",
+      "url": "/api/2014/proficiencies/saving-throw-str"
+    }
+  ],
+  "proficiency_choices": [
+    {
+      "choose": 3,
+      "desc": "Choose three from Animal Handling, Athletics, Insight, Investigation, Nature, Perception, Stealth, and Survival",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "item": {
+              "index": "skill-animal-handling",
+              "name": "Skill: Animal Handling",
+              "url": "/api/2014/proficiencies/skill-animal-handling"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-athletics",
+              "name": "Skill: Athletics",
+              "url": "/api/2014/proficiencies/skill-athletics"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-insight",
+              "name": "Skill: Insight",
+              "url": "/api/2014/proficiencies/skill-insight"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-investigation",
+              "name": "Skill: Investigation",
+              "url": "/api/2014/proficiencies/skill-investigation"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-nature",
+              "name": "Skill: Nature",
+              "url": "/api/2014/proficiencies/skill-nature"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-perception",
+              "name": "Skill: Perception",
+              "url": "/api/2014/proficiencies/skill-perception"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-stealth",
+              "name": "Skill: Stealth",
+              "url": "/api/2014/proficiencies/skill-stealth"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-survival",
+              "name": "Skill: Survival",
+              "url": "/api/2014/proficiencies/skill-survival"
+            },
+            "option_type": "reference"
+          }
+        ]
+      },
+      "type": "proficiencies"
+    }
+  ],
+  "saving_throws": [
+    {
+      "index": "str",
+      "name": "STR",
+      "url": "/api/2014/ability-scores/str"
+    },
+    {
+      "index": "dex",
+      "name": "DEX",
+      "url": "/api/2014/ability-scores/dex"
+    }
+  ],
+  "spellcasting": {
+    "info": [
+      {
+        "desc": [
+          "The Ranger table shows how many spell slots you have to cast your spells of 1st level and higher. To cast one of these spells, you must expend a slot of the spell's level or higher. You regain all expended spell slots when you finish a long rest.",
+          "For example, if you know the 1st-level spell animal friendship and have a 1st-level and a 2nd-level spell slot available, you can cast animal friendship using either slot."
+        ],
+        "name": "Spell Slots"
+      },
+      {
+        "desc": [
+          "You know two 1st-level spells of your choice from the ranger spell list.",
+          "The Spells Known column of the Ranger table shows when you learn more ranger spells of your choice. Each of these spells must be of a level for which you have spell slots. For instance, when you reach 5th level in this class, you can learn one new spell of 1st or 2nd level.",
+          "Additionally, when you gain a level in this class, you can choose one of the ranger spells you know and replace it with another spell from the ranger spell list, which also must be of a level for which you have spell slots."
+        ],
+        "name": "Spells Known of 1st Level and Higher"
+      },
+      {
+        "desc": [
+          "Wisdom is your spellcasting ability for your ranger spells, since your magic draws on your attunement to nature. You use your Wisdom whenever a spell refers to your spellcasting ability. In addition, you use your Wisdom modifier when setting the saving throw DC for a ranger spell you cast and when making an attack roll with one.",
+          "Spell save DC = 8 + your proficiency bonus + your Wisdom modifier.",
+          "Spell attack modifier = your proficiency bonus + your Wisdom modifier."
+        ],
+        "name": "Spellcasting Ability"
+      }
+    ],
+    "level": 2,
+    "spellcasting_ability": {
+      "index": "wis",
+      "name": "WIS",
+      "url": "/api/2014/ability-scores/wis"
+    }
+  },
+  "spells": "/api/2014/classes/ranger/spells",
+  "starting_equipment": [
+    {
+      "equipment": {
+        "index": "longbow",
+        "name": "Longbow",
+        "url": "/api/2014/equipment/longbow"
+      },
+      "quantity": 1
+    },
+    {
+      "equipment": {
+        "index": "arrow",
+        "name": "Arrow",
+        "url": "/api/2014/equipment/arrow"
+      },
+      "quantity": 20
+    }
+  ],
+  "starting_equipment_options": [
+    {
+      "choose": 1,
+      "desc": "(a) scale mail or (b) leather armor",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "scale-mail",
+              "name": "Scale Mail",
+              "url": "/api/2014/equipment/scale-mail"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "count": 1,
+            "of": {
+              "index": "leather-armor",
+              "name": "Leather Armor",
+              "url": "/api/2014/equipment/leather-armor"
+            },
+            "option_type": "counted_reference"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) two shortswords or (b) two simple melee weapons",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 2,
+            "of": {
+              "category_range": "Martial Melee",
+              "contents": [],
+              "cost": {
+                "quantity": 10,
+                "unit": "gp"
+              },
+              "damage": {
+                "damage_dice": "1d6",
+                "damage_type": {
+                  "index": "piercing",
+                  "name": "Piercing",
+                  "url": "/api/2014/damage-types/piercing"
+                }
+              },
+              "desc": [],
+              "equipment_categories": [
+                {
+                  "index": "weapon",
+                  "name": "Weapon",
+                  "url": "/api/2014/equipment-categories/weapon"
+                },
+                {
+                  "index": "martial-weapons",
+                  "name": "Martial Weapons",
+                  "url": "/api/2014/equipment-categories/martial-weapons"
+                },
+                {
+                  "index": "melee-weapons",
+                  "name": "Melee Weapons",
+                  "url": "/api/2014/equipment-categories/melee-weapons"
+                },
+                {
+                  "index": "martial-melee-weapons",
+                  "name": "Martial Melee Weapons",
+                  "url": "/api/2014/equipment-categories/martial-melee-weapons"
+                }
+              ],
+              "equipment_category": {
+                "index": "weapon",
+                "name": "Weapon",
+                "url": "/api/2014/equipment-categories/weapon"
+              },
+              "index": "shortsword",
+              "name": "Shortsword",
+              "properties": [
+                {
+                  "index": "finesse",
+                  "name": "Finesse",
+                  "url": "/api/2014/weapon-properties/finesse"
+                },
+                {
+                  "index": "light",
+                  "name": "Light",
+                  "url": "/api/2014/weapon-properties/light"
+                },
+                {
+                  "index": "monk",
+                  "name": "Monk",
+                  "url": "/api/2014/weapon-properties/monk"
+                }
+              ],
+              "range": {
+                "normal": 5
+              },
+              "special": [],
+              "updated_at": "2026-09-23T20:15:25.115Z",
+              "url": "/api/2014/equipment/shortsword",
+              "weapon_category": "Martial",
+              "weapon_range": "Melee",
+              "weight": 2
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "choice": {
+              "choose": 2,
+              "desc": "two simple melee weapons",
+              "from": {
+                "equipment_category": {
+                  "index": "simple-melee-weapons",
+                  "name": "Simple Melee Weapons",
+                  "url": "/api/2014/equipment-categories/simple-melee-weapons"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) a dungeoneer’s pack or (b) an explorer’s pack",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "dungeoneers-pack",
+              "name": "Dungeoneer's Pack",
+              "url": "/api/2014/equipment/dungeoneers-pack"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "count": 1,
+            "of": {
+              "index": "explorers-pack",
+              "name": "Explorer's Pack",
+              "url": "/api/2014/equipment/explorers-pack"
+            },
+            "option_type": "counted_reference"
+          }
+        ]
+      },
+      "type": "equipment"
+    }
+  ],
+  "subclasses": [
+    {
+      "index": "hunter",
+      "name": "Hunter",
+      "url": "/api/2014/subclasses/hunter"
+    }
+  ],
+  "updated_at": "2026-04-01T20:35:36.453Z",
+  "url": "/api/2014/classes/ranger"
+}

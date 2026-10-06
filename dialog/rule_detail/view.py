@@ -24,6 +24,10 @@ class RuleDetailView(PopupEditorView):
         description_heading.setStyleSheet("font-weight: 600;")
         description = QLabel(model.details["Description"], self)
         description.setWordWrap(True)
+        description.setTextInteractionFlags(
+            Qt.TextInteractionFlag.TextSelectableByMouse
+            | Qt.TextInteractionFlag.TextSelectableByKeyboard
+        )
         layout = QVBoxLayout(self)
         layout.addWidget(heading)
         layout.addWidget(description_heading)
@@ -42,6 +46,8 @@ class RuleDetailView(PopupEditorView):
             related.setOpenExternalLinks(False)
             related.setTextInteractionFlags(
                 Qt.TextInteractionFlag.LinksAccessibleByMouse
+                | Qt.TextInteractionFlag.TextSelectableByMouse
+                | Qt.TextInteractionFlag.TextSelectableByKeyboard
             )
             if on_entity_link is not None:
                 related.linkActivated.connect(

@@ -1,0 +1,20 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "values/resource_amount.schema.json",
+    "title": "D&D 5e Resource Amount",
+    "description": "A finite or unlimited maximum for a class resource.",
+    "$comment": "version 0.1.0",
+    "anyOf": [
+        {
+            "type": "integer",
+            "minimum": 1
+        },
+        {
+            "type": "string",
+            "enum": ["unlimited"]
+        },
+        {
+            "$ref": "custom_value.schema.json"
+        }
+    ]
+}

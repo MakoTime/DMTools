@@ -4,6 +4,7 @@ import re
 from typing import Any
 
 from parsers.monster_adaptor import MonsterAdaptor as XMLMonsterAdaptor
+from parsers.class_adaptor import ClassAdaptor as XMLClassAdaptor
 from parsers.spell_adaptor import SpellAdaptor as XMLSpellAdaptor
 
 
@@ -157,17 +158,20 @@ class SRDAdaptor:
             "weapon_proficiencies": [
                 _proficiency_name(name)
                 for name in proficiencies
-                if not any(
+                if not _is_tool_proficiency(name)
+                and not any(
                     term in name.lower()
-                    for term in ("armor", "shield", "saving throw", "skill:", "tool:")
+                    for term in ("armor", "shield", "saving throw", "skill:")
                 )
             ] or None,
             "tool_proficiencies": [
                 _proficiency_name(name)
                 for name in proficiencies
-                if "tool" in name.lower()
+                if _is_tool_proficiency(name)
             ] or None,
             "skill_choices": _choice(source.get("proficiency_choices")),
+            "tool_choices": _tool_choice(source.get("proficiency_choices")),
+            "resources": XMLClassAdaptor().class_resources(source),
             "features": _class_features(source),
             "required_stats": _ability_names(
                 prerequisite.get("ability_score")
@@ -252,6 +256,7 @@ class SRDAdaptor:
             "name": source["name"],
             "description": _description(source.get("desc")),
             "skill_proficiencies": _proficiency_names(source.get("starting_proficiencies")),
+            "tool_proficiencies": _starting_tool_names(source.get("starting_proficiencies")),
             "languages": _lower_names(source.get("languages")),
             "features": _features([feature]) if feature else None,
             "source": _source(source),
@@ -362,12 +367,49 @@ def _names(values):
 
 
 def _proficiency_name(value):
-    name = str(value).strip().casefold()
+    original = str(value).strip().casefold()
+    name = original
     for prefix in ("skill:", "saving throw:", "tool:"):
         if name.startswith(prefix):
             name = name.removeprefix(prefix).strip()
             break
-    return name.replace(" ", "_") if "tool:" in str(value).casefold() else name
+    if _is_tool_proficiency(original):
+        return re.sub(r"[^a-z0-9]+", "_", name).strip("_")
+    return name
+
+
+def _is_tool_proficiency(value):
+    name = str(value).strip().casefold()
+    return any(term in name for term in ("tool", "instrument", "gaming set", "kit"))
+
+
+def _tool_choice(choices):
+    for choice in choices or []:
+        options = choice.get("from", {}).get("options", [])
+        names = [
+            _proficiency_name(_name(option))
+            for option in options
+            if _is_tool_option(option) and _name(option)
+        ]
+        if names and choice.get("choose"):
+            return {"choose": choice["choose"], "from": names}
+    return None
+
+
+def _is_tool_option(option):
+    if _is_tool_proficiency(_name(option)):
+        return True
+    item = option.get("item", {}) if isinstance(option, dict) else {}
+    return _is_tool_proficiency(item.get("type", ""))
+
+
+def _starting_tool_names(values):
+    names = [
+        _proficiency_name(_name(value))
+        for value in values or []
+        if _name(value) and _is_tool_proficiency(_name(value))
+    ]
+    return list(dict.fromkeys(names)) or None
 
 
 def _proficiency_names(values):
@@ -416,7 +458,7 @@ def _choice(choices):
         names = [
             _proficiency_name(_name(option))
             for option in options
-            if _name(option)
+            if _name(option) and not _is_tool_option(option)
         ]
         if names and choice.get("choose"):
             return {"choose": choice["choose"], "from": names}

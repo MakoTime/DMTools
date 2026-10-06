@@ -9,6 +9,7 @@ from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt
 from PySide6.QtWidgets import QFileDialog, QLabel
 
 from application.project_version import upgrade_project_data
+from common import dev_mode
 
 
 @dataclass
@@ -211,6 +212,8 @@ class FileWindow:
         self.store = store or RecentProjectStore()
         self.on_project_opened = on_project_opened
         self.on_project_created = on_project_created
+        self.window.devModeCheckBox.setChecked(dev_mode.is_enabled())
+        self.window.devModeCheckBox.toggled.connect(self._set_dev_mode)
         self.entries = self.store.load()
         self.selected_project: Path | None = None
         self.list_model = ProjectListModel(self.entries)
@@ -237,6 +240,9 @@ class FileWindow:
             return
         entry = self.entries[selected.indexes()[0].row()]
         self._show_project(entry.path, entry.last_opened)
+
+    def _set_dev_mode(self, enabled):
+        dev_mode.set_enabled(enabled)
 
     def _show_project(self, path: Path, last_opened: str = ""):
         try:

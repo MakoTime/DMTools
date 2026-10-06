@@ -1,0 +1,1839 @@
+{
+  "class_levels": [
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 0,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+          ],
+          "index": "otherworldly-patron",
+          "level": 1,
+          "name": "Otherworldly Patron",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/otherworldly-patron"
+        },
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "Your arcane research and the magic bestowed on you by your patron have given you facility with spells."
+          ],
+          "index": "pact-magic",
+          "level": 1,
+          "name": "Pact Magic",
+          "prerequisites": [],
+          "reference": "/api/2014/classes/warlock/spellcasting",
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/pact-magic"
+        }
+      ],
+      "index": "warlock-1",
+      "level": 1,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "cantrips_known": 2,
+        "spell_slots_level_1": 1,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 2
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/1"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 2,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "In your study of occult lore, you have unearthed eldritch invocations, fragments of forbidden knowledge that imbue you with an abiding magical ability.",
+            "At 2nd level, you gain two eldritch invocations of your choice. Your invocation options are detailed at the end of the class description. When you gain certain warlock levels, you gain additional invocations of your choice, as shown in the Invocations Known column of the Warlock table.",
+            "Additionally, when you gain a level in this class, you can choose one of the invocations you know and replace it with another invocation that you could learn at that level."
+          ],
+          "feature_specific": {
+            "invocations": [
+              {
+                "index": "eldritch-invocation-agonizing-blast",
+                "name": "Eldritch Invocation: Agonizing Blast",
+                "url": "/api/2014/features/eldritch-invocation-agonizing-blast"
+              },
+              {
+                "index": "eldritch-invocation-armor-of-shadows",
+                "name": "Eldritch Invocation: Armor of Shadows",
+                "url": "/api/2014/features/eldritch-invocation-armor-of-shadows"
+              },
+              {
+                "index": "eldritch-invocation-beast-speech",
+                "name": "Eldritch Invocation: Beast Speech",
+                "url": "/api/2014/features/eldritch-invocation-beast-speech"
+              },
+              {
+                "index": "eldritch-invocation-beguiling-influence",
+                "name": "Eldritch Invocation: Beguiling Influence",
+                "url": "/api/2014/features/eldritch-invocation-beguiling-influence"
+              },
+              {
+                "index": "eldritch-invocation-book-of-ancient-secrets",
+                "name": "Eldritch Invocation: Book of Ancient Secrets",
+                "url": "/api/2014/features/eldritch-invocation-book-of-ancient-secrets"
+              },
+              {
+                "index": "eldritch-invocation-devils-sight",
+                "name": "Eldritch Invocation: Devil's Sight",
+                "url": "/api/2014/features/eldritch-invocation-devils-sight"
+              },
+              {
+                "index": "eldritch-invocation-eldritch-sight",
+                "name": "Eldritch Invocation: Eldritch Sight",
+                "url": "/api/2014/features/eldritch-invocation-eldritch-sight"
+              },
+              {
+                "index": "eldritch-invocation-eldritch-spear",
+                "name": "Eldritch Invocation: Eldritch Spear",
+                "url": "/api/2014/features/eldritch-invocation-eldritch-spear"
+              },
+              {
+                "index": "eldritch-invocation-eyes-of-the-rune-keeper",
+                "name": "Eldritch Invocation: Eyes of the Rune Keeper",
+                "url": "/api/2014/features/eldritch-invocation-eyes-of-the-rune-keeper"
+              },
+              {
+                "index": "eldritch-invocation-fiendish-vigor",
+                "name": "Eldritch Invocation: Fiendish Vigor",
+                "url": "/api/2014/features/eldritch-invocation-fiendish-vigor"
+              },
+              {
+                "index": "eldritch-invocation-gaze-of-two-minds",
+                "name": "Eldritch Invocation: Gaze of Two Minds",
+                "url": "/api/2014/features/eldritch-invocation-gaze-of-two-minds"
+              },
+              {
+                "index": "eldritch-invocation-mask-of-many-faces",
+                "name": "Eldritch Invocation: Mask of Many Faces",
+                "url": "/api/2014/features/eldritch-invocation-mask-of-many-faces"
+              },
+              {
+                "index": "eldritch-invocation-misty-visions",
+                "name": "Eldritch Invocation: Misty Visions",
+                "url": "/api/2014/features/eldritch-invocation-misty-visions"
+              },
+              {
+                "index": "eldritch-invocation-repelling-blast",
+                "name": "Eldritch Invocation: Repelling Blast",
+                "url": "/api/2014/features/eldritch-invocation-repelling-blast"
+              },
+              {
+                "index": "eldritch-invocation-thief-of-five-fates",
+                "name": "Eldritch Invocation: Thief of Five Fates",
+                "url": "/api/2014/features/eldritch-invocation-thief-of-five-fates"
+              },
+              {
+                "index": "eldritch-invocation-voice-of-the-chain-master",
+                "name": "Eldritch Invocation: Voice of the Chain Master",
+                "url": "/api/2014/features/eldritch-invocation-voice-of-the-chain-master"
+              },
+              {
+                "index": "eldritch-invocation-mire-the-mind",
+                "name": "Eldritch Invocation: Mire the Mind",
+                "url": "/api/2014/features/eldritch-invocation-mire-the-mind"
+              },
+              {
+                "index": "eldritch-invocation-one-with-shadows",
+                "name": "Eldritch Invocation: One with Shadows",
+                "url": "/api/2014/features/eldritch-invocation-one-with-shadows"
+              },
+              {
+                "index": "eldritch-invocation-sign-of-ill-omen",
+                "name": "Eldritch Invocation: Sign of Ill Omen",
+                "url": "/api/2014/features/eldritch-invocation-sign-of-ill-omen"
+              },
+              {
+                "index": "eldritch-invocation-thirsting-blade",
+                "name": "Eldritch Invocation: Thirsting Blade",
+                "url": "/api/2014/features/eldritch-invocation-thirsting-blade"
+              },
+              {
+                "index": "eldritch-invocation-bewitching-whispers",
+                "name": "Eldritch Invocation: Bewitching Whispers",
+                "url": "/api/2014/features/eldritch-invocation-bewitching-whispers"
+              },
+              {
+                "index": "eldritch-invocation-dreadful-word",
+                "name": "Eldritch Invocation: Dreadful Word",
+                "url": "/api/2014/features/eldritch-invocation-dreadful-word"
+              },
+              {
+                "index": "eldritch-invocation-sculptor-of-flesh",
+                "name": "Eldritch Invocation: Sculptor of Flesh",
+                "url": "/api/2014/features/eldritch-invocation-sculptor-of-flesh"
+              },
+              {
+                "index": "eldritch-invocation-ascendant-step",
+                "name": "Eldritch Invocation: Ascendant Step",
+                "url": "/api/2014/features/eldritch-invocation-ascendant-step"
+              },
+              {
+                "index": "eldritch-invocation-minions-of-chaos",
+                "name": "Eldritch Invocation: Minions of Chaos",
+                "url": "/api/2014/features/eldritch-invocation-minions-of-chaos"
+              },
+              {
+                "index": "eldritch-invocation-otherworldly-leap",
+                "name": "Eldritch Invocation: Otherworldly Leap",
+                "url": "/api/2014/features/eldritch-invocation-otherworldly-leap"
+              },
+              {
+                "index": "eldritch-invocation-whispers-of-the-grave",
+                "name": "Eldritch Invocation: Whispers of the Grave",
+                "url": "/api/2014/features/eldritch-invocation-whispers-of-the-grave"
+              },
+              {
+                "index": "eldritch-invocation-lifedrinker",
+                "name": "Eldritch Invocation: Lifedrinker",
+                "url": "/api/2014/features/eldritch-invocation-lifedrinker"
+              },
+              {
+                "index": "eldritch-invocation-chains-of-carceri",
+                "name": "Eldritch Invocation: Chains of Carceri",
+                "url": "/api/2014/features/eldritch-invocation-chains-of-carceri"
+              },
+              {
+                "index": "eldritch-invocation-master-of-myriad-forms",
+                "name": "Eldritch Invocation: Master of Myriad Forms",
+                "url": "/api/2014/features/eldritch-invocation-master-of-myriad-forms"
+              },
+              {
+                "index": "eldritch-invocation-visions-of-distant-realms",
+                "name": "Eldritch Invocation: Visions of Distant Realms",
+                "url": "/api/2014/features/eldritch-invocation-visions-of-distant-realms"
+              },
+              {
+                "index": "eldritch-invocation-witch-sight",
+                "name": "Eldritch Invocation: Witch Sight",
+                "url": "/api/2014/features/eldritch-invocation-witch-sight"
+              }
+            ]
+          },
+          "index": "eldritch-invocations",
+          "level": 2,
+          "name": "Eldritch Invocations",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/eldritch-invocations"
+        }
+      ],
+      "index": "warlock-2",
+      "level": 2,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "cantrips_known": 2,
+        "spell_slots_level_1": 2,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 3
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/2"
+    },
+    {
+      "ability_score_bonuses": 0,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 2,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice."
+          ],
+          "feature_specific": {
+            "invocations": [],
+            "subfeature_options": {
+              "choose": 1,
+              "from": {
+                "option_set_type": "options_array",
+                "options": [
+                  {
+                    "item": {
+                      "class": {
+                        "index": "warlock",
+                        "name": "Warlock",
+                        "url": "/api/2014/classes/warlock"
+                      },
+                      "desc": [
+                        "You learn the find familiar spell and can cast it as a ritual. The spell doesn't count against your number of spells known.",
+                        "When you cast the spell, you can choose one of the normal forms for your familiar or one of the following special forms: imp, pseudodragon, quasit, or sprite.",
+                        "Additionally, when you take the Attack action, you can forgo one of your own attacks to allow your familiar to make one attack of its own with its reaction.",
+                        "Your familiar is more cunning than a typical familiar. Its default form can be a reflection of your patron, with imps and quasits tied to the Fiend."
+                      ],
+                      "index": "pact-of-the-chain",
+                      "level": 3,
+                      "name": "Pact of the Chain",
+                      "parent": {
+                        "class": {
+                          "index": "warlock",
+                          "name": "Warlock",
+                          "url": "/api/2014/classes/warlock"
+                        },
+                        "desc": [
+                          "At 3rd level, your otherworldly patron bestows a gift upon you for your loyal service. You gain one of the following features of your choice."
+                        ],
+                        "feature_specific": {
+                          "invocations": [],
+                          "subfeature_options": {
+                            "choose": 1,
+                            "from": {
+                              "option_set_type": "options_array",
+                              "options": [
+                                {
+                                  "item": {
+                                    "index": "pact-of-the-chain",
+                                    "name": "Pact of the Chain",
+                                    "url": "/api/2014/features/pact-of-the-chain"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "warlock",
+                                      "name": "Warlock",
+                                      "url": "/api/2014/classes/warlock"
+                                    },
+                                    "desc": [
+                                      "You can use your action to create a pact weapon in your empty hand. You can choose the form that this melee weapon takes each time you create it. You are proficient with it while you wield it. This weapon counts as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
+                                      "Your pact weapon disappears if it is more than 5 feet away from you for 1 minute or more. It also disappears if you use this feature again, if you dismiss the weapon (no action required), or if you die.",
+                                      "You can transform one magic weapon into your pact weapon by performing a special ritual while you hold the weapon. You perform the ritual over the course of 1 hour, which can be done during a short rest. You can then dismiss the weapon, shunting it into an extradimensional space, and it appears whenever you create your pact weapon thereafter. You can't affect an artifact or a sentient weapon in this way. The weapon ceases being your pact weapon if you die, if you perform the 1-hour ritual on a different weapon, or if you use a 1-hour ritual to break your bond to it. The weapon appears at your feet if it is in the extradimensional space when the bond breaks.",
+                                      "If you serve the Fiend, your weapon could be an axe made of black metal and adorned with decorative flames."
+                                    ],
+                                    "index": "pact-of-the-blade",
+                                    "level": 3,
+                                    "name": "Pact of the Blade",
+                                    "parent": {
+                                      "index": "pact-boon",
+                                      "name": "Pact Boon",
+                                      "url": "/api/2014/features/pact-boon"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/pact-of-the-blade"
+                                  },
+                                  "option_type": "reference"
+                                },
+                                {
+                                  "item": {
+                                    "class": {
+                                      "index": "warlock",
+                                      "name": "Warlock",
+                                      "url": "/api/2014/classes/warlock"
+                                    },
+                                    "desc": [
+                                      "Your patron gives you a grimoire called a Book of Shadows. When you gain this feature, choose three cantrips from any class's spell list (the three needn't be from the same list). While the book is on your person, you can cast those cantrips at will. They don't count against your number of cantrips known. If they don't appear on the warlock spell list, they are nonetheless warlock spells for you.",
+                                      "If you lose your Book of Shadows, you can perform a 1-hour ceremony to receive a replacement from your patron. This ceremony can be performed during a short or long rest, and it destroys the previous book. The book turns to ash when you die.",
+                                      "Your Book of Shadows could be a weighty tome bound in demon hide studded with iron, holding spells of conjuration and a wealth of forbidden lore about the sinister regions of the cosmos, a gift of the Fiend."
+                                    ],
+                                    "index": "pact-of-the-tome",
+                                    "level": 3,
+                                    "name": "Pact of the Tome",
+                                    "parent": {
+                                      "index": "pact-boon",
+                                      "name": "Pact Boon",
+                                      "url": "/api/2014/features/pact-boon"
+                                    },
+                                    "prerequisites": [],
+                                    "updated_at": "2026-04-01T20:35:37.430Z",
+                                    "url": "/api/2014/features/pact-of-the-tome"
+                                  },
+                                  "option_type": "reference"
+                                }
+                              ]
+                            },
+                            "type": "feature"
+                          }
+                        },
+                        "index": "pact-boon",
+                        "level": 3,
+                        "name": "Pact Boon",
+                        "prerequisites": [],
+                        "updated_at": "2026-04-01T20:35:37.430Z",
+                        "url": "/api/2014/features/pact-boon"
+                      },
+                      "prerequisites": [],
+                      "updated_at": "2026-04-01T20:35:37.430Z",
+                      "url": "/api/2014/features/pact-of-the-chain"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "pact-of-the-blade",
+                      "name": "Pact of the Blade",
+                      "url": "/api/2014/features/pact-of-the-blade"
+                    },
+                    "option_type": "reference"
+                  },
+                  {
+                    "item": {
+                      "index": "pact-of-the-tome",
+                      "name": "Pact of the Tome",
+                      "url": "/api/2014/features/pact-of-the-tome"
+                    },
+                    "option_type": "reference"
+                  }
+                ]
+              },
+              "type": "feature"
+            }
+          },
+          "index": "pact-boon",
+          "level": 3,
+          "name": "Pact Boon",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/pact-boon"
+        }
+      ],
+      "index": "warlock-3",
+      "level": 3,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "cantrips_known": 2,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 4
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/3"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 3,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "warlock-ability-score-improvement-1",
+          "level": 4,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/warlock-ability-score-improvement-1"
+        }
+      ],
+      "index": "warlock-4",
+      "level": 4,
+      "prof_bonus": 2,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 2,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 5
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/4"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 3,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [],
+      "index": "warlock-5",
+      "level": 5,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 6
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/5"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 4,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+          ],
+          "index": "otherworldly-patron-improvement-1",
+          "level": 6,
+          "name": "Otherworldly Patron feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/otherworldly-patron-improvement-1"
+        }
+      ],
+      "index": "warlock-6",
+      "level": 6,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 2,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 7
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/6"
+    },
+    {
+      "ability_score_bonuses": 1,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 4,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [],
+      "index": "warlock-7",
+      "level": 7,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 8
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/7"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 4,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "warlock-ability-score-improvement-2",
+          "level": 8,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/warlock-ability-score-improvement-2"
+        }
+      ],
+      "index": "warlock-8",
+      "level": 8,
+      "prof_bonus": 3,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 2,
+        "spell_slots_level_5": 0,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 9
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/8"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 5,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [],
+      "index": "warlock-9",
+      "level": 9,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "cantrips_known": 3,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 2,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 10
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/9"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 5,
+        "mystic_arcanum_level_6": 0,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+          ],
+          "index": "otherworldly-patron-improvement-2",
+          "level": 10,
+          "name": "Otherworldly Patron feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/otherworldly-patron-improvement-2"
+        }
+      ],
+      "index": "warlock-10",
+      "level": 10,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 2,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 10
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/10"
+    },
+    {
+      "ability_score_bonuses": 2,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 5,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.",
+            "You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+            "At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          ],
+          "index": "mystic-arcanum-6th-level",
+          "level": 11,
+          "name": "Mystic Arcanum (6th level)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/mystic-arcanum-6th-level"
+        }
+      ],
+      "index": "warlock-11",
+      "level": 11,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 11
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/11"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 6,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 0,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "warlock-ability-score-improvement-3",
+          "level": 12,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/warlock-ability-score-improvement-3"
+        }
+      ],
+      "index": "warlock-12",
+      "level": 12,
+      "prof_bonus": 4,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 11
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/12"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 6,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.",
+            "You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+            "At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          ],
+          "index": "mystic-arcanum-7th-level",
+          "level": 13,
+          "name": "Mystic Arcanum (7th level)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/mystic-arcanum-7th-level"
+        }
+      ],
+      "index": "warlock-13",
+      "level": 13,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 12
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/13"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 6,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 0,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 1st level, you have struck a bargain with an otherworldly being of your choice, such as the Fiend. Your choice grants you features at 1st level and again at 6th, 10th, and 14th level."
+          ],
+          "index": "otherworldly-patron-improvement-3",
+          "level": 14,
+          "name": "Otherworldly Patron feature",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/otherworldly-patron-improvement-3"
+        }
+      ],
+      "index": "warlock-14",
+      "level": 14,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 12
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/14"
+    },
+    {
+      "ability_score_bonuses": 3,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 7,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.",
+            "You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+            "At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          ],
+          "index": "mystic-arcanum-8th-level",
+          "level": 15,
+          "name": "Mystic Arcanum (8th level)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/mystic-arcanum-8th-level"
+        }
+      ],
+      "index": "warlock-15",
+      "level": 15,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 13
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/15"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 7,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 0
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "warlock-ability-score-improvement-4",
+          "level": 16,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/warlock-ability-score-improvement-4"
+        }
+      ],
+      "index": "warlock-16",
+      "level": 16,
+      "prof_bonus": 5,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 3,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 13
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/16"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 7,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 11th level, your patron bestows upon you a magical secret called an arcanum. Choose one 6th- level spell from the warlock spell list as this arcanum.",
+            "You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+            "At higher levels, you gain more warlock spells of your choice that can be cast in this way: one 7th- level spell at 13th level, one 8th-level spell at 15th level, and one 9th-level spell at 17th level. You regain all uses of your Mystic Arcanum when you finish a long rest."
+          ],
+          "index": "mystic-arcanum-9th-level",
+          "level": 17,
+          "name": "Mystic Arcanum (9th level)",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/mystic-arcanum-9th-level"
+        }
+      ],
+      "index": "warlock-17",
+      "level": 17,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 4,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 14
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/17"
+    },
+    {
+      "ability_score_bonuses": 4,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 8,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 1
+      },
+      "features": [],
+      "index": "warlock-18",
+      "level": 18,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 4,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 14
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/18"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 8,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "When you reach 4th level, and again at 8th, 12th, 16th, and 19th level, you can increase one ability score of your choice by 2, or you can increase two ability scores of your choice by 1. As normal, you can't increase an ability score above 20 using this feature."
+          ],
+          "index": "warlock-ability-score-improvement-5",
+          "level": 19,
+          "name": "Ability Score Improvement",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/warlock-ability-score-improvement-5"
+        }
+      ],
+      "index": "warlock-19",
+      "level": 19,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 4,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 15
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/19"
+    },
+    {
+      "ability_score_bonuses": 5,
+      "class": {
+        "index": "warlock",
+        "name": "Warlock",
+        "url": "/api/2014/classes/warlock"
+      },
+      "class_specific": {
+        "invocations_known": 8,
+        "mystic_arcanum_level_6": 1,
+        "mystic_arcanum_level_7": 1,
+        "mystic_arcanum_level_8": 1,
+        "mystic_arcanum_level_9": 1
+      },
+      "features": [
+        {
+          "class": {
+            "index": "warlock",
+            "name": "Warlock",
+            "url": "/api/2014/classes/warlock"
+          },
+          "desc": [
+            "At 20th level, you can draw on your inner reserve of mystical power while entreating your patron to regain expended spell slots. You can spend 1 minute entreating your patron for aid to regain all your expended spell slots from your Pact Magic feature.",
+            "Once you regain spell slots with this feature, you must finish a long rest before you can do so again."
+          ],
+          "index": "eldritch-master",
+          "level": 20,
+          "name": "Eldritch Master",
+          "prerequisites": [],
+          "updated_at": "2026-04-01T20:35:37.430Z",
+          "url": "/api/2014/features/eldritch-master"
+        }
+      ],
+      "index": "warlock-20",
+      "level": 20,
+      "prof_bonus": 6,
+      "spellcasting": {
+        "cantrips_known": 4,
+        "spell_slots_level_1": 0,
+        "spell_slots_level_2": 0,
+        "spell_slots_level_3": 0,
+        "spell_slots_level_4": 0,
+        "spell_slots_level_5": 4,
+        "spell_slots_level_6": 0,
+        "spell_slots_level_7": 0,
+        "spell_slots_level_8": 0,
+        "spell_slots_level_9": 0,
+        "spells_known": 15
+      },
+      "updated_at": "2026-04-01T20:35:37.787Z",
+      "url": "/api/2014/classes/warlock/levels/20"
+    }
+  ],
+  "hit_die": 8,
+  "index": "warlock",
+  "multi_classing": {
+    "prerequisites": [
+      {
+        "ability_score": {
+          "index": "cha",
+          "name": "CHA",
+          "url": "/api/2014/ability-scores/cha"
+        },
+        "minimum_score": 13
+      }
+    ],
+    "proficiencies": [
+      {
+        "index": "light-armor",
+        "name": "Light Armor",
+        "url": "/api/2014/proficiencies/light-armor"
+      },
+      {
+        "index": "simple-weapons",
+        "name": "Simple Weapons",
+        "url": "/api/2014/proficiencies/simple-weapons"
+      }
+    ]
+  },
+  "name": "Warlock",
+  "proficiencies": [
+    {
+      "index": "light-armor",
+      "name": "Light Armor",
+      "url": "/api/2014/proficiencies/light-armor"
+    },
+    {
+      "index": "simple-weapons",
+      "name": "Simple Weapons",
+      "url": "/api/2014/proficiencies/simple-weapons"
+    },
+    {
+      "index": "saving-throw-wis",
+      "name": "Saving Throw: WIS",
+      "url": "/api/2014/proficiencies/saving-throw-wis"
+    },
+    {
+      "index": "saving-throw-cha",
+      "name": "Saving Throw: CHA",
+      "url": "/api/2014/proficiencies/saving-throw-cha"
+    }
+  ],
+  "proficiency_choices": [
+    {
+      "choose": 2,
+      "desc": "Choose two skills from Arcana, Deception, History, Intimidation, Investigation, Nature, and Religion",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "item": {
+              "index": "skill-arcana",
+              "name": "Skill: Arcana",
+              "url": "/api/2014/proficiencies/skill-arcana"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-deception",
+              "name": "Skill: Deception",
+              "url": "/api/2014/proficiencies/skill-deception"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-history",
+              "name": "Skill: History",
+              "url": "/api/2014/proficiencies/skill-history"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-intimidation",
+              "name": "Skill: Intimidation",
+              "url": "/api/2014/proficiencies/skill-intimidation"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-investigation",
+              "name": "Skill: Investigation",
+              "url": "/api/2014/proficiencies/skill-investigation"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-nature",
+              "name": "Skill: Nature",
+              "url": "/api/2014/proficiencies/skill-nature"
+            },
+            "option_type": "reference"
+          },
+          {
+            "item": {
+              "index": "skill-religion",
+              "name": "Skill: Religion",
+              "url": "/api/2014/proficiencies/skill-religion"
+            },
+            "option_type": "reference"
+          }
+        ]
+      },
+      "type": "proficiencies"
+    }
+  ],
+  "saving_throws": [
+    {
+      "index": "wis",
+      "name": "WIS",
+      "url": "/api/2014/ability-scores/wis"
+    },
+    {
+      "index": "cha",
+      "name": "CHA",
+      "url": "/api/2014/ability-scores/cha"
+    }
+  ],
+  "spellcasting": {
+    "info": [
+      {
+        "desc": [
+          "You know two cantrips of your choice from the warlock spell list. You learn additional warlock cantrips of your choice at higher levels, as shown in the Cantrips Known column of the Warlock table."
+        ],
+        "name": "Cantrips"
+      },
+      {
+        "desc": [
+          "The Warlock table shows how many spell slots you have. The table also shows what the level of those slots is; all of your spell slots are the same level. To cast one of your warlock spells of 1st level or higher, you must expend a spell slot. You regain all expended spell slots when you finish a short or long rest.",
+          "For example, when you are 5th level, you have two 3rd-level spell slots. To cast the 1st-level spell thunderwave, you must spend one of those slots, and you cast it as a 3rd-level spell."
+        ],
+        "name": "Spell Slots"
+      },
+      {
+        "desc": [
+          "At 1st level, you know two 1st-level spells of your choice from the warlock spell list.",
+          "The Spells Known column of the Warlock table shows when you learn more warlock spells of your choice of 1st level and higher. ",
+          "A spell you choose must be of a level no higher than what's shown in the table's Slot Level column for your level. When you reach 6th level, for example, you learn a new warlock spell, which can be 1st, 2nd, or 3rd level.",
+          "Additionally, when you gain a level in this class, you can choose one of the warlock spells you know and replace it with another spell from the warlock spell list, which also must be of a level for which you have spell slots."
+        ],
+        "name": "Spells Known of 1st Level and Higher"
+      },
+      {
+        "desc": [
+          "Charisma is your spellcasting ability for your warlock spells, so you use your Charisma whenever a spell refers to your spellcasting ability. In addition, you use your Charisma modifier when setting the saving throw DC for a warlock spell you cast and when making an attack roll with one.",
+          "Spell save DC = 8 + your proficiency bonus + your Charisma modifier.",
+          "Spell attack modifier = your proficiency bonus + your Charisma modifier."
+        ],
+        "name": "Spellcasting Ability"
+      },
+      {
+        "desc": [
+          "You can use an arcane focus as a spellcasting focus for your warlock spells."
+        ],
+        "name": "Spellcasting Focus"
+      }
+    ],
+    "level": 1,
+    "spellcasting_ability": {
+      "index": "cha",
+      "name": "CHA",
+      "url": "/api/2014/ability-scores/cha"
+    }
+  },
+  "spells": "/api/2014/classes/warlock/spells",
+  "starting_equipment": [
+    {
+      "equipment": {
+        "index": "dagger",
+        "name": "Dagger",
+        "url": "/api/2014/equipment/dagger"
+      },
+      "quantity": 2
+    },
+    {
+      "equipment": {
+        "index": "leather-armor",
+        "name": "Leather Armor",
+        "url": "/api/2014/equipment/leather-armor"
+      },
+      "quantity": 1
+    }
+  ],
+  "starting_equipment_options": [
+    {
+      "choose": 1,
+      "desc": "(a) a light crossbow and 20 bolts or (b) any simple weapon",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "items": [
+              {
+                "count": 1,
+                "of": {
+                  "index": "crossbow-light",
+                  "name": "Crossbow, light",
+                  "url": "/api/2014/equipment/crossbow-light"
+                },
+                "option_type": "counted_reference"
+              },
+              {
+                "count": 20,
+                "of": {
+                  "index": "crossbow-bolt",
+                  "name": "Crossbow bolt",
+                  "url": "/api/2014/equipment/crossbow-bolt"
+                },
+                "option_type": "counted_reference"
+              }
+            ],
+            "option_type": "multiple"
+          },
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "any simple weapon",
+              "from": {
+                "equipment_category": {
+                  "index": "simple-weapons",
+                  "name": "Simple Weapons",
+                  "url": "/api/2014/equipment-categories/simple-weapons"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) a component pouch or (b) an arcane focus",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "index": "component-pouch",
+              "name": "Component pouch",
+              "url": "/api/2014/equipment/component-pouch"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "choice": {
+              "choose": 1,
+              "desc": "arcane focus",
+              "from": {
+                "equipment_category": {
+                  "index": "arcane-foci",
+                  "name": "Arcane Foci",
+                  "url": "/api/2014/equipment-categories/arcane-foci"
+                },
+                "option_set_type": "equipment_category"
+              },
+              "type": "equipment"
+            },
+            "option_type": "choice"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "(a) a scholar’s pack or (b) a dungeoneer’s pack",
+      "from": {
+        "option_set_type": "options_array",
+        "options": [
+          {
+            "count": 1,
+            "of": {
+              "contents": [
+                {
+                  "item": {
+                    "index": "backpack",
+                    "name": "Backpack",
+                    "url": "/api/2014/equipment/backpack"
+                  },
+                  "quantity": 1
+                },
+                {
+                  "item": {
+                    "contents": [],
+                    "cost": {
+                      "quantity": 25,
+                      "unit": "gp"
+                    },
+                    "desc": [
+                      "A book might contain poetry, historical accounts, information pertaining to a particular field of lore, diagrams and notes on gnomish contraptions, or just about anything else that can be represented using text or pictures. A book of spells is a spellbook (described later in this section)."
+                    ],
+                    "equipment_categories": [
+                      {
+                        "index": "adventuring-gear",
+                        "name": "Adventuring Gear",
+                        "url": "/api/2014/equipment-categories/adventuring-gear"
+                      },
+                      {
+                        "index": "standard-gear",
+                        "name": "Standard Gear",
+                        "url": "/api/2014/equipment-categories/standard-gear"
+                      }
+                    ],
+                    "equipment_category": {
+                      "index": "adventuring-gear",
+                      "name": "Adventuring Gear",
+                      "url": "/api/2014/equipment-categories/adventuring-gear"
+                    },
+                    "gear_category": {
+                      "index": "standard-gear",
+                      "name": "Standard Gear",
+                      "url": "/api/2014/equipment-categories/standard-gear"
+                    },
+                    "index": "book",
+                    "name": "Book",
+                    "properties": [],
+                    "special": [],
+                    "updated_at": "2026-09-23T20:15:25.116Z",
+                    "url": "/api/2014/equipment/book",
+                    "weight": 5
+                  },
+                  "quantity": 1
+                },
+                {
+                  "item": {
+                    "index": "ink-1-ounce-bottle",
+                    "name": "Ink (1 ounce bottle)",
+                    "url": "/api/2014/equipment/ink-1-ounce-bottle"
+                  },
+                  "quantity": 1
+                },
+                {
+                  "item": {
+                    "index": "ink-pen",
+                    "name": "Ink pen",
+                    "url": "/api/2014/equipment/ink-pen"
+                  },
+                  "quantity": 1
+                },
+                {
+                  "item": {
+                    "contents": [],
+                    "cost": {
+                      "quantity": 1,
+                      "unit": "sp"
+                    },
+                    "desc": [],
+                    "equipment_categories": [
+                      {
+                        "index": "adventuring-gear",
+                        "name": "Adventuring Gear",
+                        "url": "/api/2014/equipment-categories/adventuring-gear"
+                      },
+                      {
+                        "index": "standard-gear",
+                        "name": "Standard Gear",
+                        "url": "/api/2014/equipment-categories/standard-gear"
+                      }
+                    ],
+                    "equipment_category": {
+                      "index": "adventuring-gear",
+                      "name": "Adventuring Gear",
+                      "url": "/api/2014/equipment-categories/adventuring-gear"
+                    },
+                    "gear_category": {
+                      "index": "standard-gear",
+                      "name": "Standard Gear",
+                      "url": "/api/2014/equipment-categories/standard-gear"
+                    },
+                    "index": "parchment-one-sheet",
+                    "name": "Parchment (one sheet)",
+                    "properties": [],
+                    "special": [],
+                    "updated_at": "2026-09-23T20:15:25.116Z",
+                    "url": "/api/2014/equipment/parchment-one-sheet",
+                    "weight": 0
+                  },
+                  "quantity": 10
+                },
+                {
+                  "item": {
+                    "contents": [],
+                    "cost": {
+                      "quantity": 0,
+                      "unit": "cp"
+                    },
+                    "desc": [
+                      "A small bag of sand, typically found in a scholar's pack."
+                    ],
+                    "equipment_categories": [
+                      {
+                        "index": "adventuring-gear",
+                        "name": "Adventuring Gear",
+                        "url": "/api/2014/equipment-categories/adventuring-gear"
+                      },
+                      {
+                        "index": "standard-gear",
+                        "name": "Standard Gear",
+                        "url": "/api/2014/equipment-categories/standard-gear"
+                      }
+                    ],
+                    "equipment_category": {
+                      "index": "adventuring-gear",
+                      "name": "Adventuring Gear",
+                      "url": "/api/2014/equipment-categories/adventuring-gear"
+                    },
+                    "gear_category": {
+                      "index": "standard-gear",
+                      "name": "Standard Gear",
+                      "url": "/api/2014/equipment-categories/standard-gear"
+                    },
+                    "index": "little-bag-of-sand",
+                    "name": "Little bag of sand",
+                    "properties": [],
+                    "special": [],
+                    "updated_at": "2026-09-23T20:15:25.116Z",
+                    "url": "/api/2014/equipment/little-bag-of-sand",
+                    "weight": 0
+                  },
+                  "quantity": 1
+                },
+                {
+                  "item": {
+                    "contents": [],
+                    "cost": {
+                      "quantity": 0,
+                      "unit": "cp"
+                    },
+                    "desc": [
+                      "A small knife, typically found in a scholar's pack."
+                    ],
+                    "equipment_categories": [
+                      {
+                        "index": "adventuring-gear",
+                        "name": "Adventuring Gear",
+                        "url": "/api/2014/equipment-categories/adventuring-gear"
+                      },
+                      {
+                        "index": "standard-gear",
+                        "name": "Standard Gear",
+                        "url": "/api/2014/equipment-categories/standard-gear"
+                      }
+                    ],
+                    "equipment_category": {
+                      "index": "adventuring-gear",
+                      "name": "Adventuring Gear",
+                      "url": "/api/2014/equipment-categories/adventuring-gear"
+                    },
+                    "gear_category": {
+                      "index": "standard-gear",
+                      "name": "Standard Gear",
+                      "url": "/api/2014/equipment-categories/standard-gear"
+                    },
+                    "index": "small-knife",
+                    "name": "Small knife",
+                    "properties": [],
+                    "special": [],
+                    "updated_at": "2026-09-23T20:15:25.117Z",
+                    "url": "/api/2014/equipment/small-knife",
+                    "weight": 0
+                  },
+                  "quantity": 1
+                }
+              ],
+              "cost": {
+                "quantity": 40,
+                "unit": "gp"
+              },
+              "desc": [],
+              "equipment_categories": [
+                {
+                  "index": "adventuring-gear",
+                  "name": "Adventuring Gear",
+                  "url": "/api/2014/equipment-categories/adventuring-gear"
+                },
+                {
+                  "index": "equipment-packs",
+                  "name": "Equipment Packs",
+                  "url": "/api/2014/equipment-categories/equipment-packs"
+                }
+              ],
+              "equipment_category": {
+                "index": "adventuring-gear",
+                "name": "Adventuring Gear",
+                "url": "/api/2014/equipment-categories/adventuring-gear"
+              },
+              "gear_category": {
+                "index": "equipment-packs",
+                "name": "Equipment Packs",
+                "url": "/api/2014/equipment-categories/equipment-packs"
+              },
+              "index": "scholars-pack",
+              "name": "Scholar's Pack",
+              "properties": [],
+              "special": [],
+              "updated_at": "2026-09-23T20:15:25.117Z",
+              "url": "/api/2014/equipment/scholars-pack"
+            },
+            "option_type": "counted_reference"
+          },
+          {
+            "count": 1,
+            "of": {
+              "index": "dungeoneers-pack",
+              "name": "Dungeoneer's Pack",
+              "url": "/api/2014/equipment/dungeoneers-pack"
+            },
+            "option_type": "counted_reference"
+          }
+        ]
+      },
+      "type": "equipment"
+    },
+    {
+      "choose": 1,
+      "desc": "any simple weapon",
+      "from": {
+        "equipment_category": {
+          "index": "simple-weapons",
+          "name": "Simple Weapons",
+          "url": "/api/2014/equipment-categories/simple-weapons"
+        },
+        "option_set_type": "equipment_category"
+      },
+      "type": "equipment"
+    }
+  ],
+  "subclasses": [
+    {
+      "index": "fiend",
+      "name": "Fiend",
+      "url": "/api/2014/subclasses/fiend"
+    }
+  ],
+  "updated_at": "2026-04-01T20:35:36.453Z",
+  "url": "/api/2014/classes/warlock"
+}

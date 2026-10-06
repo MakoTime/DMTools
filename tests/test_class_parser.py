@@ -42,6 +42,21 @@ class TestClassParser(unittest.TestCase):
         self.assertEqual(cleric["spellcasting"], {"ability": "wisdom", "progression": "full"})
         self.assertTrue(barbarian["features"])
         self.assertTrue(all("level" in feature for feature in barbarian["features"]))
+        assert barbarian["resources"][0] == {
+            "name": "Rages",
+            "levels": [
+                {"level": 1, "maximum": 2},
+                {"level": 3, "maximum": 3},
+                {"level": 6, "maximum": 4},
+                {"level": 12, "maximum": 5},
+                {"level": 17, "maximum": 6},
+                {"level": 20, "maximum": "unlimited"},
+            ],
+            "recharge": "long_rest",
+        }
+        assert {resource["name"] for resource in cleric["resources"]} == {
+            "Channel Divinity",
+        }
         for class_data in (barbarian, cleric):
             Class.model_validate(class_data)
             self.assertTrue(validate(
@@ -53,6 +68,34 @@ class TestClassParser(unittest.TestCase):
             self.assertIn("Starting Barbarian", barbarian.get("description", ""))
             self.assertNotIn("Path of the Berserker", barbarian.get("description", ""))
 
+    def test_xml_warlock_adapts_eldritch_invocations(self):
+        resources = ClassAdaptor().class_resources({"name": "Warlock"})
+
+        assert resources == [{
+            "name": "Invocations Known",
+            "levels": [
+                {"level": 2, "value": 2},
+                {"level": 5, "value": 3},
+                {"level": 7, "value": 4},
+                {"level": 9, "value": 5},
+                {"level": 12, "value": 6},
+                {"level": 15, "value": 7},
+                {"level": 18, "value": 8},
+            ],
+        }]
+
+    def test_adapts_class_tool_and_instrument_proficiencies(self):
+        adaptor = ClassAdaptor()
+
+        self.assertEqual(
+            adaptor.adapt(self.source_class("Bard"))["tool_proficiencies"],
+            ["three_musical_instruments_of_your_choice"],
+        )
+        self.assertEqual(
+            adaptor.adapt(self.source_class("Artificer"))["tool_proficiencies"],
+            ["thieves_tools", "tinker_s_tools", "one_type_of_artisan_s_tools_of_your_choice"],
+        )
+
     def test_class_schema_uses_editor_friendly_progression_shapes(self):
         class_data = {
             "name": "Test Class",
@@ -61,6 +104,67 @@ class TestClassParser(unittest.TestCase):
             "starting_class": "You can start as a member of this class.",
             "multiclassing": "You need Strength 13 to multiclass into this class.",
             "ability_score_increase": [4, 8, 12, 16, 19],
+        }
+
+        Class.model_validate(class_data)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Class.schema.json",
+                class_data,
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
+    def test_class_schema_supports_resources_and_dice_progressions(self):
+        class_data = {
+            "name": "monk",
+            "hit_dice": 8,
+            "resources": [
+                {
+                    "name": "Ki Points",
+                    "maximum_formula": "class_level",
+                    "minimum_level": 2,
+                    "recharge": "short_rest",
+                },
+                {
+                    "name": "Martial Arts Die",
+                    "levels": [
+                        {"level": 1, "dice": 4},
+                        {"level": 5, "dice": 6},
+                        {"level": 11, "dice": 8},
+                        {"level": 17, "dice": 10},
+                    ],
+                }
+            ],
+        }
+
+        Class.model_validate(class_data)
+        self.assertTrue(
+            validate(
+                PROJECT_ROOT / "schemas" / "entities" / "Class.schema.json",
+                class_data,
+                PROJECT_ROOT / "schemas",
+            )
+        )
+
+    def test_class_schema_supports_level_based_resource_amounts(self):
+        class_data = {
+            "name": "barbarian",
+            "hit_dice": 12,
+            "resources": [
+                {
+                    "name": "Rages",
+                    "levels": [
+                        {"level": 1, "maximum": 2},
+                        {"level": 3, "maximum": 3},
+                        {"level": 6, "maximum": 4},
+                        {"level": 12, "maximum": 5},
+                        {"level": 17, "maximum": 6},
+                        {"level": 20, "maximum": "unlimited"},
+                    ],
+                    "recharge": "long_rest",
+                }
+            ],
         }
 
         Class.model_validate(class_data)

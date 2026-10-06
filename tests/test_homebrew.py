@@ -22,6 +22,12 @@ ITEM_XML = """
 """
 
 
+def descendants(node):
+    for child in node.children:
+        yield child
+        yield from descendants(child)
+
+
 def qt_app():
     return QApplication.instance() or QApplication([])
 
@@ -93,6 +99,7 @@ def test_purge_entity_data_can_limit_entity_types(tmp_path):
 def test_purge_removes_reloaded_node_from_project_tree_model(tmp_path):
     qt_app()
     controller, item = controller_with_item(tmp_path)
+    controller.project_file = tmp_path / "project.json"
     project_file = controller.save_project()
 
     reopened = ProjectController(artifact_store=ArtifactStore(tmp_path))
@@ -112,18 +119,19 @@ def test_purge_removes_reloaded_node_from_project_tree_model(tmp_path):
     assert all(
         child.uid != node_uid
         for root in reopened.project.tree.root_nodes
-        for child in root.iter_descendants()
+        for child in descendants(root)
     )
     assert all(
         child.uid != node_uid
         for root in reopened.project_tree_model.root_data
-        for child in root.iter_descendants()
+        for child in descendants(root)
     )
 
 
 def test_purge_persists_removed_entity_and_tree_node(tmp_path):
     qt_app()
     controller, item = controller_with_item(tmp_path)
+    controller.project_file = tmp_path / "project.json"
     project_file = controller.save_project()
     controller.save_entity_namespace_json("compendium")
     data_file = project_file.parent / "data" / "compendium.json"

@@ -5,6 +5,18 @@ from common.icons import get_icon
 from components.tree.model import TreeNode
 
 
+_WEAPON_GROUP_LABELS = {
+    "simple": "Simple Weapons",
+    "martial": "Martial Weapons",
+    "simple_melee": "Simple Melee Weapons",
+    "simple_ranged": "Simple Ranged Weapons",
+    "martial_melee": "Martial Melee Weapons",
+    "martial_ranged": "Martial Ranged Weapons",
+    "melee": "Melee Weapons",
+    "ranged": "Ranged Weapons",
+}
+
+
 ENTITY_CATEGORIES = (
     ("item", "Item"),
     ("spell", "Spells"),
@@ -155,7 +167,11 @@ class RulesValueNode(TreeNode):
 
     def __init__(self, namespace: str, category_type: str, value: str, schema_names):
         super().__init__(
-            value.replace("_", " ").title(),
+            (
+                _WEAPON_GROUP_LABELS.get(value, value.replace("_", " ").title())
+                if category_type == "weapons-groups"
+                else value.replace("_", " ").title()
+            ),
             icon=get_icon("folder"),
             uid=f"dmtools-{namespace}-rules-{category_type}-{value}",
         )

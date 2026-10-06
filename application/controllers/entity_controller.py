@@ -24,6 +24,29 @@ _BUILTIN_QUERY_BY_TYPE = {
 }
 
 
+def _weapon_group_label(value):
+    labels = {
+        "simple": "Simple Weapons",
+        "martial": "Martial Weapons",
+        "simple_melee": "Simple Melee Weapons",
+        "simple_ranged": "Simple Ranged Weapons",
+        "martial_melee": "Martial Melee Weapons",
+        "martial_ranged": "Martial Ranged Weapons",
+        "melee": "Melee Weapons",
+        "ranged": "Ranged Weapons",
+    }
+    return labels.get(value, value.replace("_", " ").title())
+
+
+def _weapon_group_matches(group, description):
+    description = description.casefold()
+    if group == "melee":
+        return " melee weapon" in description
+    if group == "ranged":
+        return " ranged weapon" in description
+    return f"{group.replace('_', ' ')} weapon" in description
+
+
 class EntityTreeController:
     """Coordinate entity root and category commands from the project tree."""
 
@@ -63,6 +86,7 @@ class EntityTreeController:
                 project_controller,
                 mdi_area,
                 on_edit=self._open_homebrew_editor,
+                on_class_progression=self._open_class_progression_editor,
                 on_rule=self._open_rule_value,
             )
         if hasattr(tree_view, "doubleClicked"):
@@ -133,18 +157,37 @@ class EntityTreeController:
     def _rule_related_entities(self, category, value):
         if category != "weapons-groups":
             return ()
-        return tuple(
-            (
-                weapon_type.replace("_", " ").title(),
-                f"dmtools://rule/weapons-types/{weapon_type}",
+        if value in {"simple", "martial"}:
+            subtype_values = (
+                f"{value}_melee",
+                f"{value}_ranged",
             )
-            for weapon_type, description in _RULE_DESCRIPTIONS[
-                "weapons-types"
-            ].items()
-            if weapon_type not in {"description", "handbook_reference"}
-            and f" {value} " in f" {description} "
-        )
-
+            return tuple(
+                (
+                    _weapon_group_label(subtype),
+                    f"dmtools://rule/weapons-groups/{subtype}",
+                )
+                for subtype in subtype_values
+            )
+        if value in {
+            "simple_melee",
+            "simple_ranged",
+            "martial_melee",
+            "martial_ranged",
+            "melee",
+            "ranged",
+        }:
+            weapon_types = _RULE_DESCRIPTIONS["weapons-types"].items()
+            return tuple(
+                (
+                    weapon_type.replace("_", " ").title(),
+                    f"dmtools://rule/weapons-types/{weapon_type}",
+                )
+                for weapon_type, description in weapon_types
+                if weapon_type not in {"description", "handbook_reference"}
+                and _weapon_group_matches(value, description)
+            )
+        return ()
     def _open_rule_entity_link(self, url):
         if url.startswith("dmtools://rule/"):
             _scheme, _authority, _kind, category, value = url.split("/", 4)
@@ -383,6 +426,25 @@ class EntityTreeController:
         subwindow.resize(680, 560)
         subwindow.show()
         return subwindow
+
+    def _open_class_progression_editor(self, entity):
+        from dialog.progression_editor import create_progression_editor
+
+        def commit(configuration):
+            updated = self.project_controller.update_class_progression(
+                entity.uid, configuration
+            )
+            if self.inspection_controller is not None:
+                self.inspection_controller.refresh(entity.uid)
+            return updated
+
+        view = create_progression_editor(
+            entity.payload,
+            parent=getattr(self.parent, "sceneViewer", None),
+            on_apply=commit,
+        )
+        view.show()
+        return view
 
     def _clone_homebrew_source(self, source_uid):
         clone = self.project_controller.copy_entity_to_homebrew(source_uid)

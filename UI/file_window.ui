@@ -29,6 +29,7 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="buttonsLayout">
+      <item><widget class="QCheckBox" name="devModeCheckBox"><property name="text"><string>Development mode</string></property><property name="toolTip"><string>Show developer inspection controls</string></property></widget></item>
     <item><spacer name="buttonSpacer"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="sizeHint"><size><width>40</width><height>20</height></size></property></spacer></item>
       <item><widget class="QPushButton" name="newButton"><property name="text"><string>New project...</string></property></widget></item>
      <item><widget class="QPushButton" name="browseButton"><property name="text"><string>Open project...</string></property></widget></item>

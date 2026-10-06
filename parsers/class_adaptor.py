@@ -52,6 +52,7 @@ class ClassAdaptor:
             "tool_proficiencies": self.tools(source.get("tools")),
             "skill_choices": self.skill_choices(source),
             "spellcasting": self.spellcasting(name, source),
+            "resources": self.class_resources(source),
             "features": self.class_features(source),
         }
         return {key: value for key, value in result.items() if value is not None}
@@ -91,7 +92,11 @@ class ClassAdaptor:
     def tools(self, value: Any) -> list[str] | None:
         if not value or str(value).strip().lower() == "none":
             return None
-        return [part.strip().lower().replace(" ", "_") for part in re.split(r",|\band\b", str(value), flags=re.IGNORECASE) if part.strip()]
+        return [
+            re.sub(r"[^a-z0-9]+", "_", part.strip().lower()).strip("_")
+            for part in re.split(r",|\band\b", str(value), flags=re.IGNORECASE)
+            if part.strip()
+        ]
 
     def skill_choices(self, source: dict[str, Any]) -> dict[str, Any] | None:
         count = source.get("numSkills")
@@ -138,6 +143,50 @@ class ClassAdaptor:
             if running:
                 result[str(level)] = running
         return result or None
+
+    def class_resources(self, source: dict[str, Any]) -> list[dict[str, Any]] | None:
+        name = self.normalize(source.get("name"))
+        resources = {
+            "barbarian": [
+                {"name": "Rages", "levels": self._levels({1: 2, 3: 3, 6: 4, 12: 5, 17: 6, 20: "unlimited"}, "maximum"), "recharge": "long_rest"},
+                {"name": "Rage Damage", "levels": self._levels({1: 2, 9: 3, 16: 4}, "value")},
+            ],
+            "bard": [
+                {"name": "Bardic Inspiration", "maximum_formula": "ability_modifier", "ability": "charisma", "minimum_level": 1, "levels": self._levels({1: 6, 5: 8, 10: 10, 15: 12}, "dice"), "recharge": "short_rest"},
+                {"name": "Song of Rest", "levels": self._levels({2: 6, 9: 8, 13: 10, 17: 12}, "dice")},
+            ],
+            "cleric": [
+                {"name": "Channel Divinity", "levels": self._levels({2: 1, 6: 2, 18: 3}, "maximum"), "recharge": "short_rest"},
+            ],
+            "druid": [
+                {"name": "Wild Shape", "levels": self._levels({2: "1/4", 4: "1/2", 8: "1"}, "value"), "recharge": "short_rest"},
+            ],
+            "monk": [
+                {"name": "Ki Points", "maximum_formula": "class_level", "minimum_level": 2, "recharge": "short_rest"},
+                {"name": "Martial Arts Die", "levels": self._levels({1: 4, 5: 6, 11: 8, 17: 10}, "dice")},
+                {"name": "Unarmored Movement", "levels": self._levels({2: "+10 ft.", 6: "+15 ft.", 10: "+20 ft.", 14: "+25 ft.", 18: "+30 ft."}, "value")},
+            ],
+            "paladin": [
+                {"name": "Lay on Hands", "maximum_formula": "class_level * 5", "minimum_level": 1, "recharge": "long_rest"},
+            ],
+            "rogue": [
+                {"name": "Sneak Attack", "levels": self._levels({level: f"{(level + 1) // 2}d6" for level in range(1, 20, 2)}, "value")},
+            ],
+            "sorcerer": [
+                {"name": "Sorcery Points", "maximum_formula": "class_level - 1", "minimum_level": 2, "recharge": "long_rest"},
+            ],
+            "warlock": [
+                {"name": "Invocations Known", "levels": self._levels({2: 2, 5: 3, 7: 4, 9: 5, 12: 6, 15: 7, 18: 8}, "value")},
+            ],
+        }
+        return resources.get(name or "") or None
+
+    @staticmethod
+    def _levels(checkpoints: dict[int, Any], field: str) -> list[dict[str, Any]]:
+        return [
+            {"level": level, field: value}
+            for level, value in sorted(checkpoints.items())
+        ]
 
     def resource_progression(self, source: dict[str, Any]) -> dict[str, dict[str, Any]]:
         """Return PHB base-class resource columns for reader presentation."""

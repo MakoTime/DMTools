@@ -235,6 +235,25 @@ class TestSpellParser(unittest.TestCase):
                 PROJECT_ROOT / "schemas",
             ))
 
+    def test_adapt_disintegrate_effects(self):
+        root = parse_xml(PROJECT_ROOT / "5eFile.xml")
+        source = next(
+            child for child in root["children"]
+            if child["tag"] == "spell"
+            and next(value["text"] for value in child["children"] if value["tag"] == "name") == "Disintegrate"
+        )
+
+        effects = SpellAdaptor().adapt(parse_spell(source))["effects"]
+        attack_save = effects[0]["attack_save"]
+
+        self.assertEqual(attack_save["ability"], "dexterity")
+        self.assertEqual(attack_save["failure"][0]["damage"]["type"], "force")
+        self.assertIn("disintegrated", attack_save["failure"][1]["description"])
+        self.assertTrue(any(
+            "automatically disintegrates" in effect.get("description", "")
+            for effect in effects
+        ))
+
     def test_adapt_spell_effects_per_paragraph(self):
         adaptor = SpellAdaptor()
 
@@ -294,8 +313,8 @@ class TestSpellParser(unittest.TestCase):
                     spell.model_dump(mode="json", exclude_none=True),
                     PROJECT_ROOT / "schemas",
                 )
-                
-                
+
+
     # def test_parse_items(self):
     #     for xml_path in DATA_ROOT.glob("*.xml"):
     #         with self.subTest(xml=xml_path.name):

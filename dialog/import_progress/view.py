@@ -1,6 +1,7 @@
 from time import monotonic
 
 from PySide6.QtCore import QTimer
+from PySide6.QtGui import QTextCursor
 from PySide6.QtWidgets import (
     QCheckBox,
     QDialog,
@@ -32,7 +33,7 @@ class ImportProgressView(QDialog):
         self.progress_bar.setRange(0, 0)
         self.details_toggle = QCheckBox("Show details")
         self.details_label = QLabel()
-        self.details_log = QPlainTextEdit()
+        self.details_log = ImportDetailsLog()
         self.details_log.setReadOnly(True)
         self.details_log.setMaximumBlockCount(8)
         self.details_log.setMaximumHeight(100)
@@ -150,7 +151,7 @@ class ImportProgressView(QDialog):
             f"<b>Rate:</b> {rate_text} &nbsp; "
             f"<b>Remaining:</b> {remaining_text}"
         )
-        self.details_log.setPlainText("\n".join(activity))
+        self.details_log.update_text("\n".join(activity))
         self.details_log.setVisible(bool(activity))
 
     @staticmethod
@@ -200,3 +201,89 @@ class ImportProgressView(QDialog):
             event.ignore()
             return
         super().closeEvent(event)
+
+
+class ImportDetailsLog(QPlainTextEdit):
+    """Append-only import log that follows the bottom until the user scrolls."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._rendered_text = ""
+        self._follow_bottom = True
+        self._programmatic_scroll = False
+        self._follow_timer = QTimer(self)
+        self._follow_timer.setSingleShot(True)
+        self._follow_timer.timeout.connect(self._scroll_to_bottom_if_following)
+        scrollbar = self.verticalScrollBar()
+        scrollbar.valueChanged.connect(self._scroll_changed)
+        scrollbar.rangeChanged.connect(self._scroll_range_changed)
+        self.document().documentLayout().documentSizeChanged.connect(
+            self._scroll_to_bottom_if_following
+        )
+
+    def update_text(self, text):
+        if text == self._rendered_text:
+            return
+        if text.startswith(self._rendered_text):
+            self._append_text(text[len(self._rendered_text):])
+        else:
+            self._replace_text(text)
+        self._rendered_text = text
+
+    def _append_text(self, suffix):
+        if not suffix:
+            return
+        cursor = self.textCursor()
+        selection_start = cursor.selectionStart()
+        selection_end = cursor.selectionEnd()
+        follow_bottom = self._follow_bottom
+        scrollbar = self.verticalScrollBar()
+        scroll_value = scrollbar.value()
+        end_cursor = QTextCursor(self.document())
+        end_cursor.movePosition(QTextCursor.MoveOperation.End)
+        self._programmatic_scroll = True
+        try:
+            end_cursor.insertText(suffix)
+        finally:
+            self._programmatic_scroll = False
+        cursor.setPosition(selection_start)
+        cursor.setPosition(selection_end, cursor.MoveMode.KeepAnchor)
+        self.setTextCursor(cursor)
+        self._follow_bottom = follow_bottom
+        if follow_bottom:
+            self._scroll_to_bottom_if_following()
+            self._follow_timer.start(0)
+        else:
+            self._programmatic_scroll = True
+            try:
+                scrollbar.setValue(scroll_value)
+            finally:
+                self._programmatic_scroll = False
+
+    def _replace_text(self, text):
+        cursor = self.textCursor()
+        self._programmatic_scroll = True
+        try:
+            self.setPlainText(text)
+        finally:
+            self._programmatic_scroll = False
+        self.setTextCursor(cursor)
+        self._scroll_to_bottom_if_following()
+
+    def _scroll_changed(self, value):
+        if self._programmatic_scroll:
+            return
+        scrollbar = self.verticalScrollBar()
+        self._follow_bottom = value >= scrollbar.maximum()
+
+    def _scroll_range_changed(self, minimum, maximum):
+        del minimum, maximum
+        self._scroll_to_bottom_if_following()
+
+    def _scroll_to_bottom_if_following(self):
+        if not self._follow_bottom:
+            return
+        scrollbar = self.verticalScrollBar()
+        self._programmatic_scroll = True
+        scrollbar.setValue(scrollbar.maximum())
+        self._programmatic_scroll = False

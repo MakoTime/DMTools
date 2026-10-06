@@ -7,6 +7,25 @@ from application.imports import ENTITY_REGISTRY, ImportedEntityRecord
 from components.tree.roots.entity_roots import canonical_entity_type
 
 
+CLASS_PAYLOAD_DEFAULTS = {
+    "hit_dice": 1,
+    "saving_throws": {},
+    "ability_score_increase": [
+        4,
+        8,
+        12,
+        16,
+        19
+    ],
+    "armour_proficiencies": [],
+    "weapon_proficiencies": [],
+    "skill_choices": {
+        "choose": 2,
+        "from": []
+    },
+}
+
+
 @dataclass
 class HomebrewDraft:
     """Temporary Homebrew editor state discarded unless explicitly applied."""

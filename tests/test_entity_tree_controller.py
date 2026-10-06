@@ -89,6 +89,25 @@ def test_category_menus_offer_only_applicable_quick_queries():
     assert action_labels(race_menu) == ["Search", "Refresh"]
 
 
+def test_weapon_group_related_entities_link_groups_to_subgroups_and_types():
+    qt_app()
+    controller = EntityTreeController(
+        FakeTreeView(), FakeProjectController(), FakeImportController()
+    )
+
+    simple_links = controller._rule_related_entities("weapons-groups", "simple")
+    simple_melee_links = controller._rule_related_entities(
+        "weapons-groups", "simple_melee"
+    )
+
+    assert simple_links == (
+        ("Simple Melee Weapons", "dmtools://rule/weapons-groups/simple_melee"),
+        ("Simple Ranged Weapons", "dmtools://rule/weapons-groups/simple_ranged"),
+    )
+    assert ("Club", "dmtools://rule/weapons-types/club") in simple_melee_links
+    assert ("Crossbow Light", "dmtools://rule/weapons-types/crossbow_light") not in simple_melee_links
+
+
 def test_category_search_executes_against_its_namespace_and_opens_results():
     qt_app()
     rows = (SimpleNamespace(uid="entity-1"),)

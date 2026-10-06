@@ -128,6 +128,9 @@
 
 ## Testing
 
+- Run pytest with live, verbose output and a per-test timeout: `python -m pytest -vv -s --tb=short --timeout=60`.
+- Run the narrowest relevant test file or test first with the same flags before starting a broader suite; do not launch a potentially long test run silently.
+- Report the test command immediately when starting it, and stop or investigate any test that reaches its timeout instead of waiting indefinitely.
 - Add focused tests for lifecycle, dependency, serialization, ownership, UID, and model behavior.
 - Test success, failure, cancellation, invalidation, duplicate UID, missing reference, cycle, and cross-project cases.
 - Test both standalone compatibility and project-backed paths during migrations.
