@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QDialog,
     QDialogButtonBox,
-    QTableWidget,
+    QPushButton,
     QTableWidgetItem,
     QSpinBox,
     QSplitter,
@@ -27,6 +27,7 @@ from application.entity_rendering import render_entity_html
 from application.imports.registry import SCHEMA_ROOT
 
 from .model import HomebrewEditorModel
+from .property_tables import PROPERTY_TABLES
 
 ENTITY_SCHEMAS = {
     "item": "Item.schema.json", "spell": "Spell.schema.json",
@@ -71,6 +72,8 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.published_check.stateChanged.connect(self.update_preview)
         self.version_spin.valueChanged.connect(self.update_preview)
         self.name_edit.textChanged.connect(self._mark_dirty)
+        if model.entity_type == "spell":
+            self.name_edit.textChanged.connect(self._sync_spell_property_dialog_names)
         self.state_combo.currentTextChanged.connect(self._mark_dirty)
         self.published_check.stateChanged.connect(self._mark_dirty)
         self.version_spin.valueChanged.connect(self._mark_dirty)
@@ -79,7 +82,7 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.error_label.setWordWrap(True)
 
         self.field_widgets = {}
-        self.property_table = QTableWidget(self)
+        self.property_table = PROPERTY_TABLES[model.entity_type](self)
         self.property_table.setColumnCount(2)
         self.property_table.setHorizontalHeaderLabels(("Property", "Value"))
         self.property_table.horizontalHeader().setStretchLastSection(True)
@@ -104,6 +107,10 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         editor_panel = QWidget(self)
         editor_layout = QVBoxLayout(editor_panel)
         editor_layout.addLayout(metadata)
+        if model.entity_type == "spell":
+            edit_spell_button = QPushButton("Edit Spell Properties", self)
+            edit_spell_button.clicked.connect(self._open_spell_property_editor)
+            editor_layout.addWidget(edit_spell_button)
         editor_layout.addWidget(self.property_table, 1)
         editor_layout.addWidget(self.error_label)
         buttons = self.create_button_box()
@@ -139,19 +146,17 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
     def _build_property_table(self):
         schema_path = SCHEMA_ROOT / "entities" / ENTITY_SCHEMAS[self.model.entity_type]
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
-        names = list(schema.get("properties", {}))
-        requested = (
-            "description", "hit_dice", "saving_throws", "armor_proficiencies",
-            "weapon_proficiencies", "tool_proficiencies", "spellcasting", "features",
-            "repeating_features", "required_stats", "starting_class", "multiclassing",
-            "ability_score_increase",
-        )
-        names = [name for name in requested if name in names] + [
-            name for name in names if name not in requested and name != "name"
-        ]
+        names = self.property_table.property_names
+        schema_properties = schema.get("properties", {})
+        unknown_fields = set(names) - set(schema_properties)
+        if unknown_fields:
+            raise ValueError(
+                f"Homebrew {self.model.entity_type} table contains unknown fields: "
+                f"{', '.join(sorted(unknown_fields))}"
+            )
         self.property_table.setRowCount(len(names))
         for row, name in enumerate(names):
-            definition = schema["properties"][name]
+            definition = schema_properties[name]
             label = QTableWidgetItem(name.replace("_", " ").title())
             label.setFlags(label.flags() & ~Qt.ItemFlag.ItemIsEditable)
             self.property_table.setItem(row, 0, label)
@@ -250,6 +255,9 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         if column != 1:
             return
         name = self.property_table.item(row, 0).text().lower().replace(" ", "_")
+        if self.model.entity_type == "spell":
+            self._open_spell_property_editor()
+            return
         _, definition = self.field_widgets[name]
         value = self.model.payload.get(name)
         dialog = QDialog(self)
@@ -279,6 +287,37 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.model.payload[name] = parsed
         self.property_table.item(row, 1).setText(self._display_value(parsed))
         self._mark_dirty()
+
+    def _open_spell_property_editor(self):
+        from .spell_editor import create_spell_property_dialog
+
+        dialog = create_spell_property_dialog(
+            self.model.payload,
+            parent=self,
+            on_apply=self._apply_spell_properties,
+        )
+        if not hasattr(self, "_property_dialogs"):
+            self._property_dialogs = []
+        self._property_dialogs.append(dialog)
+        dialog.destroyed.connect(
+            lambda: self._property_dialogs.remove(dialog)
+            if dialog in self._property_dialogs
+            else None
+        )
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
+
+    def _apply_spell_properties(self, payload):
+        self.model.payload = payload
+        self.name_edit.setText(payload.get("name", self.name_edit.text()))
+        self._build_property_table()
+        self._mark_dirty()
+
+    def _sync_spell_property_dialog_names(self, name):
+        for dialog in getattr(self, "_property_dialogs", ()):
+            if hasattr(dialog, "name_edit") and dialog.name_edit.text() != name:
+                dialog.name_edit.setText(name)
 
     def apply_model(self):
         self.error_label.clear()

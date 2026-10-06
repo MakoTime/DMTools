@@ -22,6 +22,14 @@ def create_homebrew_mdi_view(
     parent: Optional[QWidget] = None,
 ):
     """Create a modeless Homebrew editor for a QMdiArea subwindow."""
+    if entity_type == "spell":
+        from .spell_editor import create_spell_property_dialog
+
+        return create_spell_property_dialog(
+            parent=parent,
+            draft=draft,
+            on_apply=on_accept,
+        )
     model = create_homebrew_editor_model(entity_type, draft=draft)
     return HomebrewEditorMdiView(
         model,
