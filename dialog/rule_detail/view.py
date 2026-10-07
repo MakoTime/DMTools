@@ -19,9 +19,9 @@ class RuleDetailView(PopupEditorView):
         self.resize(620, 420)
 
         heading = QLabel(model.title, self)
-        heading.setStyleSheet("font-size: 18px; font-weight: 600;")
+        heading.setObjectName("ruleDetailTitle")
         description_heading = QLabel("Rule description", self)
-        description_heading.setStyleSheet("font-weight: 600;")
+        description_heading.setObjectName("ruleDetailSectionHeading")
         description = QLabel(model.details["Description"], self)
         description.setWordWrap(True)
         description.setTextInteractionFlags(
@@ -35,7 +35,7 @@ class RuleDetailView(PopupEditorView):
         related_entities = model.details.get("Related entities", ())
         if related_entities:
             related_heading = QLabel("Related entities", self)
-            related_heading.setStyleSheet("font-weight: 600;")
+            related_heading.setObjectName("ruleDetailSectionHeading")
             related = QLabel(
                 "<br>".join(
                     f'<a href="{url}">{name}</a>'

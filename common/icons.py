@@ -40,6 +40,10 @@ VISIBLE_ICON = _icon("visible.svg")
 INVISIBLE_ICON = _icon("invisible.svg")
 PHOTO_CHANGED_FILTER_ICON = _icon("photo_changed_filter.svg")
 SHAPE_CUBE_ICON = _icon("shape_cube.svg")
+WINDOW_MINIMIZE_ICON = _icon("window_minimize.svg")
+WINDOW_MAXIMIZE_ICON = _icon("window_maximize.svg")
+WINDOW_RESTORE_ICON = _icon("window_restore.svg")
+WINDOW_CLOSE_ICON = _icon("window_close.svg")
 
 
 ICONS = {
@@ -73,6 +77,10 @@ ICONS = {
 	"invisible": INVISIBLE_ICON,
 	"photo_changed_filter": PHOTO_CHANGED_FILTER_ICON,
 	"shape_cube": SHAPE_CUBE_ICON,
+	"window_minimize": WINDOW_MINIMIZE_ICON,
+	"window_maximize": WINDOW_MAXIMIZE_ICON,
+	"window_restore": WINDOW_RESTORE_ICON,
+	"window_close": WINDOW_CLOSE_ICON,
 }
 
 

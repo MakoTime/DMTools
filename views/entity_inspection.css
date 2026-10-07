@@ -1,7 +1,7 @@
 /* dmtools-inspection-css-version: 1 */
 .dmtools-inspection {
-    color: #202124;
-    font-family: Georgia, "Times New Roman", serif;
+    color: #e3e8f0;
+    font-family: "Segoe UI", sans-serif;
     line-height: 1.55;
     max-width: 68rem;
     margin: 0 auto;
@@ -11,13 +11,13 @@
 .dmtools-inspection h1,
 .dmtools-inspection h2,
 .dmtools-inspection h3 {
-    color: #27364b;
-    font-family: "Trebuchet MS", sans-serif;
+    color: #f0f3f8;
+    font-family: "Segoe UI", sans-serif;
     line-height: 1.2;
 }
 
 .dmtools-inspection h1 {
-    border-bottom: 2px solid #c9783d;
+    border-bottom: 2px solid #5790f5;
     padding-bottom: 0.45rem;
 }
 
@@ -33,17 +33,17 @@
     display: grid;
     grid-template-columns: max-content 1fr;
     gap: 0.25rem 1rem;
-    border-left: 4px solid #c9783d;
+    border-left: 4px solid #5790f5;
     padding-left: 1rem;
 }
 
 .entity-metadata dt { font-weight: 700; }
 .entity-metadata dd { margin: 0; }
-.entity-link { color: #145a82; font-weight: 700; }
-.entity-diagnostics { color: #8a3b12; }
+.entity-link { color: #79a6ff; font-weight: 700; }
+.entity-diagnostics { color: #f0a39d; }
 .dmtools-inspection blockquote {
-    background: #f7efe8;
-    border-left: 4px solid #c9783d;
+    background: #252a32;
+    border-left: 4px solid #5790f5;
     margin: 1rem 0;
     padding: 0.7rem 1rem;
 }
@@ -57,12 +57,15 @@
 }
 .dmtools-inspection th,
 .dmtools-inspection td {
-    border: 1px solid #d7d9dd;
+    border: 1px solid #414a58;
     padding: 0.45rem 0.6rem;
     text-align: left;
     vertical-align: top;
 }
-.dmtools-inspection th { background: #eef1f4; }
+.dmtools-inspection th {
+    background: #303642;
+    color: #e3e8f0;
+}
 .entity-properties {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));

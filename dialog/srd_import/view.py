@@ -15,7 +15,7 @@ class SRDImportView(PopupEditorView):
         self.query_edits = {}
         self.query_form = QFormLayout()
         self.error_label = QLabel()
-        self.error_label.setStyleSheet("color: #b42318;")
+        self.error_label.setObjectName("errorLabel")
         self.error_label.setWordWrap(True)
         form = QFormLayout()
         form.addRow("Collection", self.collection_combo)

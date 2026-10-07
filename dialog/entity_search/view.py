@@ -113,6 +113,7 @@ class EntitySearchView(WidgetEditorView):
         splitter.setStretchFactor(1, 1)
 
         self.status_label = QLabel()
+        self.status_label.setObjectName("feedbackLabel")
         self.status_label.setWordWrap(True)
         button_box = QHBoxLayout()
         search_button = QPushButton("Run Search")
@@ -192,8 +193,7 @@ class EntitySearchView(WidgetEditorView):
         result_model = EntityQueryResultsModel(rows, self.results_table)
         self.results_table.setModel(result_model)
         self.pagination.set_model(result_model)
-        self.status_label.setStyleSheet("")
-        self.status_label.setText(f"{len(rows)} result(s)")
+        self._set_status(f"{len(rows)} result(s)")
         return rows
 
     def closeEvent(self, event):
@@ -226,8 +226,14 @@ class EntitySearchView(WidgetEditorView):
             return None
 
     def _show_error(self, error):
-        self.status_label.setStyleSheet("color: #b42318;")
-        self.status_label.setText(str(error))
+        self._set_status(str(error), state="error")
+
+    def _set_status(self, text, state="success"):
+        self.status_label.setProperty("feedbackState", state)
+        style = self.status_label.style()
+        style.unpolish(self.status_label)
+        style.polish(self.status_label)
+        self.status_label.setText(text)
 
     def _criterion_text(self, criterion):
         field_label = self.model.field_label(criterion.field)

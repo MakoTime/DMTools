@@ -7,6 +7,6 @@ class SplitButton(QToolButton):
     def __init__(self, text="", menu=None, parent=None):
         super().__init__(parent)
         self.setText(text)
+        self.setObjectName("splitButton")
         self.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
-        self.setMinimumHeight(self.fontMetrics().height() + 12)
         self.setMenu(menu)

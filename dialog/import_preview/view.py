@@ -23,7 +23,7 @@ class ImportPreviewView(PopupEditorView):
             any(issue.blocking for issue in model.preview.issues)
         )
         self.error_label = QLabel()
-        self.error_label.setStyleSheet("color: #b42318;")
+        self.error_label.setObjectName("errorLabel")
         self.error_label.setWordWrap(True)
 
         layout = QVBoxLayout(self)

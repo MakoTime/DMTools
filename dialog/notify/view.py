@@ -23,13 +23,13 @@ class NotifyView(QDialog):
         self.resize(380, 180)
 
         self.notify_icon = QLabel()
-        self.notify_icon.setFixedSize(32, 32)
+        self.notify_icon.setObjectName("notificationIcon")
         self.notify_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.notify_icon.setScaledContents(True)
 
         self.title = QLabel()
+        self.title.setObjectName("notificationTitle")
         self.title.setWordWrap(True)
-        self.title.setStyleSheet("font-size: 12pt; font-weight: 600;")
 
         header_layout = QHBoxLayout()
         header_layout.setSpacing(8)
@@ -37,7 +37,7 @@ class NotifyView(QDialog):
         header_layout.addWidget(self.title, 1)
 
         self.content = QLabel()
-        self.content.setMinimumHeight(40)
+        self.content.setObjectName("notificationContent")
         self.content.setWordWrap(True)
         self.content.setAlignment(
             Qt.AlignmentFlag.AlignLeading | Qt.AlignmentFlag.AlignTop

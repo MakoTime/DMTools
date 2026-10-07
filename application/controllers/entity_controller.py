@@ -3,6 +3,7 @@ import inspect
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6.QtWidgets import QDialog, QInputDialog, QMessageBox, QMdiArea
 
+from application.display_space import mdi_content_widget
 from application.entity_queries import EntityQueryFactory
 from application.rules_catalog import _RULE_DESCRIPTIONS
 from dialog.entity_detail import create_entity_detail_dialog
@@ -128,7 +129,7 @@ class EntityTreeController:
             existing.showNormal()
             existing.raise_()
             existing.activateWindow()
-            return existing.widget()
+            return mdi_content_widget(existing)
         dialog = create_rule_detail_dialog(
             value,
             category,

@@ -1,5 +1,9 @@
+from pathlib import Path
+
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QDialogButtonBox,
+    QHBoxLayout,
     QPushButton,
     QTreeWidget,
     QTreeWidgetItem,
@@ -25,16 +29,23 @@ class EntityDetailView(PopupEditorView):
     ):
         super().__init__(model, parent=parent)
         self.setWindowTitle(model.title)
-        self.resize(720, 620)
+        self.ui = QUiLoader().load(str(Path(__file__).with_suffix(".ui")), self)
+        if self.ui is None:
+            raise RuntimeError("Could not load entity detail UI")
+        self.resize(self.ui.size())
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
 
-        self.tree = QTreeWidget()
-        self.tree.setHeaderLabels(("Field", "Value"))
+        self.tree = self.ui.findChild(QTreeWidget, "tree")
         self.tree.header().setStretchLastSection(True)
         for name, value in model.details.items():
             self._add_value(self.tree.invisibleRootItem(), name, value)
         self.tree.expandToDepth(1)
 
         buttons = self.create_button_box(QDialogButtonBox.StandardButton.Close)
+        self.ui.findChild(QHBoxLayout, "buttonBoxLayout").addWidget(buttons)
+        action_buttons = self.ui.findChild(QHBoxLayout, "actionButtonsLayout")
         if (
             project_controller is not None
             and model.entity.source_namespace == "compendium"
@@ -43,16 +54,13 @@ class EntityDetailView(PopupEditorView):
             clone_button.clicked.connect(
                 lambda: self._clone_to_homebrew(project_controller, on_clone)
             )
-            buttons.addButton(clone_button, QDialogButtonBox.ButtonRole.ActionRole)
+            action_buttons.addWidget(clone_button)
         if project_controller is not None and model.entity.source_namespace == "homebrew":
             edit_button = QPushButton("Edit Homebrew", self)
             edit_button.clicked.connect(
                 lambda: on_edit(model.entity) if on_edit is not None else None
             )
-            buttons.addButton(edit_button, QDialogButtonBox.ButtonRole.ActionRole)
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.tree, 1)
-        layout.addWidget(buttons)
+            action_buttons.addWidget(edit_button)
 
     def _clone_to_homebrew(self, project_controller, on_clone):
         clone = project_controller.copy_entity_to_homebrew(self.model.entity.uid)

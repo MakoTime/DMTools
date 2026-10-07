@@ -137,7 +137,7 @@ def setup_menu(
 	display_menu = window_menu.addMenu("Display Space")
 	minimize_all_action = display_menu.addAction("Minimise all")
 	rearrange_grid_action = display_menu.addAction("Rearrange grid")
-	if display_space is None:
+	if display_space is None or not display_space.supports_arrangement:
 		minimize_all_action.setEnabled(False)
 		rearrange_grid_action.setEnabled(False)
 	else:

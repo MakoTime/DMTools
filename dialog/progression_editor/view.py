@@ -88,6 +88,7 @@ class ProgressionEditorView(PopupEditorView):
         self.merge_recharge.toggled.connect(self._mini_columns_changed)
 
         self.formula_edit = QLineEdit(self)
+        self.formula_edit.setObjectName("formulaEdit")
         self.formula_edit.setPlaceholderText("2 * [level] + [Wisdom]")
         self.formula_edit.textChanged.connect(self._formula_changed)
         self.add_variable_button = QPushButton("Add variable", self)
@@ -125,7 +126,7 @@ class ProgressionEditorView(PopupEditorView):
         self.values.verticalHeader().setVisible(False)
         self.values.itemChanged.connect(self._update_selected)
         self.validation_label = QLabel(self)
-        self.validation_label.setStyleSheet("color: #b42318;")
+        self.validation_label.setObjectName("errorLabel")
         self.validation_label.setWordWrap(True)
         self.value_add = QPushButton("Add level", self)
         self.value_add.clicked.connect(self._add_level)
@@ -333,13 +334,17 @@ class ProgressionEditorView(PopupEditorView):
             return
         formula = self.formula_edit.text().strip()
         self._formula_error = ""
-        self.formula_edit.setStyleSheet("")
+        formula_invalid = False
         if self.method.currentText() == "formula":
             try:
                 validate_formula(formula)
             except ValueError as error:
                 self._formula_error = str(error)
-                self.formula_edit.setStyleSheet("background: #fee4e2; border: 1px solid #b42318;")
+                formula_invalid = True
+        self.formula_edit.setProperty("formulaInvalid", formula_invalid)
+        style = self.formula_edit.style()
+        style.unpolish(self.formula_edit)
+        style.polish(self.formula_edit)
         if self._selected_key and self.method.currentText() == "formula":
             column = next(
                 column for column in self.model.editor_columns

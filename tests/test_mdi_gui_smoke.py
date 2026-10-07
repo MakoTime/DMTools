@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 from PySide6.QtWidgets import QApplication, QMdiArea
 
+from application.display_space import DisplaySpaceController, mdi_content_widget
 from application.entity_references import EntityReference
 from dialog.entity_detail.controller import EntityInspectionController
 from dialog.homebrew.factory import create_homebrew_mdi_view
@@ -36,11 +37,12 @@ def test_mdi_entity_link_homebrew_cancel_and_shutdown_smoke():
             return resolved[reference.target_uid]
 
     mdi_area = QMdiArea()
+    DisplaySpaceController(mdi_area)
     inspection = EntityInspectionController(Controller(), mdi_area)
 
     source_view = inspection.display(source)
     opened_target = inspection.open_link("dmtools://entity/spell-target")
-    target_view = inspection._windows[target.uid].widget()
+    target_view = mdi_content_widget(inspection._windows[target.uid])
     assert opened_target is target
     assert source_view is not target_view
     assert inspection.open(EntityReference(target.uid, "spell", "compendium")) is target

@@ -3,7 +3,9 @@ from __future__ import annotations
 from urllib.parse import unquote, urlparse
 
 from PySide6.QtWidgets import QDialog, QMdiArea
+from shiboken6 import isValid
 
+from application.display_space import mdi_content_widget
 from application.entity_references import EntityNavigationController, EntityReference
 from application.rules_catalog import _RULE_DESCRIPTIONS
 
@@ -94,22 +96,24 @@ class EntityInspectionController:
 
     def refresh(self, entity_uid):
         """Re-resolve one open entity and invalidate its derived HTML."""
-        window = self._windows.get(entity_uid)
+        window = self._get_window(entity_uid)
         if window is None:
             return None
         entity = self.project_controller.resolve_entity(entity_uid)
-        window.widget().refresh_entity(entity)
-        return window.widget()
+        view = mdi_content_widget(window)
+        view.refresh_entity(entity)
+        return view
 
     def _display(self, entity):
         self._active_uid = entity.uid
-        window = self._windows.get(entity.uid)
+        window = self._get_window(entity.uid)
         if window is None:
+            window_ref = {}
             view = create_entity_detail_mdi_view(
                 entity_uid=entity.uid,
                 entity_loader=self.project_controller.resolve_entity,
-                on_close=lambda _model, _reason, uid=entity.uid: self._windows.pop(
-                    uid, None
+                on_close=lambda _model, _reason, uid=entity.uid, ref=window_ref: self._forget_window(
+                    uid, ref.get("window")
                 ),
                 on_link=self.open_link,
                 on_rule=self.on_rule,
@@ -118,9 +122,26 @@ class EntityInspectionController:
                 on_resolve=self.resolve_references,
             )
             window = self.mdi_area.addSubWindow(view)
+            window_ref["window"] = window
             self._windows[entity.uid] = window
+            window.destroyed.connect(
+                lambda *_args, uid=entity.uid, ref=window_ref: self._forget_window(
+                    uid, ref.get("window")
+                )
+            )
             view.show()
         self.mdi_area.setActiveSubWindow(window)
         window.showNormal()
         window.raise_()
-        return window.widget()
+        return mdi_content_widget(window)
+
+    def _get_window(self, entity_uid):
+        window = self._windows.get(entity_uid)
+        if window is not None and not isValid(window):
+            self._windows.pop(entity_uid, None)
+            return None
+        return window
+
+    def _forget_window(self, entity_uid, expected_window):
+        if self._windows.get(entity_uid) is expected_window:
+            self._windows.pop(entity_uid, None)

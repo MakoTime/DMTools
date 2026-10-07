@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EntityDetailMdiView</class>
+ <widget class="QWidget" name="entityDetailContent">
+    <property name="geometry">
+     <rect><x>0</x><y>0</y><width>760</width><height>560</height></rect>
+    </property>
+    <property name="minimumSize">
+     <size><width>520</width><height>360</height></size>
+    </property>
+  <layout class="QVBoxLayout" name="entityDetailLayout">
+   <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>8</number></property>
+    <property name="topMargin"><number>8</number></property>
+    <property name="rightMargin"><number>8</number></property>
+    <property name="bottomMargin"><number>8</number></property>
+   <item>
+    <layout class="QHBoxLayout" name="toolbarLayout">
+     <property name="spacing"><number>6</number></property>
+     <item>
+    <layout class="QHBoxLayout" name="debugToolbarLayout">
+     <property name="spacing"><number>6</number></property>
+    </layout>
+       </item>
+       <item>
+    <spacer name="toolbarSpacer">
+     <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+    </spacer>
+       </item>
+       <item>
+    <layout class="QHBoxLayout" name="actionToolbarLayout">
+     <property name="spacing"><number>6</number></property>
+    </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QSplitter" name="detailSplitter">
+     <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+     <widget class="QPlainTextEdit" name="rawView">
+      <property name="lineWrapMode"><enum>QPlainTextEdit::LineWrapMode::NoWrap</enum></property>
+      <property name="readOnly"><bool>true</bool></property>
+     </widget>
+     <widget class="QTextBrowser" name="browser">
+      <property name="openExternalLinks"><bool>false</bool></property>
+      <property name="openLinks"><bool>false</bool></property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

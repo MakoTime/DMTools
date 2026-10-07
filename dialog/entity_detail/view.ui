@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EntityDetailView</class>
+ <widget class="QWidget" name="entityDetailContent">
+  <layout class="QVBoxLayout" name="entityDetailLayout">
+   <property name="spacing"><number>8</number></property>
+   <property name="leftMargin"><number>0</number></property>
+   <property name="topMargin"><number>0</number></property>
+   <property name="rightMargin"><number>0</number></property>
+   <property name="bottomMargin"><number>0</number></property>
+   <item>
+    <widget class="QTreeWidget" name="tree">
+     <property name="columnCount"><number>2</number></property>
+     <column><property name="text"><string>Field</string></property></column>
+     <column><property name="text"><string>Value</string></property></column>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="buttonRowLayout">
+     <property name="spacing"><number>8</number></property>
+     <item>
+      <layout class="QHBoxLayout" name="actionButtonsLayout">
+       <property name="spacing"><number>6</number></property>
+      </layout>
+     </item>
+     <item>
+      <spacer name="buttonRowSpacer">
+       <property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="buttonBoxLayout">
+       <property name="spacing"><number>6</number></property>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

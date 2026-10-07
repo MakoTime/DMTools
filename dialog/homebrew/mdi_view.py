@@ -78,7 +78,7 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.published_check.stateChanged.connect(self._mark_dirty)
         self.version_spin.valueChanged.connect(self._mark_dirty)
         self.error_label = QLabel()
-        self.error_label.setStyleSheet("color: #b42318;")
+        self.error_label.setObjectName("errorLabel")
         self.error_label.setWordWrap(True)
 
         self.field_widgets = {}

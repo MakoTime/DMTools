@@ -86,9 +86,10 @@ class ManualReferencesView(PopupEditorView):
         self.resolve_button = QPushButton("Match Selected Reference")
         self.resolve_button.clicked.connect(self._resolve_selected)
         self.intended_button = QPushButton("Mark as intended")
-        self.intended_button.setFixedWidth(120)
+        self.intended_button.setObjectName("intendedReferenceButton")
         self.intended_button.clicked.connect(self._mark_intended)
         self.status_label = QLabel()
+        self.status_label.setObjectName("feedbackLabel")
         self.status_label.setWordWrap(True)
 
         matching_group = QGroupBox("Match Reference")
@@ -255,11 +256,9 @@ class ManualReferencesView(PopupEditorView):
         try:
             updated = self.model.resolve(target_uids)
         except ValueError as error:
-            self.status_label.setStyleSheet("color: #b42318;")
-            self.status_label.setText(str(error))
+            self._set_status(str(error), state="error")
             return None
-        self.status_label.setStyleSheet("")
-        self.status_label.setText(f"Updated {len(updated)} source reference(s).")
+        self._set_status(f"Updated {len(updated)} source reference(s).")
         self._refresh_references()
         return updated
 
@@ -267,13 +266,18 @@ class ManualReferencesView(PopupEditorView):
         try:
             updated = self.model.mark_intended()
         except ValueError as error:
-            self.status_label.setStyleSheet("color: #b42318;")
-            self.status_label.setText(str(error))
+            self._set_status(str(error), state="error")
             return None
-        self.status_label.setStyleSheet("")
-        self.status_label.setText("Marked reference as intended.")
+        self._set_status("Marked reference as intended.")
         self._refresh_references()
         return updated
 
     def apply_changes(self):
         return self.model
+
+    def _set_status(self, text, state="success"):
+        self.status_label.setProperty("feedbackState", state)
+        style = self.status_label.style()
+        style.unpolish(self.status_label)
+        style.polish(self.status_label)
+        self.status_label.setText(text)

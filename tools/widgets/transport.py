@@ -1,4 +1,4 @@
-from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QToolButton
 
 from common.icons import get_icon
@@ -13,28 +13,10 @@ class _SteppedTransportWidget(QToolButton):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._speed = 1
-        self.setAutoRaise(True)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.setFixedSize(30, 30)
-        self.setIconSize(QSize(22, 22))
+        self.setObjectName("transportControl")
         self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
         self.setAccessibleName(self.ACTION_NAME)
-        self.setStyleSheet(
-            """
-            QToolButton {
-                border: 1px solid transparent;
-                border-radius: 4px;
-                padding: 3px;
-            }
-            QToolButton:hover {
-                background-color: rgba(70, 120, 180, 35);
-                border-color: rgba(70, 120, 180, 100);
-            }
-            QToolButton:focus {
-                border-color: #4682b4;
-            }
-            """
-        )
         self.clicked.connect(self.advance)
         self._update_icon()
 

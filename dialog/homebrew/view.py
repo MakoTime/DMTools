@@ -57,7 +57,7 @@ class HomebrewEditorView(PopupEditorView):
             json.dumps(model.payload, indent=2, sort_keys=True)
         )
         self.error_label = QLabel()
-        self.error_label.setStyleSheet("color: #b42318;")
+        self.error_label.setObjectName("errorLabel")
         self.error_label.setWordWrap(True)
 
         form = QFormLayout()

@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from PySide6.QtCore import QSize
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QPlainTextEdit,
@@ -11,8 +13,8 @@ from PySide6.QtWidgets import (
 )
 
 from application.entity_rendering import render_entity_html
-from common.icons import get_icon
 from common import dev_mode
+from common.icons import get_icon
 from dialog.base.widget_editor import WidgetEditorView
 
 from .model import EntityDetailModel
@@ -35,15 +37,27 @@ class EntityDetailMdiView(WidgetEditorView):
     ):
         super().__init__(model, parent=parent, on_close=on_close)
         self.setWindowTitle(model.title)
-        self.resize(720, 620)
-        self.raw_view = None
-        if dev_mode.is_enabled():
-            self.raw_view = QPlainTextEdit(self)
-            self.raw_view.setReadOnly(True)
-            self.raw_view.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.browser = QTextBrowser(self)
-        self.browser.setOpenLinks(False)
-        self.browser.setOpenExternalLinks(False)
+        self.ui = QUiLoader().load(str(Path(__file__).with_suffix(".ui")), self)
+        if self.ui is None:
+            raise RuntimeError("Could not load entity detail MDI UI")
+        self.resize(self.ui.size())
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.ui)
+
+        self.debug_toolbar_layout = self.ui.findChild(
+            QHBoxLayout, "debugToolbarLayout"
+        )
+        self.action_toolbar_layout = self.ui.findChild(
+            QHBoxLayout, "actionToolbarLayout"
+        )
+        self.detail_splitter = self.ui.findChild(QSplitter, "detailSplitter")
+        self.raw_view_widget = self.ui.findChild(QPlainTextEdit, "rawView")
+        self.raw_view = self.raw_view_widget if dev_mode.is_enabled() else None
+        if self.raw_view is None:
+            self.raw_view_widget.hide()
+
+        self.browser = self.ui.findChild(QTextBrowser, "browser")
         if on_link is not None:
             self.browser.anchorClicked.connect(
                 lambda url: on_link(url.toString(), on_rule=on_rule)
@@ -56,7 +70,7 @@ class EntityDetailMdiView(WidgetEditorView):
         entity = model.entity
         self.browser.setHtml(render_entity_html(entity))
         model.release_entity()
-        toolbar = QHBoxLayout()
+
         self.raw_button = None
         self.source_button = None
         if dev_mode.is_enabled():
@@ -65,43 +79,41 @@ class EntityDetailMdiView(WidgetEditorView):
             self.raw_button.setChecked(True)
             self.raw_button.setToolTip("Show or hide raw entity JSON")
             self.raw_button.toggled.connect(self._toggle_raw_view)
-            toolbar.addWidget(self.raw_button)
+            self.debug_toolbar_layout.addWidget(self.raw_button)
             self.source_button = QPushButton(self)
             self.source_button.setCheckable(True)
-            self.source_button.setToolTip("Toggle between canonical payload and imported source JSON")
+            self.source_button.setToolTip(
+                "Toggle between canonical payload and imported source JSON"
+            )
             self.source_button.toggled.connect(self._toggle_raw_source)
-            toolbar.addWidget(self.source_button)
+            self.debug_toolbar_layout.addWidget(self.source_button)
             self._update_raw_source(entity)
-        toolbar.addStretch(1)
+
         if on_edit is not None:
             edit_button = QPushButton(self)
+            edit_button.setObjectName("mdiEditButton")
             edit_button.setIcon(get_icon("edit"))
+            edit_button.setIconSize(QSize(18, 18))
+            edit_button.setFixedSize(40, 34)
             edit_button.setToolTip("Edit Homebrew data")
             edit_button.clicked.connect(lambda: on_edit(entity))
-            toolbar.addWidget(edit_button)
+            self.action_toolbar_layout.addWidget(edit_button)
         if on_class_progression is not None and getattr(entity, "entity_type", None) == "class":
             progression_button = QPushButton(self)
             progression_button.setIcon(get_icon("grid"))
             progression_button.setToolTip("Edit class progression table")
             progression_button.clicked.connect(lambda: on_class_progression(entity))
-            toolbar.addWidget(progression_button)
+            self.action_toolbar_layout.addWidget(progression_button)
         if on_resolve is not None and getattr(entity, "source_metadata", {}).get(
             "reference_diagnostics"
         ):
             self.resolve_button = QPushButton("Resolve references", self)
             self.resolve_button.clicked.connect(lambda: on_resolve(entity))
-            toolbar.addWidget(self.resolve_button)
+            self.action_toolbar_layout.addWidget(self.resolve_button)
         else:
             self.resolve_button = None
-        layout = QVBoxLayout(self)
-        layout.addLayout(toolbar)
-        splitter = QSplitter(self)
         if dev_mode.is_enabled():
-            splitter.addWidget(self.raw_view)
-        splitter.addWidget(self.browser)
-        if dev_mode.is_enabled():
-            splitter.setSizes((360, 640))
-        layout.addWidget(splitter, 1)
+            self.detail_splitter.setSizes((360, 640))
 
     @staticmethod
     def _source_info(entity):

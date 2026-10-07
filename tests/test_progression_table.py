@@ -77,7 +77,7 @@ def test_formula_edit_refreshes_preview_table():
     preview_column = list(view._preview_keys()).index("bonus")
     assert view.preview.item(0, preview_column).text() == "2"
     view.formula_edit.setText("2 * [level] +")
-    assert view.formula_edit.styleSheet()
+    assert view.formula_edit.property("formulaInvalid") is True
     assert "valid arithmetic" in view.validation_label.text()
     view.close()
 

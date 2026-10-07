@@ -1,7 +1,33 @@
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QHBoxLayout, QPushButton
 
 from common import dev_mode
-from dialog.entity_detail.factory import create_entity_detail_mdi_view
+from dialog.entity_detail.factory import (
+    create_entity_detail_dialog,
+    create_entity_detail_mdi_view,
+)
+
+
+def test_entity_detail_dialog_loads_designer_tree_and_button_slots():
+    QApplication.instance() or QApplication([])
+    entity = type(
+        "Entity",
+        (),
+        {
+            "name": "Backpack",
+            "entity_type": "item",
+            "source_namespace": "compendium",
+            "uid": "item-backpack",
+            "payload": {"weight": 5},
+        },
+    )()
+
+    view = create_entity_detail_dialog(entity)
+
+    assert view.tree.objectName() == "tree"
+    assert view.tree.topLevelItemCount() == 4
+    assert view.ui.findChild(type(view.tree), "tree") is view.tree
+    assert view.ui.findChild(QHBoxLayout, "buttonBoxLayout").count() == 1
+    view.close()
 
 
 def test_entity_detail_factory_creates_modeless_widget_without_copying_entity():
@@ -24,6 +50,36 @@ def test_entity_detail_factory_creates_modeless_widget_without_copying_entity():
     assert view.windowTitle() == "Backpack"
     assert view.model.entity is entity
     assert view.isModal() is False
+    view.close()
+
+
+def test_edit_action_is_right_aligned_in_the_mdi_toolbar():
+    QApplication.instance() or QApplication([])
+    dev_mode.set_enabled(True)
+    entity = type(
+        "Entity",
+        (),
+        {
+            "name": "Copper",
+            "entity_type": "item",
+            "source_namespace": "homebrew",
+            "uid": "item-copper",
+            "payload": {},
+            "source_metadata": {"api_source": {"name": "Copper"}},
+        },
+    )()
+
+    view = create_entity_detail_mdi_view(entity, on_edit=lambda _entity: None)
+    view.resize(760, 560)
+    view.show()
+    QApplication.processEvents()
+
+    edit_button = view.findChild(QPushButton, "mdiEditButton")
+    assert view.raw_button.geometry().center().x() < view.width() // 2
+    assert view.source_button.geometry().center().x() < view.width() // 2
+    assert view.source_button.text() == "API source"
+    assert edit_button is not None
+    assert edit_button.geometry().center().x() > view.width() // 2
     view.close()
 
 

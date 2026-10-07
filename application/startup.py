@@ -51,6 +51,8 @@ def load_main_window(project_file):
         controller,
         on_open_entity=entity_controller.open_entity_and_reveal,
     )
+    menu_bar = window.menuBar()
+    menu_bar.setNativeMenuBar(False)
     window.open_action.triggered.connect(
         lambda checked=False: controller.open_project(window)
     )
@@ -83,6 +85,8 @@ class ApplicationLauncher:
         self.argv = list(sys.argv if argv is None else argv)
         dev_mode.set_enabled("--dev" in self.argv)
         self.app = QApplication(self.argv)
+        stylesheet = BASE_DIRECTORY / "views" / "app_theme.qss"
+        self.app.setStyleSheet(stylesheet.read_text(encoding="utf-8"))
         self.file_window = load_file_window()
         self.project_windows = []
         self.file_window.on_project_opened = self.open_project
