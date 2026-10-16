@@ -6,7 +6,15 @@ from pathlib import Path
 from PySide6.QtCore import QObject, QEvent, QPoint, QRect, QSize, Qt
 from PySide6.QtGui import QBrush, QCursor, QPalette
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QLabel, QMdiArea, QMdiSubWindow, QToolButton, QWidget
+from PySide6.QtWidgets import (
+    QLabel,
+    QMdiArea,
+    QMdiSubWindow,
+    QTabWidget,
+    QToolButton,
+    QWidget,
+)
+from shiboken6 import isValid
 
 from common.icons import get_icon
 
@@ -16,8 +24,88 @@ MDI_FRAME_UI = Path(__file__).resolve().parents[1] / "UI" / "mdi_window_frame.ui
 
 def mdi_content_widget(window: QMdiSubWindow):
     """Return the original view hosted inside an optional MDI frame."""
+    tab_content = getattr(window, "workspace_content_widget", None)
+    if tab_content is not None:
+        return tab_content
     frame = window.widget()
     return getattr(frame, "mdi_content_widget", frame)
+
+
+def _close_workspace_tab(tabs: QTabWidget, widget: QWidget):
+    if not isValid(widget):
+        return
+    index = tabs.indexOf(widget)
+    if index >= 0:
+        tabs.removeTab(index)
+    widget.close()
+    widget.deleteLater()
+
+
+class WorkspaceTabHandle:
+    """Window-like operations for a document hosted beside the Scene tab."""
+
+    def __init__(self, tabs: QTabWidget, widget: QWidget, title: str):
+        self.tabs = tabs
+        self.workspace_content_widget = widget
+        widget.setWindowTitle(title)
+        widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        index = tabs.addTab(widget, title)
+        self.close_button = QToolButton(tabs.tabBar())
+        self.close_button.setObjectName("workspaceTabCloseButton")
+        self.close_button.setAutoRaise(True)
+        self.close_button.setFixedSize(22, 22)
+        self.close_button.setIcon(get_icon("window_close"))
+        self.close_button.setIconSize(QSize(12, 12))
+        self.close_button.setToolTip("Close tab")
+        self.close_button.setStyleSheet(
+            "QToolButton { background: transparent; border: none; padding: 0; }"
+            "QToolButton:hover { background: transparent; border: none; }"
+        )
+        tabs.tabBar().setTabButton(index, tabs.tabBar().ButtonPosition.RightSide, self.close_button)
+        self.close_button.clicked.connect(
+            lambda _checked=False, tab_widget=tabs, page=widget: _close_workspace_tab(
+                tab_widget, page
+            )
+        )
+        widget.windowTitleChanged.connect(self._update_title)
+        widget.destroyed.connect(self._remove_tab)
+        self.show()
+
+    def __getattr__(self, name):
+        return getattr(self.workspace_content_widget, name)
+
+    @property
+    def is_valid(self):
+        return isValid(self.workspace_content_widget)
+
+    def _update_title(self, title):
+        index = self.tabs.indexOf(self.workspace_content_widget)
+        if index >= 0:
+            self.tabs.setTabText(index, title)
+
+    def _remove_tab(self, *_args):
+        if isValid(self.workspace_content_widget):
+            index = self.tabs.indexOf(self.workspace_content_widget)
+            if index >= 0:
+                self.tabs.removeTab(index)
+
+    def show(self):
+        if self.is_valid:
+            self.tabs.setCurrentWidget(self.workspace_content_widget)
+            self.workspace_content_widget.show()
+
+    def showNormal(self):
+        self.show()
+
+    def raise_(self):
+        self.show()
+
+    def activateWindow(self):
+        self.show()
+        self.workspace_content_widget.activateWindow()
+
+    def close(self):
+        _close_workspace_tab(self.tabs, self.workspace_content_widget)
 
 
 class DisplaySpaceController(QObject):
@@ -27,17 +115,25 @@ class DisplaySpaceController(QObject):
     MINIMUM_TITLE_BAR_HEIGHT = 24
     RESIZE_MARGIN = 7
 
-    def __init__(self, mdi_area: QMdiArea, parent=None):
+    def __init__(
+        self,
+        mdi_area: QMdiArea,
+        parent=None,
+        *,
+        workspace_tabs: QTabWidget | None = None,
+    ):
         super().__init__(parent or mdi_area)
         self.mdi_area = mdi_area
+        self.workspace_tabs = workspace_tabs
+        if self.workspace_tabs is not None:
+            self.workspace_tabs.setTabsClosable(False)
+            self.workspace_tabs.tabBar().setMovable(True)
+            self.workspace_tabs.setDocumentMode(True)
         if self.mdi_area.objectName() == "sceneViewer":
             self.mdi_area.setBackground(
                 QBrush(self.mdi_area.palette().color(QPalette.ColorRole.Window))
             )
-            self.mdi_area.setViewMode(QMdiArea.ViewMode.TabbedView)
-            self.mdi_area.setTabsClosable(True)
-            self.mdi_area.setTabsMovable(True)
-            self.mdi_area.setDocumentMode(True)
+            self.mdi_area.setViewMode(QMdiArea.ViewMode.SubWindowView)
         self._adjusting = False
         self._title_bar_windows = {}
         self._frame_windows = {}
@@ -192,7 +288,18 @@ class DisplaySpaceController(QObject):
 
     @property
     def supports_arrangement(self):
-        return self.mdi_area.viewMode() == QMdiArea.ViewMode.SubWindowView
+        return (
+            self.workspace_tabs is None
+            and self.mdi_area.viewMode() == QMdiArea.ViewMode.SubWindowView
+        )
+
+    def open_document(self, widget: QWidget, title: str):
+        if self.workspace_tabs is not None:
+            return WorkspaceTabHandle(self.workspace_tabs, widget, title)
+        window = self.mdi_area.addSubWindow(widget)
+        window.setWindowTitle(title)
+        window.show()
+        return window
 
     def _install_frame(self, window):
         content_widget = window.widget()

@@ -23,12 +23,14 @@ class EntityInspectionController:
         on_edit=None,
         on_class_progression=None,
         on_rule=None,
+        document_host=None,
     ):
         self.project_controller = project_controller
         self.mdi_area = mdi_area
         self.on_edit = on_edit
         self.on_class_progression = on_class_progression
         self.on_rule = on_rule
+        self.document_host = document_host
         self.navigation = EntityNavigationController(
             project_controller,
             on_open=self._display,
@@ -121,7 +123,10 @@ class EntityInspectionController:
                 on_class_progression=self.on_class_progression,
                 on_resolve=self.resolve_references,
             )
-            window = self.mdi_area.addSubWindow(view)
+            if self.document_host is not None:
+                window = self.document_host.open_document(view, view.windowTitle())
+            else:
+                window = self.mdi_area.addSubWindow(view)
             window_ref["window"] = window
             self._windows[entity.uid] = window
             window.destroyed.connect(
@@ -129,15 +134,22 @@ class EntityInspectionController:
                     uid, ref.get("window")
                 )
             )
-            view.show()
-        self.mdi_area.setActiveSubWindow(window)
+            if self.document_host is None:
+                view.show()
+        if self.document_host is None:
+            self.mdi_area.setActiveSubWindow(window)
         window.showNormal()
         window.raise_()
         return mdi_content_widget(window)
 
     def _get_window(self, entity_uid):
         window = self._windows.get(entity_uid)
-        if window is not None and not isValid(window):
+        valid = (
+            window.is_valid
+            if window is not None and hasattr(window, "is_valid")
+            else window is not None and isValid(window)
+        )
+        if window is not None and not valid:
             self._windows.pop(entity_uid, None)
             return None
         return window

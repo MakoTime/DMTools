@@ -25,6 +25,15 @@ _BUILTIN_QUERY_BY_TYPE = {
 }
 
 
+def _open_document(parent, mdi_area, widget, title):
+    display_space = getattr(parent, "display_space_controller", None)
+    if display_space is not None and display_space.workspace_tabs is not None:
+        return display_space.open_document(widget, title)
+    window = mdi_area.addSubWindow(widget)
+    window.setWindowTitle(title)
+    return window
+
+
 def _weapon_group_label(value):
     labels = {
         "simple": "Simple Weapons",
@@ -86,6 +95,7 @@ class EntityTreeController:
             self.inspection_controller = EntityInspectionController(
                 project_controller,
                 mdi_area,
+                document_host=getattr(parent, "display_space_controller", None),
                 on_edit=self._open_homebrew_editor,
                 on_class_progression=self._open_class_progression_editor,
                 on_rule=self._open_rule_value,
@@ -142,7 +152,7 @@ class EntityTreeController:
         if mdi_area is None:
             dialog.exec()
             return dialog
-        window = mdi_area.addSubWindow(dialog)
+        window = _open_document(self.parent, mdi_area, dialog, dialog.windowTitle())
         self._rule_windows[window_uid] = window
         window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         dialog.finished.connect(window.close)
@@ -265,8 +275,9 @@ class EntityTreeController:
         if mdi_area is None:
             dialog.show()
             return dialog
-        subwindow = mdi_area.addSubWindow(dialog)
-        subwindow.setWindowTitle(f"{node.name} Search")
+        subwindow = _open_document(
+            self.parent, mdi_area, dialog, f"{node.name} Search"
+        )
         subwindow.resize(900, 650)
         subwindow.show()
         self._search_windows[node.uid] = subwindow
@@ -333,8 +344,7 @@ class EntityTreeController:
         mdi_area = getattr(self.parent, "sceneViewer", None)
         if mdi_area is None:
             return view
-        subwindow = mdi_area.addSubWindow(view)
-        subwindow.setWindowTitle(title)
+        subwindow = _open_document(self.parent, mdi_area, view, title)
         subwindow.resize(900, 650)
         subwindow.show()
         return subwindow
@@ -422,8 +432,9 @@ class EntityTreeController:
         if mdi_area is None:
             view.show()
             return view
-        subwindow = mdi_area.addSubWindow(view)
-        subwindow.setWindowTitle(view.windowTitle())
+        subwindow = _open_document(
+            self.parent, mdi_area, view, view.windowTitle()
+        )
         subwindow.resize(680, 560)
         subwindow.show()
         return subwindow
@@ -466,8 +477,9 @@ class EntityTreeController:
         if mdi_area is None:
             view.show()
             return view
-        subwindow = mdi_area.addSubWindow(view)
-        subwindow.setWindowTitle(view.windowTitle())
+        subwindow = _open_document(
+            self.parent, mdi_area, view, view.windowTitle()
+        )
         subwindow.resize(1000, 650)
         subwindow.show()
         return subwindow

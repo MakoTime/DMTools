@@ -170,44 +170,6 @@ QMdiArea#sceneViewer {
     background-color: #242a32;
 }
 
-QMdiArea#sceneViewer QTabBar {
-    background-color: #1f252d;
-    border-bottom: 1px solid #3a424d;
-}
-
-QMdiArea#sceneViewer QTabBar::tab {
-    background-color: #303642;
-    color: #aab4c2;
-    border: none;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    padding: 8px 14px 6px;
-    min-width: 110px;
-    min-height: 34px;
-}
-
-QMdiArea#sceneViewer QTabBar::tab:selected {
-    background-color: #242a32;
-    color: #f0f3f8;
-    border-bottom: 2px solid #61b3a2;
-}
-
-QMdiArea#sceneViewer QTabBar::tab:hover:!selected {
-    background-color: #3b4350;
-    color: #ffffff;
-}
-
-QMdiArea#sceneViewer QTabBar::close-button {
-    min-width: 20px;
-    min-height: 20px;
-    margin: 0 6px 0 2px;
-}
-
-QMdiArea#sceneViewer QTabBar::close-button:hover {
-    background-color: #b8444a;
-    border-radius: 0;
-}
-
 QTabBar::tab {
     background-color: #303642;
     color: #b8c1cf;
@@ -254,9 +216,9 @@ QTabWidget#workspaceTabs QTabBar::tab {
     border: none;
     border-bottom: 2px solid transparent;
     border-radius: 0;
-    padding: 9px 20px 7px;
+    padding: 4px 14px 3px;
     min-width: 80px;
-    min-height: 36px;
+    min-height: 26px;
 }
 
 QTabWidget#workspaceTabs QTabBar::tab:selected {
@@ -268,6 +230,18 @@ QTabWidget#workspaceTabs QTabBar::tab:selected {
 QTabWidget#workspaceTabs QTabBar::tab:hover:!selected {
     background-color: #2a313a;
     color: #ffffff;
+}
+
+QToolButton#workspaceTabCloseButton {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+QToolButton#workspaceTabCloseButton:hover {
+    background-color: transparent;
+    border: none;
 }
 
 QDockWidget::title {

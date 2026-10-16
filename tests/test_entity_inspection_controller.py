@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QMdiArea, QTabBar
+from PySide6.QtWidgets import QApplication, QMdiArea, QTabBar, QTabWidget
 
 from application.display_space import DisplaySpaceController, mdi_content_widget
 from application.entity_references import EntityReference
@@ -25,8 +25,15 @@ def test_entity_inspection_controller_reuses_mdi_view_for_uid():
 
     mdi_area = QMdiArea()
     mdi_area.setObjectName("sceneViewer")
-    DisplaySpaceController(mdi_area)
-    controller = EntityInspectionController(ProjectController(), mdi_area)
+    workspace_tabs = QTabWidget()
+    workspace_tabs.addTab(mdi_area, "Scene")
+    display_space = DisplaySpaceController(
+        mdi_area,
+        workspace_tabs=workspace_tabs,
+    )
+    controller = EntityInspectionController(
+        ProjectController(), mdi_area, document_host=display_space
+    )
     reference = EntityReference("second", "item", "compendium")
 
     first_view = controller.open(reference, origin_uid="first")
@@ -50,12 +57,16 @@ def test_entity_inspection_controller_reuses_mdi_view_for_uid():
             raise AssertionError(f"Expected invalid link to fail: {link}")
     assert len(controller._windows) == 1
     old_window = controller._windows["second"]
-    tab_bar = mdi_area.findChild(QTabBar)
-    close_button = tab_bar.tabButton(0, QTabBar.ButtonPosition.RightSide)
+    tab_bar = workspace_tabs.tabBar()
+    assert workspace_tabs.tabText(0) == "Scene"
+    assert workspace_tabs.tabText(1) == "Updated Entity"
+    close_button = tab_bar.tabButton(1, QTabBar.ButtonPosition.RightSide)
     assert close_button is not None
     close_button.click()
     QApplication.processEvents()
+    assert workspace_tabs.count() == 1
     reopened_view = controller.display(second)
     assert reopened_view is not second_view
     assert controller._windows["second"] is not old_window
-    mdi_area.closeAllSubWindows()
+    controller._windows["second"].close()
+    workspace_tabs.close()

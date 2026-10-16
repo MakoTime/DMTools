@@ -36,7 +36,11 @@ def load_main_window(project_file):
     controller = ProjectController()
     window.treeWidget.setModel(controller.project_tree_model)
     controller.load_project(project_file)
-    display_space_controller = DisplaySpaceController(window.sceneViewer, parent=window)
+    display_space_controller = DisplaySpaceController(
+        window.sceneViewer,
+        parent=window,
+        workspace_tabs=window.workspaceTabs,
+    )
     window.display_space_controller = display_space_controller
     import_controller = EntityImportController(controller, parent=window)
     entity_controller = EntityTreeController(

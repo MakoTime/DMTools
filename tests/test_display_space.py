@@ -122,28 +122,33 @@ def test_scene_documents_are_closable_tabs_inside_the_scene_workspace():
     loader = QUiLoader()
     loader.registerCustomWidget(TreeView)
     window = loader.load(str(root / "UI" / "main.ui"))
-    window.display_space_controller = DisplaySpaceController(window.sceneViewer)
+    window.display_space_controller = DisplaySpaceController(
+        window.sceneViewer,
+        workspace_tabs=window.workspaceTabs,
+    )
     setup_menu(window)
     content = QWidget()
     content.setObjectName("entityDetailContent")
-    document = window.sceneViewer.addSubWindow(content)
-    document.setWindowTitle("Copper (cp)")
+    window.display_space_controller.open_document(content, "Copper (cp)")
     window.show()
-    document.show()
     app.processEvents()
 
-    tab_bar = window.sceneViewer.findChild(QTabBar)
-    close_button = tab_bar.tabButton(0, QTabBar.ButtonPosition.RightSide)
+    tab_bar = window.workspaceTabs.tabBar()
+    close_button = tab_bar.tabButton(1, QTabBar.ButtonPosition.RightSide)
     assert window.workspaceTabs.tabText(0) == "Scene"
+    assert window.workspaceTabs.tabText(1) == "Copper (cp)"
     assert not window.minimize_all_action.isEnabled()
     assert not window.rearrange_grid_action.isEnabled()
-    assert window.sceneViewer.tabsClosable()
-    assert window.sceneViewer.viewMode() == QMdiArea.ViewMode.TabbedView
-    assert tab_bar.count() == 1
+    assert window.sceneViewer.viewMode() == QMdiArea.ViewMode.SubWindowView
+    assert window.workspaceTabs.count() == 2
+    assert tab_bar.height() <= 36
     assert close_button is not None
+    assert close_button.objectName() == "workspaceTabCloseButton"
+    assert "background: transparent" in close_button.styleSheet()
     close_button.click()
     app.processEvents()
-    assert not document.isVisible()
+    assert window.workspaceTabs.count() == 1
+    assert not content.isVisible()
 
     window.close()
     app.setStyleSheet(previous_stylesheet)
