@@ -4,11 +4,15 @@ from PySide6.QtWidgets import (
     QApplication,
     QDialog,
     QDialogButtonBox,
+    QMessageBox,
     QMdiArea,
+    QTabWidget,
     QWidget,
 )
 
 from application.controllers.entity_controller import EntityTreeController
+from application.display_space import DisplaySpaceController, mdi_content_widget
+from application.homebrew import HomebrewDraft
 from components.tree.model import TreeModel, TreeNode
 from components.tree.roots.entity_roots import compendium_root, homebrew_root
 
@@ -46,6 +50,83 @@ class FakeImportController:
 
 def action_labels(menu):
     return [action.text() for action in menu.actions()]
+
+
+def test_homebrew_editors_open_in_mdi_not_workspace_tabs():
+    app = qt_app()
+    mdi_area = QMdiArea()
+    mdi_area.setObjectName("sceneViewer")
+    workspace_tabs = QTabWidget()
+    workspace_tabs.addTab(mdi_area, "Scene")
+    display_space = DisplaySpaceController(
+        mdi_area,
+        workspace_tabs=workspace_tabs,
+    )
+    parent = SimpleNamespace(
+        sceneViewer=mdi_area,
+        display_space_controller=display_space,
+    )
+    controller = EntityTreeController(
+        FakeTreeView(),
+        FakeProjectController(),
+        FakeImportController(),
+        parent=parent,
+    )
+
+    entity = SimpleNamespace(
+        uid="item-1",
+        name="Test Item",
+        entity_type="item",
+        source_namespace="compendium",
+        payload={"name": "Test Item", "type": "G", "weight": 1},
+    )
+    edit_window = controller._open_homebrew_editor(entity)
+    new_window = controller._open_new_homebrew_editor(
+        HomebrewDraft.blank("item")
+    )
+    app.processEvents()
+
+    assert edit_window in mdi_area.subWindowList()
+    assert new_window in mdi_area.subWindowList()
+    assert workspace_tabs.count() == 1
+    assert not edit_window.isMaximized()
+    assert not new_window.isMaximized()
+    mdi_area.closeAllSubWindows()
+    app.processEvents()
+    workspace_tabs.close()
+
+
+def test_class_progression_editor_uses_the_shared_mdi_frame():
+    app = qt_app()
+    mdi_area = QMdiArea()
+    mdi_area.setObjectName("sceneViewer")
+    workspace_tabs = QTabWidget()
+    workspace_tabs.addTab(mdi_area, "Scene")
+    display_space = DisplaySpaceController(
+        mdi_area,
+        workspace_tabs=workspace_tabs,
+    )
+    parent = SimpleNamespace(
+        sceneViewer=mdi_area,
+        display_space_controller=display_space,
+    )
+    controller = EntityTreeController(
+        FakeTreeView(),
+        FakeProjectController(),
+        FakeImportController(),
+        parent=parent,
+    )
+    entity = SimpleNamespace(uid="class-1", payload={})
+
+    window = controller._open_class_progression_editor(entity)
+    app.processEvents()
+
+    assert window in mdi_area.subWindowList()
+    assert getattr(window.widget(), "mdi_window_frame", False)
+    assert workspace_tabs.count() == 1
+    window.close()
+    app.processEvents()
+    workspace_tabs.close()
 
 
 def test_entity_root_menus_route_import_and_refresh_commands():
@@ -87,6 +168,74 @@ def test_category_menus_offer_only_applicable_quick_queries():
         "Refresh",
     ]
     assert action_labels(race_menu) == ["Search", "Refresh"]
+
+
+def test_homebrew_entity_menu_offers_confirmed_delete(monkeypatch):
+    qt_app()
+    entity = SimpleNamespace(
+        uid="homebrew-spell-1", name="Test Spell", source_namespace="homebrew"
+    )
+    project = FakeProjectController()
+    project.resolve_entity = lambda uid: entity
+    deleted = []
+    project.delete_homebrew_entity = deleted.append
+    monkeypatch.setattr(
+        "application.controllers.entity_controller.QMessageBox.question",
+        lambda *args: QMessageBox.StandardButton.Yes,
+    )
+    controller = EntityTreeController(
+        FakeTreeView(), project, FakeImportController()
+    )
+    node = SimpleNamespace(
+        node_type="entity",
+        namespace="homebrew",
+        entity_uid=entity.uid,
+    )
+
+    menu = controller.create_context_menu(node)
+
+    assert action_labels(menu) == ["Edit Homebrew", "Delete Homebrew"]
+    menu.actions()[1].trigger()
+    assert deleted == [entity.uid]
+
+
+def test_add_from_source_routes_selected_entity_to_homebrew_clone():
+    qt_app()
+    source = SimpleNamespace(uid="compendium-spell-1")
+    store = SimpleNamespace(block=SimpleNamespace(guid="compendium-database"))
+    project = FakeProjectController()
+    project.entity_database_store = lambda namespace: store
+    dialog_requests = []
+
+    def create_dialog(_store, entity_type, **kwargs):
+        dialog_requests.append((entity_type, kwargs))
+        return SimpleNamespace(
+            model=SimpleNamespace(rows=()),
+            exec=lambda: QDialog.DialogCode.Rejected,
+        )
+
+    controller = EntityTreeController(
+        FakeTreeView(),
+        project,
+        FakeImportController(),
+        search_dialog_factory=create_dialog,
+    )
+    cloned = []
+    controller._clone_homebrew_source = lambda uid: cloned.append(uid)
+    normal_search = SimpleNamespace(
+        showNormal=lambda: None,
+        raise_=lambda: None,
+        activateWindow=lambda: None,
+    )
+    controller._search_windows[compendium_root.category("spell").uid] = normal_search
+
+    controller.add_from_source(homebrew_root.category("spell"))
+
+    entity_type, kwargs = dialog_requests[0]
+    assert entity_type == "spell"
+    assert kwargs["open_action_text"] == "Add to Homebrew"
+    assert kwargs["on_open"](source) is None
+    assert cloned == [source.uid]
 
 
 def test_weapon_group_related_entities_link_groups_to_subgroups_and_types():
@@ -246,6 +395,13 @@ def test_search_is_hosted_as_non_modal_mdi_child():
     mdi_area = QMdiArea()
     parent = QWidget()
     parent.sceneViewer = mdi_area
+    parent.workspaceTabs = QTabWidget()
+    parent.workspaceTabs.addTab(mdi_area, "Scene")
+    parent.display_space_controller = DisplaySpaceController(
+        mdi_area,
+        parent=parent,
+        workspace_tabs=parent.workspaceTabs,
+    )
     project = FakeProjectController()
     project.entity_database_store = lambda namespace: SimpleNamespace(
         FIELD_PROJECTIONS={"spell": {"name": "name"}},
@@ -258,7 +414,9 @@ def test_search_is_hosted_as_non_modal_mdi_child():
     search_window = controller.search(homebrew_root.category("spell"))
 
     assert search_window in mdi_area.subWindowList()
-    assert search_window.widget().isModal() is False
+    assert mdi_content_widget(search_window).isModal() is False
+    assert getattr(search_window.widget(), "mdi_window_frame", False)
+    assert parent.workspaceTabs.count() == 1
     assert len(mdi_area.subWindowList()) == 1
     assert controller.search(homebrew_root.category("spell")) is search_window
     search_window.close()
@@ -271,13 +429,23 @@ def test_rule_view_is_hosted_as_reusable_mdi_child():
     mdi_area = QMdiArea()
     parent = QWidget()
     parent.sceneViewer = mdi_area
+    parent.workspaceTabs = QTabWidget()
+    parent.workspaceTabs.addTab(mdi_area, "Scene")
+    parent.display_space_controller = DisplaySpaceController(
+        mdi_area,
+        parent=parent,
+        workspace_tabs=parent.workspaceTabs,
+    )
     controller = EntityTreeController(
         FakeTreeView(), FakeProjectController(), FakeImportController(), parent=parent
     )
     node = compendium_root.rules.category("conditions").children[0]
 
     first = controller._open_rule(node)
-    assert first is mdi_area.subWindowList()[0].widget()
+    window = mdi_area.subWindowList()[0]
+    assert first is mdi_content_widget(window)
+    assert getattr(window.widget(), "mdi_window_frame", False)
+    assert parent.workspaceTabs.count() == 1
     assert first.isModal() is False
     assert "blinded" in first.windowTitle().lower()
     assert controller._open_rule(node) is first

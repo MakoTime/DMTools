@@ -1,8 +1,11 @@
 import json
+from pathlib import Path
 
 import pytest
 from projectfoundry import ArtifactStore
-from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtCore import QPoint, Qt
+from PySide6.QtTest import QTest
+from PySide6.QtWidgets import QApplication, QPushButton, QSplitter
 
 from application.homebrew import HomebrewDraft
 from application.imports import EntityImportService
@@ -222,6 +225,84 @@ def test_homebrew_editor_can_clone_source_again(tmp_path):
     view.close()
 
 
+def test_spell_editor_saves_homebrew_entity_through_project_controller(tmp_path):
+    qt_app()
+    controller = ProjectController(artifact_store=ArtifactStore(tmp_path))
+    accepted_drafts = []
+    created_entities = []
+
+    def accept(draft):
+        accepted_drafts.append(draft)
+        created_entities.append(controller.create_homebrew_entity(draft))
+
+    view = create_homebrew_mdi_view(
+        "spell",
+        draft=HomebrewDraft.blank("spell"),
+        on_accept=accept,
+    )
+
+    record = view.apply_changes()
+
+    assert record.uid
+    assert accepted_drafts == [view.model]
+    assert created_entities[0].uid == record.uid
+    assert controller.resolve_entity(record.uid).name == "New Spell"
+    view.close()
+
+
+def test_homebrew_mdi_view_shows_styled_document_and_live_raw_json():
+    qt_app()
+    view = HomebrewEditorMdiView(create_homebrew_editor_model("item"))
+
+    assert "dmtools-inspection-css-version: 1" in view.preview.document().defaultStyleSheet()
+    assert view.raw_json_view.isReadOnly()
+    assert view.document_tabs.tabText(1) == "Raw JSON"
+
+    view.name_edit.setText("Wand")
+    category_row, _definition = view.field_widgets["category"]
+    view.property_table.item(category_row, 1).setText("wand")
+    payload = json.loads(view.raw_json_view.toPlainText())
+
+    assert payload["name"] == "Wand"
+    assert payload["category"] == "wand"
+    view.document_tabs.setCurrentIndex(1)
+    assert view.document_tabs.currentWidget() is view.raw_json_view
+    view._dirty = False
+    view.close()
+
+
+def test_homebrew_mdi_editor_preview_splitter_can_be_dragged():
+    app = qt_app()
+    previous_stylesheet = app.styleSheet()
+    stylesheet_path = Path(__file__).resolve().parents[1] / "views" / "app_theme.qss"
+    app.setStyleSheet(stylesheet_path.read_text(encoding="utf-8"))
+    view = HomebrewEditorMdiView(create_homebrew_editor_model("item"))
+    view.resize(680, 560)
+    view.show()
+    app.processEvents()
+
+    try:
+        handle = view.preview_splitter.handle(1)
+        default_splitter = QSplitter(Qt.Orientation.Horizontal)
+        assert view.preview_splitter.handleWidth() == default_splitter.handleWidth()
+        sizes_before = view.preview_splitter.sizes()
+        center = handle.rect().center()
+        QTest.mousePress(handle, Qt.MouseButton.LeftButton, pos=center)
+        QTest.mouseMove(handle, center + QPoint(50, 0), delay=100)
+        QTest.mouseRelease(
+            handle,
+            Qt.MouseButton.LeftButton,
+            pos=center + QPoint(50, 0),
+        )
+        app.processEvents()
+
+        assert view.preview_splitter.sizes()[0] > sizes_before[0]
+    finally:
+        view._dirty = False
+        view.close()
+        app.setStyleSheet(previous_stylesheet)
+
+
 def test_adaptive_editor_builds_schema_controls_for_scalar_fields():
     qt_app()
     dialog = create_homebrew_dialog("item")
@@ -389,7 +470,6 @@ def test_homebrew_workflow_round_trips_without_mutating_compendium_source(tmp_pa
     accepted = HomebrewDraft.for_edit(homebrew)
     accepted.name = "Travel Pack"
     updated = controller.update_homebrew_entity(homebrew.uid, accepted)
-    controller.save_project()
 
     reopened = ProjectController()
     reopened.load_project(project_file)
@@ -398,5 +478,12 @@ def test_homebrew_workflow_round_trips_without_mutating_compendium_source(tmp_pa
     assert reopened.resolve_entity(source_record.uid).payload == source_before.payload
     assert reopened.resolve_entity(updated.uid).name == "Travel Pack"
 
+    reopened.delete_homebrew_entity(updated.uid)
+    after_delete = ProjectController()
+    after_delete.load_project(project_file)
+    with pytest.raises(ValueError, match="Unknown active-project entity UID"):
+        after_delete.resolve_entity(updated.uid)
+
     controller.close()
     reopened.close()
+    after_delete.close()

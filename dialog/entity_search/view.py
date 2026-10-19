@@ -34,6 +34,7 @@ class EntitySearchView(WidgetEditorView):
         *,
         project_controller=None,
         on_open=None,
+        open_action_text="Open Selected",
         origin_uid=None,
         parent=None,
         on_close=None,
@@ -45,6 +46,7 @@ class EntitySearchView(WidgetEditorView):
             else None
         )
         self.origin_uid = origin_uid
+        self.open_action_text = open_action_text
         self.setWindowTitle(f"Search {model.entity_type.replace('_', ' ').title()}s")
         self.resize(900, 600)
 
@@ -97,7 +99,7 @@ class EntitySearchView(WidgetEditorView):
         self.reference_delegate.referenceActivated.connect(self._open_reference)
         self.results_table.setItemDelegateForColumn(0, self.reference_delegate)
         self.pagination = PaginationControls(self.results_table.model(), self)
-        open_button = QPushButton("Open Selected")
+        open_button = QPushButton(self.open_action_text)
         open_button.clicked.connect(self.open_selected_entity)
         results = QGroupBox("Results")
         results_layout = QVBoxLayout(results)

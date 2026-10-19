@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from PySide6.QtCore import QPoint, Qt
-from PySide6.QtGui import QColor
+from PySide6.QtCore import QEvent, QPoint, QPointF, Qt
+from PySide6.QtGui import QColor, QMouseEvent
 from PySide6.QtTest import QTest
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
@@ -9,9 +9,12 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMdiArea,
     QTabBar,
+    QSplitter,
     QToolButton,
     QWidget,
+    QVBoxLayout,
 )
+from shiboken6 import delete, isValid
 
 from application.display_space import DisplaySpaceController, mdi_content_widget
 from common import dev_mode
@@ -76,7 +79,18 @@ def test_display_space_grid_and_minimize_keep_windows_reachable():
     controller.enforce_bounds()
     geometry = windows[0].geometry()
     assert geometry.top() >= 0
-    assert geometry.right() >= 0
+    assert (
+        geometry.right()
+        >= controller.MINIMUM_TITLE_BAR_WIDTH_WITH_CONTROLS - 1
+    )
+
+    windows[0].move(500, 0)
+    controller.enforce_bounds()
+    geometry = windows[0].geometry()
+    assert geometry.left() < mdi_area.viewport().width()
+    assert geometry.left() <= (
+        mdi_area.viewport().width() - controller.MINIMUM_TITLE_BAR_WIDTH
+    )
 
     controller.minimize_all()
 
@@ -111,6 +125,62 @@ def test_scene_viewport_uses_the_workspace_theme_surface():
     app.setStyleSheet(previous_stylesheet)
     assert center == QColor("#242a32")
     assert active_indicator == QColor("#61b3a2")
+
+
+def test_frameless_mdi_controller_preserves_splitter_handle_cursor():
+    app = qt_app()
+    mdi_area = QMdiArea()
+    mdi_area.resize(800, 600)
+    controller = DisplaySpaceController(mdi_area)
+    content = QWidget()
+    splitter = QSplitter(Qt.Orientation.Horizontal)
+    splitter.addWidget(QWidget())
+    splitter.addWidget(QWidget())
+    content_layout = QVBoxLayout(content)
+    content_layout.addWidget(splitter)
+    window = controller.open_mdi_window(content, "Split")
+    mdi_area.show()
+    window.show()
+    app.processEvents()
+
+    handle = splitter.handle(1)
+    handle.setCursor(Qt.CursorShape.SplitHCursor)
+    local_position = QPointF(handle.rect().center())
+    global_position = QPointF(handle.mapToGlobal(local_position.toPoint()))
+    event = QMouseEvent(
+        QEvent.Type.MouseMove,
+        local_position,
+        local_position,
+        global_position,
+        Qt.MouseButton.NoButton,
+        Qt.MouseButton.NoButton,
+        Qt.KeyboardModifier.NoModifier,
+    )
+
+    controller.eventFilter(handle, event)
+
+    assert handle.cursor().shape() == Qt.CursorShape.SplitHCursor
+    window.close()
+
+
+def test_mdi_window_close_skips_content_already_deleted_by_qt():
+    app = qt_app()
+    mdi_area = QMdiArea()
+    mdi_area.resize(800, 600)
+    controller = DisplaySpaceController(mdi_area)
+    content = QWidget()
+    content.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+    window = controller.open_mdi_window(content, "Delete on close")
+    mdi_area.show()
+    window.show()
+    app.processEvents()
+
+    content.close()
+    delete(content)
+    app.processEvents()
+
+    assert not isValid(content)
+    assert not window.isVisible()
 
 
 def test_scene_documents_are_closable_tabs_inside_the_scene_workspace():

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from urllib.parse import unquote, urlparse
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QMdiArea
 from shiboken6 import isValid
 
@@ -23,14 +24,14 @@ class EntityInspectionController:
         on_edit=None,
         on_class_progression=None,
         on_rule=None,
-        document_host=None,
+        display_space_controller=None,
     ):
         self.project_controller = project_controller
         self.mdi_area = mdi_area
+        self.display_space_controller = display_space_controller
         self.on_edit = on_edit
         self.on_class_progression = on_class_progression
         self.on_rule = on_rule
-        self.document_host = document_host
         self.navigation = EntityNavigationController(
             project_controller,
             on_open=self._display,
@@ -123,10 +124,16 @@ class EntityInspectionController:
                 on_class_progression=self.on_class_progression,
                 on_resolve=self.resolve_references,
             )
-            if self.document_host is not None:
-                window = self.document_host.open_document(view, view.windowTitle())
+            if self.display_space_controller is not None:
+                window = self.display_space_controller.open_mdi_window(
+                    view,
+                    view.windowTitle(),
+                    delete_on_close=True,
+                )
             else:
                 window = self.mdi_area.addSubWindow(view)
+                window.setWindowTitle(view.windowTitle())
+                window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
             window_ref["window"] = window
             self._windows[entity.uid] = window
             window.destroyed.connect(
@@ -134,10 +141,12 @@ class EntityInspectionController:
                     uid, ref.get("window")
                 )
             )
-            if self.document_host is None:
-                view.show()
-        if self.document_host is None:
-            self.mdi_area.setActiveSubWindow(window)
+            view.show()
+        workspace_tab = getattr(window, "workspace_tab_handle", None)
+        if workspace_tab is not None:
+            workspace_tab.show()
+            return mdi_content_widget(window)
+        self.mdi_area.setActiveSubWindow(window)
         window.showNormal()
         window.raise_()
         return mdi_content_widget(window)

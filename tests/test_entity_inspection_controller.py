@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QApplication, QMdiArea, QTabBar, QTabWidget
+from PySide6.QtCore import QCoreApplication, QEvent
+from PySide6.QtWidgets import QApplication, QMdiArea, QTabWidget, QToolButton
 
 from application.display_space import DisplaySpaceController, mdi_content_widget
 from application.entity_references import EntityReference
@@ -31,8 +32,12 @@ def test_entity_inspection_controller_reuses_mdi_view_for_uid():
         mdi_area,
         workspace_tabs=workspace_tabs,
     )
+    workspace_tabs.resize(900, 700)
+    workspace_tabs.show()
     controller = EntityInspectionController(
-        ProjectController(), mdi_area, document_host=display_space
+        ProjectController(),
+        mdi_area,
+        display_space_controller=display_space,
     )
     reference = EntityReference("second", "item", "compendium")
 
@@ -56,15 +61,29 @@ def test_entity_inspection_controller_reuses_mdi_view_for_uid():
         else:
             raise AssertionError(f"Expected invalid link to fail: {link}")
     assert len(controller._windows) == 1
+    assert workspace_tabs.count() == 1
+    assert mdi_area.subWindowList() == [controller._windows["second"]]
     old_window = controller._windows["second"]
-    tab_bar = workspace_tabs.tabBar()
-    assert workspace_tabs.tabText(0) == "Scene"
+    maximize_button = old_window.findChild(QToolButton, "mdiMaximizeButton")
+    assert maximize_button is not None
+    maximize_button.click()
+    QApplication.processEvents()
+    assert workspace_tabs.count() == 2
     assert workspace_tabs.tabText(1) == "Updated Entity"
-    close_button = tab_bar.tabButton(1, QTabBar.ButtonPosition.RightSide)
-    assert close_button is not None
-    close_button.click()
+    assert mdi_area.viewMode() == QMdiArea.ViewMode.SubWindowView
+    restore_button = workspace_tabs.tabBar().tabButton(
+        1, workspace_tabs.tabBar().ButtonPosition.LeftSide
+    )
+    assert restore_button is not None
+    restore_button.click()
     QApplication.processEvents()
     assert workspace_tabs.count() == 1
+    assert mdi_area.viewMode() == QMdiArea.ViewMode.SubWindowView
+    assert old_window in mdi_area.subWindowList()
+    assert browser.isVisible()
+    old_window.close()
+    QApplication.processEvents()
+    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
     reopened_view = controller.display(second)
     assert reopened_view is not second_view
     assert controller._windows["second"] is not old_window

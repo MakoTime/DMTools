@@ -204,6 +204,7 @@ class ProjectController:
         if self.project.artifact_store is None:
             raise RuntimeError("Project has no artifact store")
         block_uid = f"dmtools-{namespace}-entity-database"
+        created = False
         if self.project.blocks.contains(block_uid):
             block = self.project.blocks.get(block_uid)
             if not isinstance(block, EntityDatabaseBlock):
@@ -215,8 +216,12 @@ class ProjectController:
             )
             self.project.add_block(block)
             self.refresh_project_tree()
+            created = True
         path = self.project.artifact_store.path_for(block.block_data.artifact.path)
-        return EntityDatabaseStore(path, namespace=namespace, block=block).initialize()
+        store = EntityDatabaseStore(path, namespace=namespace, block=block).initialize()
+        if created:
+            self._save_project_if_active()
+        return store
 
     def entity_source_identities(self, namespace="compendium"):
         """Return persisted source identities without creating a database block."""
@@ -231,7 +236,6 @@ class ProjectController:
         if not self.project.blocks.contains(block_uid):
             return ()
         return tuple(self.entity_database_store(namespace).all_records())
-
     def save_entity_namespace_json(self, namespace="compendium"):
         """Write a shareable JSON projection of the canonical entity store."""
         if namespace not in {"compendium", "homebrew"}:
@@ -600,6 +604,7 @@ class ProjectController:
         for record in records:
             node_uid = f"dmtools-{namespace}-entity-{record.uid}"
             if self.project.nodes.contains(node_uid):
+                self.project.nodes.get(node_uid).name = record.display_name
                 continue
             from projectfoundry.tree import TreeNode
 
@@ -615,6 +620,8 @@ class ProjectController:
         if namespace == "homebrew":
             self._refresh_homebrew_rules()
         self.project_tree_model.refresh()
+        if records:
+            self._save_project_if_active()
         return count
 
     def register_entity_query(self, query_block):
@@ -644,6 +651,7 @@ class ProjectController:
         self.project.add_block(query_block)
         self.project.connect_blocks(database.guid, query_block.guid)
         self.refresh_project_tree()
+        self._save_project_if_active()
         return query_block
 
     def update_entity_query(self, query_uid, **changes):
@@ -662,6 +670,7 @@ class ProjectController:
         query.block_data = candidate.block_data
         query.mark_changed()
         self.refresh_project_tree()
+        self._save_project_if_active()
         return query
 
     def duplicate_entity_query(self, query_uid, name=None):
@@ -688,6 +697,7 @@ class ProjectController:
                 self.project.remove_node(node.uid)
         self.project.remove_block(query_uid)
         self.project_tree_model.refresh()
+        self._save_project_if_active()
 
     def execute_entity_query(self, query_uid, limit=100):
         """Resolve a saved query and execute it against its owned database."""
@@ -734,6 +744,7 @@ class ProjectController:
         if dynamic_query_uid is not None:
             self.project.connect_blocks(collection.guid, dynamic_query_uid)
         self.refresh_project_tree()
+        self._save_project_if_active()
         return collection
 
     def update_collection(self, collection_uid, *, name=None, description=None):
@@ -746,6 +757,7 @@ class ProjectController:
             collection.block_data.description = description.strip()
         collection.mark_changed()
         self.refresh_project_tree()
+        self._save_project_if_active()
         return collection
 
     def duplicate_collection(self, collection_uid, name=None):
@@ -765,6 +777,7 @@ class ProjectController:
                 self.project.remove_node(node.uid)
         self.project.remove_block(collection_uid)
         self.project_tree_model.refresh()
+        self._save_project_if_active()
 
     def add_collection_entity(self, collection_uid, entity_uid):
         collection = self._collection(collection_uid)
@@ -773,6 +786,7 @@ class ProjectController:
             raise ValueError("Entity is already in the collection")
         collection.block_data.entity_uids.append(entity_uid)
         collection.mark_changed()
+        self._save_project_if_active()
         return collection
 
     def remove_collection_entity(self, collection_uid, entity_uid):
@@ -781,6 +795,7 @@ class ProjectController:
             return False
         collection.block_data.entity_uids.remove(entity_uid)
         collection.mark_changed()
+        self._save_project_if_active()
         return True
 
     def reorder_collection_entities(self, collection_uid, entity_uids):
@@ -793,6 +808,7 @@ class ProjectController:
             raise ValueError("Collection reorder must preserve every member UID")
         collection.block_data.entity_uids = entity_uids
         collection.mark_changed()
+        self._save_project_if_active()
         return collection
 
     def capture_query_results(self, collection_uid, query_uid):
@@ -801,6 +817,7 @@ class ProjectController:
             if row.uid not in collection.block_data.entity_uids:
                 collection.block_data.entity_uids.append(row.uid)
         collection.mark_changed()
+        self._save_project_if_active()
         return collection
 
     def resolve_collection_members(self, collection_uid, include_dynamic=True):
@@ -955,6 +972,7 @@ class ProjectController:
         self.entity_database_store("homebrew").delete(entity_uid)
         self.project.remove_node(node_uid)
         self.project_tree_model.refresh()
+        self._save_project_if_active()
 
     def purge_entity_data(self, namespace, entity_types=None):
         """Delete selected entity rows and remove their project references."""
@@ -982,7 +1000,7 @@ class ProjectController:
         self.refresh_project_tree()
         if self.project_file is not None:
             self.save_entity_namespace_json(namespace)
-            self.save_project()
+        self._save_project_if_active()
         return len(removed_uids)
 
     def _remove_legacy_entity_nodes(self, namespace, entity_uids):
@@ -1023,6 +1041,7 @@ class ProjectController:
             raise ValueError("Table belongs to another project")
         table_object.add_to_tree(self.tree_manager, parent)
         self.refresh_project_tree()
+        self._save_project_if_active()
         return table_object
 
     def register_shopkeeper(self, shopkeeper, parent=None):
@@ -1049,6 +1068,7 @@ class ProjectController:
         self.refresh_project_tree()
         if data.database_uid is not None:
             self.project.connect_blocks(data.database_uid, block.guid)
+        self._save_project_if_active()
         return shopkeeper
 
     def unregister_shopkeeper(self, shopkeeper_uid):
@@ -1061,6 +1081,7 @@ class ProjectController:
                 self.project.remove_node(node.uid)
         self.project.remove_block(shopkeeper_uid)
         self.project_tree_model.refresh()
+        self._save_project_if_active()
 
     def commit_table(self, table_object):
         """Atomically persist a registered table's DataFrame artifact."""
@@ -1071,6 +1092,7 @@ class ProjectController:
             raise RuntimeError("Project has no artifact store")
         block.commit(table_object.data, self.project.artifact_store)
         table_object.release_data()
+        self._save_project_if_active()
         return block.block_data.artifact
 
     def load_table_data(self, table_uid):
@@ -1136,6 +1158,7 @@ class ProjectController:
         if block is not None and self.project.blocks.contains(block.guid):
             self.tree_mutations.rename_block(block.guid, name)
         object_base._on_name_changed(name)
+        self._save_project_if_active()
         return True
 
     def new_project(self):
@@ -1196,6 +1219,11 @@ class ProjectController:
         if self.project_context is not None:
             self.project_context.dirty = False
         return saved
+
+    def _save_project_if_active(self):
+        if self.project_file is None:
+            return None
+        return self.save_project()
 
     def save_project_as(self, parent=None):
         """Save the current project to a newly selected project file."""

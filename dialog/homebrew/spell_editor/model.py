@@ -28,4 +28,7 @@ class SpellPropertyEditorModel(HomebrewDraft, EditorModel):
 
     def apply(self):
         self.payload["name"] = self.name
-        return self
+        record = super().apply()
+        self.entity_uid = record.uid
+        self.source_identity = record.source_identity
+        return record

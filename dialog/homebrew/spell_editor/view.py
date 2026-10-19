@@ -1,4 +1,6 @@
-from PySide6.QtCore import Qt
+from pathlib import Path
+
+from PySide6.QtCore import QEvent, QTimer, Qt, Signal
 from PySide6.QtGui import QStandardItem, QStandardItemModel
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -8,6 +10,7 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QLabel,
     QLineEdit,
+    QMdiSubWindow,
     QPushButton,
     QSpinBox,
     QSplitter,
@@ -17,6 +20,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from shiboken6 import isValid
 
 from dialog.base.popup_editor import PopupEditorView
 from application.entity_rendering import render_entity_html
@@ -32,8 +36,11 @@ from .model import SpellPropertyEditorModel
 
 
 class CheckableComboBox(QComboBox):
+    valuesChanged = Signal(tuple)
+
     def __init__(self, options, selected=(), parent=None):
         super().__init__(parent)
+        options = tuple(dict.fromkeys((*options, *selected)))
         self.setEditable(True)
         self.lineEdit().setReadOnly(True)
         self.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
@@ -50,9 +57,28 @@ class CheckableComboBox(QComboBox):
             model.appendRow(item)
         self.setModel(model)
         self.setCurrentIndex(-1)
-        self.view().pressed.connect(self._toggle)
+        self.lineEdit().installEventFilter(self)
+        self.view().viewport().installEventFilter(self)
         model.itemChanged.connect(lambda _item: self._refresh_text())
         self._refresh_text()
+
+    def eventFilter(self, watched, event):
+        if (
+            watched is self.lineEdit()
+            and event.type() == QEvent.Type.MouseButtonPress
+            and event.button() == Qt.MouseButton.LeftButton
+        ):
+            self.showPopup()
+            return True
+        if (
+            watched is self.view().viewport()
+            and event.type() == QEvent.Type.MouseButtonRelease
+        ):
+            index = self.view().indexAt(event.position().toPoint())
+            if index.isValid():
+                self._toggle(index)
+                return True
+        return super().eventFilter(watched, event)
 
     def _toggle(self, index):
         item = self.model().itemFromIndex(index)
@@ -63,6 +89,7 @@ class CheckableComboBox(QComboBox):
         )
         item.setCheckState(state)
         self._refresh_text()
+        self.valuesChanged.emit(tuple(self.values()))
 
     def _refresh_text(self):
         self.lineEdit().setText(", ".join(self.values()))
@@ -96,12 +123,16 @@ class SpellPropertyEditorView(PopupEditorView):
         parent=None,
         on_apply=None,
         on_clone=None,
+        class_options=(),
     ):
         super().__init__(model, parent=parent, on_apply=on_apply)
+        self._mdi_parent_close_requested = False
+        self.finished.connect(self._close_mdi_parent)
         self.on_clone = on_clone
         self.setWindowTitle("Spell Properties")
         self.resize(720, 620)
         payload = model.payload
+        self.class_options = tuple(class_options)
 
         tabs = QTabWidget(self)
         tabs.addTab(self._build_details_tab(payload), "Details")
@@ -126,10 +157,17 @@ class SpellPropertyEditorView(PopupEditorView):
         editor_layout.addWidget(buttons)
         self.preview = QTextBrowser(self)
         self.preview.setOpenLinks(False)
-        splitter = QSplitter(self)
+        stylesheet = Path(__file__).resolve().parents[3] / "views" / "entity_inspection.css"
+        if stylesheet.exists():
+            self.preview.document().setDefaultStyleSheet(
+                stylesheet.read_text(encoding="utf-8")
+            )
+        splitter = QSplitter(Qt.Orientation.Horizontal, self)
         splitter.addWidget(editor_panel)
         splitter.addWidget(self.preview)
+        splitter.setStretchFactor(1, 1)
         splitter.setSizes((460, 540))
+        self.preview_splitter = splitter
         layout = QVBoxLayout(self)
         layout.addWidget(splitter)
         for widget in (
@@ -142,10 +180,28 @@ class SpellPropertyEditorView(PopupEditorView):
         ):
             if hasattr(widget, "textChanged"):
                 widget.textChanged.connect(self.update_preview)
+        self.school_combo.currentTextChanged.connect(self.update_preview)
+        self.classes_combo.valuesChanged.connect(self.update_preview)
         self.level_spin.valueChanged.connect(self.update_preview)
         self.ritual_check.stateChanged.connect(self.update_preview)
         self.concentration_check.stateChanged.connect(self.update_preview)
         self.update_preview()
+
+    def _close_mdi_parent(self, _result):
+        window = self.parentWidget()
+        while window is not None and not isinstance(window, QMdiSubWindow):
+            window = window.parentWidget()
+        if (
+            window is None
+            or getattr(window, "_closing_content", False)
+            or self._mdi_parent_close_requested
+        ):
+            return
+        self._mdi_parent_close_requested = True
+        QTimer.singleShot(
+            0,
+            lambda target=window: target.close() if isValid(target) else None,
+        )
 
     def _build_details_tab(self, payload):
         tab = QWidget()
@@ -157,10 +213,13 @@ class SpellPropertyEditorView(PopupEditorView):
         self.level_spin.setRange(0, 9)
         self.level_spin.setValue(int(payload.get("level", 0)))
         self.school_combo = QComboBox()
-        self.school_combo.setEditable(True)
-        self.school_combo.addItems(self.SCHOOLS)
-        self.school_combo.setCurrentText(str(payload.get("school", "")))
-        self.classes_combo = CheckableComboBox(self.CLASSES, payload.get("classes", ()))
+        school = str(payload.get("school", ""))
+        schools = (*self.SCHOOLS, *((school,) if school and school not in self.SCHOOLS else ()))
+        self.school_combo.addItems(schools)
+        self.school_combo.setCurrentIndex(self.school_combo.findText(school))
+        self.classes_combo = CheckableComboBox(
+            (*self.CLASSES, *self.class_options), payload.get("classes", ())
+        )
         self.tags_edit = QLineEdit(", ".join(payload.get("tags", ())))
         form.addRow("Name", self.name_edit)
         form.addRow("Description", self.description_edit)
@@ -190,6 +249,7 @@ class SpellPropertyEditorView(PopupEditorView):
         layout.addWidget(self.material_group)
         self.components_combo.model().itemChanged.connect(self._update_material_visibility)
         self.components_combo.model().itemChanged.connect(self.update_preview)
+        self.components_combo.valuesChanged.connect(self.update_preview)
         self._update_material_visibility()
         return tab
 
@@ -255,6 +315,7 @@ class SpellPropertyEditorView(PopupEditorView):
         self.target_description.textChanged.connect(self.update_preview)
         self.target_range_amount.valueChanged.connect(self.update_preview)
         self.target_range_unit.textChanged.connect(self.update_preview)
+        self.target_section = group
         self._update_target_visibility()
         return group
 
@@ -296,11 +357,25 @@ class SpellPropertyEditorView(PopupEditorView):
         self.material_group.setVisible("material" in self.components_combo.values())
 
     def _update_target_visibility(self):
+        previous_height = self.target_section.sizeHint().height()
         visible = self.targeting_combo.currentText() == "range"
         self.target_range_amount.setVisible(visible)
         self.target_range_unit.setVisible(visible)
         self.target_range_amount_label.setVisible(visible)
         self.target_range_unit_label.setVisible(visible)
+        if visible:
+            required_growth = (
+                self.target_section.sizeHint().height() - previous_height
+            )
+            window = self.parentWidget()
+            while window is not None and not isinstance(window, QMdiSubWindow):
+                window = window.parentWidget()
+            if (
+                required_growth > 0
+                and window is not None
+                and not window.isMaximized()
+            ):
+                window.resize(window.width(), window.height() + required_growth)
 
     @staticmethod
     def _summary(value):

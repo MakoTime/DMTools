@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from types import SimpleNamespace
 
 from PySide6.QtWidgets import (
@@ -9,17 +10,19 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QDialog,
     QDialogButtonBox,
+    QFormLayout,
+    QPlainTextEdit,
     QPushButton,
     QTableWidgetItem,
     QSpinBox,
     QSplitter,
     QTextEdit,
     QTextBrowser,
+    QTabWidget,
     QWidget,
-    QHBoxLayout,
     QVBoxLayout,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QSignalBlocker, Qt
 
 from dialog.base.editor import EditorButtonBoxImplementation
 from dialog.base.widget_editor import WidgetEditorView
@@ -87,22 +90,17 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.property_table.setHorizontalHeaderLabels(("Property", "Value"))
         self.property_table.horizontalHeader().setStretchLastSection(True)
         self.property_table.verticalHeader().setVisible(False)
-        self.property_table.itemChanged.connect(self._mark_dirty)
+        self.property_table.itemChanged.connect(self._property_changed)
         self.property_table.cellDoubleClicked.connect(self._edit_property)
         self._build_property_table()
         self._dirty = False
 
-        metadata = QHBoxLayout()
-        metadata.addWidget(QLabel("Type"))
-        metadata.addWidget(self.type_label)
-        metadata.addWidget(QLabel("Name"))
-        metadata.addWidget(self.name_edit, 1)
-        metadata.addWidget(QLabel("State"))
-        metadata.addWidget(self.state_combo)
-        metadata.addWidget(QLabel("Published"))
-        metadata.addWidget(self.published_check)
-        metadata.addWidget(QLabel("Version"))
-        metadata.addWidget(self.version_spin)
+        metadata = QFormLayout()
+        metadata.addRow("Type", self.type_label)
+        metadata.addRow("Name", self.name_edit)
+        metadata.addRow("State", self.state_combo)
+        metadata.addRow("Published", self.published_check)
+        metadata.addRow("Version", self.version_spin)
 
         editor_panel = QWidget(self)
         editor_layout = QVBoxLayout(editor_panel)
@@ -124,13 +122,24 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
 
         self.preview = QTextBrowser(self)
         self.preview.setOpenLinks(False)
-        splitter = QSplitter(self)
-        splitter.addWidget(editor_panel)
-        splitter.addWidget(self.preview)
-        splitter.setSizes((420, 580))
+        stylesheet = Path(__file__).resolve().parents[2] / "views" / "entity_inspection.css"
+        if stylesheet.exists():
+            self.preview.document().setDefaultStyleSheet(
+                stylesheet.read_text(encoding="utf-8")
+            )
+        self.raw_json_view = QPlainTextEdit(self)
+        self.raw_json_view.setReadOnly(True)
+        self.document_tabs = QTabWidget(self)
+        self.document_tabs.addTab(self.preview, "Document")
+        self.document_tabs.addTab(self.raw_json_view, "Raw JSON")
+        self.preview_splitter = QSplitter(Qt.Orientation.Horizontal, self)
+        self.preview_splitter.addWidget(editor_panel)
+        self.preview_splitter.addWidget(self.document_tabs)
+        self.preview_splitter.setStretchFactor(1, 1)
+        self.preview_splitter.setSizes((420, 580))
 
         layout = QVBoxLayout(self)
-        layout.addWidget(splitter)
+        layout.addWidget(self.preview_splitter)
         self.update_preview()
 
     def update_model(self):
@@ -143,6 +152,10 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
     def _mark_dirty(self):
         self._dirty = True
 
+    def _property_changed(self, _item=None):
+        self._mark_dirty()
+        self.update_preview()
+
     def _build_property_table(self):
         schema_path = SCHEMA_ROOT / "entities" / ENTITY_SCHEMAS[self.model.entity_type]
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
@@ -154,21 +167,23 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
                 f"Homebrew {self.model.entity_type} table contains unknown fields: "
                 f"{', '.join(sorted(unknown_fields))}"
             )
-        self.property_table.setRowCount(len(names))
-        for row, name in enumerate(names):
-            definition = schema_properties[name]
-            label = QTableWidgetItem(name.replace("_", " ").title())
-            label.setFlags(label.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.property_table.setItem(row, 0, label)
-            value = self.model.payload.get(name)
-            if self._requires_subdialog(value, definition):
-                item = QTableWidgetItem(self._display_value(value))
-                item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                self.property_table.setItem(row, 1, item)
-            else:
-                item = QTableWidgetItem(self._display_inline_value(value))
-                self.property_table.setItem(row, 1, item)
-            self.field_widgets[name] = (row, definition)
+        with QSignalBlocker(self.property_table):
+            self.property_table.setRowCount(len(names))
+            self.field_widgets.clear()
+            for row, name in enumerate(names):
+                definition = schema_properties[name]
+                label = QTableWidgetItem(name.replace("_", " ").title())
+                label.setFlags(label.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                self.property_table.setItem(row, 0, label)
+                value = self.model.payload.get(name)
+                if self._requires_subdialog(value, definition):
+                    item = QTableWidgetItem(self._display_value(value))
+                    item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                    self.property_table.setItem(row, 1, item)
+                else:
+                    item = QTableWidgetItem(self._display_inline_value(value))
+                    self.property_table.setItem(row, 1, item)
+                self.field_widgets[name] = (row, definition)
 
     @staticmethod
     def _requires_subdialog(value, definition):
@@ -314,6 +329,7 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
         self.name_edit.setText(payload.get("name", self.name_edit.text()))
         self._build_property_table()
         self._mark_dirty()
+        self.update_preview()
 
     def _sync_spell_property_dialog_names(self, name):
         for dialog in getattr(self, "_property_dialogs", ()):
@@ -356,9 +372,13 @@ class HomebrewEditorMdiView(WidgetEditorView, EditorButtonBoxImplementation):
                     "version": self.version_spin.value(),
                 },
             )
+            self.raw_json_view.setPlainText(
+                json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True)
+            )
             self.preview.setHtml(render_entity_html(entity))
             self.error_label.clear()
         except (TypeError, ValueError, json.JSONDecodeError) as error:
+            self.raw_json_view.setPlainText(f"JSON unavailable: {error}")
             self.preview.setHtml(
                 "<p>Preview unavailable until the draft JSON is valid.</p>"
             )

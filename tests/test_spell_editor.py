@@ -1,15 +1,24 @@
 import pytest
-from PySide6.QtCore import QEvent, QObject, Qt
+from pathlib import Path
+from types import SimpleNamespace
+
+from PySide6.QtCore import QEvent, QObject, QPoint, Qt
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import (
     QApplication,
     QDialogButtonBox,
+    QDialog,
+    QMdiArea,
     QPushButton,
+    QSpinBox,
+    QSplitter,
     QTextEdit,
     QWidget,
 )
 
 from application.imports.registry import ENTITY_REGISTRY
+from application.controllers.entity_controller import EntityTreeController
+from application.display_space import DisplaySpaceController
 from application.homebrew import HomebrewDraft
 from dialog.homebrew.spell_editor.dialogs import EffectDialog, EffectsDialog, GrantDialog
 from dialog.homebrew.spell_editor.model import SpellPropertyEditorModel
@@ -94,6 +103,143 @@ def test_checkable_combo_shows_selected_values():
     assert combo.lineEdit().text() == "verbal, material"
 
 
+def test_spell_school_dropdown_and_multiselect_classes_and_subclasses():
+    qt_app()
+    payload = HomebrewDraft.blank("spell").payload
+    view = SpellPropertyEditorView(
+        SpellPropertyEditorModel.from_payload(payload),
+        class_options=("fighter (eldritch knight)", "mystic"),
+    )
+
+    assert not view.school_combo.isEditable()
+    assert all(view.school_combo.findText(school) >= 0 for school in view.SCHOOLS)
+    _choose_combo(view.school_combo, "evocation")
+    _choose_combo(view.classes_combo, "wizard")
+    _choose_combo(view.classes_combo, "fighter (eldritch knight)")
+    _choose_combo(view.classes_combo, "mystic")
+    view.update_model()
+
+    assert view.model.payload["school"] == "evocation"
+    assert view.model.payload["classes"] == [
+        "wizard",
+        "fighter (eldritch knight)",
+        "mystic",
+    ]
+    view.close()
+
+
+def test_accepting_spell_editor_closes_its_mdi_window():
+    qt_app()
+    mdi_area = QMdiArea()
+    applied = []
+    view = SpellPropertyEditorView(
+        SpellPropertyEditorModel.from_payload(HomebrewDraft.blank("spell").payload),
+        on_apply=lambda model: applied.append(model) or True,
+    )
+    window = mdi_area.addSubWindow(view)
+    window.show()
+    _process_events()
+
+    view.button_box.button(QDialogButtonBox.StandardButton.Ok).click()
+    _process_events()
+
+    assert len(applied) == 1
+    assert applied[0].entity_type == "spell"
+    assert not window.isVisible()
+    mdi_area.close()
+
+
+def test_spell_class_options_include_project_classes_and_subclasses():
+    class Blocks:
+        @staticmethod
+        def contains(_block_uid):
+            return True
+
+    class Store:
+        def __init__(self, namespace):
+            self.namespace = namespace
+
+        def all_records(self):
+            if self.namespace == "compendium":
+                return (
+                    SimpleNamespace(
+                        entity_type="class",
+                        name="Mystic",
+                        payload={"name": "Mystic"},
+                    ),
+                    SimpleNamespace(
+                        entity_type="subclass",
+                        name="Eldritch Knight",
+                        payload={"class_name": "fighter"},
+                    ),
+                )
+            return ()
+
+    class ProjectController:
+        project = SimpleNamespace(blocks=Blocks())
+
+        @staticmethod
+        def entity_database_store(namespace):
+            return Store(namespace)
+
+    controller = object.__new__(EntityTreeController)
+    controller.project_controller = ProjectController()
+
+    assert controller._spell_class_options() == (
+        "fighter (eldritch knight)",
+        "mystic",
+    )
+
+
+def test_spell_preview_splitter_has_a_movable_handle():
+    qt_app()
+    view = SpellPropertyEditorView(
+        SpellPropertyEditorModel.from_payload(HomebrewDraft.blank("spell").payload)
+    )
+    view.show()
+    _process_events()
+
+    default_splitter = QSplitter(Qt.Orientation.Horizontal)
+    assert view.preview_splitter.handleWidth() == default_splitter.handleWidth()
+    sizes_before = view.preview_splitter.sizes()
+    handle = view.preview_splitter.handle(1)
+    center = handle.rect().center()
+    QTest.mousePress(handle, Qt.MouseButton.LeftButton, pos=center)
+    QTest.mouseMove(handle, center + QPoint(60, 0), delay=100)
+    QTest.mouseRelease(
+        handle,
+        Qt.MouseButton.LeftButton,
+        pos=center + QPoint(60, 0),
+    )
+    _process_events()
+
+    assert view.preview_splitter.sizes()[0] > sizes_before[0]
+    view.close()
+
+
+def test_spinbox_up_button_is_clickable_with_application_theme():
+    app = qt_app()
+    previous_stylesheet = app.styleSheet()
+    stylesheet_path = Path(__file__).resolve().parents[1] / "views" / "app_theme.qss"
+    app.setStyleSheet(stylesheet_path.read_text(encoding="utf-8"))
+    spinbox = QSpinBox()
+    spinbox.setRange(0, 2)
+    spinbox.resize(120, 36)
+    spinbox.show()
+    _process_events()
+
+    try:
+        QTest.mouseClick(
+            spinbox,
+            Qt.MouseButton.LeftButton,
+            pos=QPoint(spinbox.width() - 9, 8),
+        )
+        assert spinbox.value() == 1
+    finally:
+        spinbox.close()
+        app.setStyleSheet(previous_stylesheet)
+
+
 def test_grant_fields_follow_selected_grant_type():
     qt_app()
     dialog = GrantDialog({"type": "resistance"})
@@ -137,8 +283,8 @@ def test_effect_fields_follow_selected_effect_type():
         ("damage", {"damage_type", "roll_mode", "roll_dice", "roll_count", "damage_modifier", "damage_ability"}, set()),
         ("healing", {"roll_mode", "roll_dice", "roll_count"}, set()),
         ("ability_score", {"ability"}, set()),
-        ("attack_hit", {"attack_type", "attack_bonus"}, {"attack_hit_effects_button"}),
-        ("attack_save", {"ability"}, {"attack_save_success_button", "attack_save_failure_button"}),
+        ("attack_hit", {"attack_type", "attack_bonus"}, set()),
+        ("attack_save", {"ability"}, set()),
         ("condition", {"condition"}, set()),
         ("grants", set(), {"grants_button"}),
         ("description", {"description"}, set()),
@@ -154,9 +300,6 @@ def test_effect_type_shows_only_relevant_fields(effect_type, visible_fields, vis
         assert _visible(widget) is (name in visible_fields), name
         assert _visible(_label) is (name in visible_fields), name
     for name in (
-        "attack_hit_effects_button",
-        "attack_save_success_button",
-        "attack_save_failure_button",
         "grants_button",
     ):
         assert _visible(getattr(dialog, name)) is (name in visible_controls), name
@@ -221,6 +364,26 @@ def test_target_range_rows_follow_targeting_selection():
     view.close()
 
 
+def test_target_range_controls_expand_the_mdi_window():
+    app = qt_app()
+    mdi_area = QMdiArea()
+    mdi_area.resize(1200, 900)
+    controller = DisplaySpaceController(mdi_area)
+    view = SpellPropertyEditorView(
+        SpellPropertyEditorModel.from_payload(HomebrewDraft.blank("spell").payload)
+    )
+    window = controller.open_mdi_window(view, "Spell Properties")
+    mdi_area.show()
+    app.processEvents()
+    height_before = window.height()
+
+    view.targeting_combo.setCurrentText("range")
+    app.processEvents()
+
+    assert window.height() > height_before
+    window.close()
+
+
 def test_effects_dialog_uses_recursive_tree():
     qt_app()
     dialog = EffectsDialog([], parent=None)
@@ -248,6 +411,19 @@ def test_effects_tree_contains_recursive_attack_effects():
     root = dialog.tree.topLevelItem(0)
     assert root.childCount() == 1
     assert root.child(0).text(0) == "condition"
+    dialog.close()
+
+
+def test_adding_child_effect_uses_inline_widget_not_dialog():
+    qt_app()
+    dialog = EffectsDialog([{"attack_hit": {"type": "melee_spell"}}])
+    dialog.tree.setCurrentItem(dialog.tree.topLevelItem(0))
+
+    assert dialog.add_child.isEnabled()
+    dialog.add_child.click()
+
+    assert isinstance(dialog.effect_editor, QWidget)
+    assert not isinstance(dialog.effect_editor, QDialog)
     dialog.close()
 
 
@@ -295,11 +471,20 @@ def test_effect_editor_preserves_schema_supported_roll_and_attack_fields():
     })
     damage.apply_values()
     attack = EffectDialog({
-        "attack_hit": {"type": "melee_spell", "bonus": 3},
+        "attack_hit": {
+            "type": "melee_spell",
+            "bonus": 3,
+            "effects": [{"damage": {"type": "fire", "roll": {"count": 1, "dice": 6}}}],
+        },
     })
     attack.apply_values()
     saving_throw = EffectDialog({
-        "attack_save": {"ability": "wisdom", "dc": 15},
+        "attack_save": {
+            "ability": "wisdom",
+            "dc": 15,
+            "success": [{"condition": "prone"}],
+            "failure": [{"description": "The target is restrained."}],
+        },
     })
     saving_throw.apply_values()
 
@@ -310,7 +495,14 @@ def test_effect_editor_preserves_schema_supported_roll_and_attack_fields():
         "ability": "charisma",
     }
     assert attack.value["attack_hit"]["bonus"] == 3
+    assert attack.value["attack_hit"]["effects"] == [
+        {"damage": {"type": "fire", "roll": {"count": 1, "dice": 6}}}
+    ]
     assert saving_throw.value["attack_save"]["dc"] == 15
+    assert saving_throw.value["attack_save"]["success"] == [{"condition": "prone"}]
+    assert saving_throw.value["attack_save"]["failure"] == [
+        {"description": "The target is restrained."}
+    ]
     damage.close()
     attack.close()
     saving_throw.close()
@@ -402,13 +594,16 @@ def test_dialogs_create_ice_knife_payload():
         _choose_combo(damage.damage_type, damage_type)
         _set_line_edit(damage.roll_dice.lineEdit(), str(dice))
         _set_spinbox(damage.roll_count, count)
+        assert not effects._apply_started
         effects.save_effect.click()
         _process_events()
+        assert effects.values[0]["attack_save"]["failure"][-1]["damage"]["type"] == damage_type
 
     add_damage("piercing", 10, 1)
     add_damage("cold", 6, 2)
     effects.buttons.button(QDialogButtonBox.StandardButton.Ok).click()
     _process_events()
+    assert view.model.payload["effects"] == effects.values
     view.update_model()
 
     assert view.model.payload == {

@@ -3,13 +3,14 @@ from __future__ import annotations
 from math import ceil, sqrt
 from pathlib import Path
 
-from PySide6.QtCore import QObject, QEvent, QPoint, QRect, QSize, Qt
+from PySide6.QtCore import QObject, QEvent, QPoint, QRect, QSize, QTimer, Qt
 from PySide6.QtGui import QBrush, QCursor, QPalette
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QLabel,
     QMdiArea,
     QMdiSubWindow,
+    QSplitterHandle,
     QTabWidget,
     QToolButton,
     QWidget,
@@ -17,6 +18,7 @@ from PySide6.QtWidgets import (
 from shiboken6 import isValid
 
 from common.icons import get_icon
+from dialog.workspace_tab.factory import create_workspace_tab
 
 
 MDI_FRAME_UI = Path(__file__).resolve().parents[1] / "UI" / "mdi_window_frame.ui"
@@ -31,87 +33,11 @@ def mdi_content_widget(window: QMdiSubWindow):
     return getattr(frame, "mdi_content_widget", frame)
 
 
-def _close_workspace_tab(tabs: QTabWidget, widget: QWidget):
-    if not isValid(widget):
-        return
-    index = tabs.indexOf(widget)
-    if index >= 0:
-        tabs.removeTab(index)
-    widget.close()
-    widget.deleteLater()
-
-
-class WorkspaceTabHandle:
-    """Window-like operations for a document hosted beside the Scene tab."""
-
-    def __init__(self, tabs: QTabWidget, widget: QWidget, title: str):
-        self.tabs = tabs
-        self.workspace_content_widget = widget
-        widget.setWindowTitle(title)
-        widget.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
-        index = tabs.addTab(widget, title)
-        self.close_button = QToolButton(tabs.tabBar())
-        self.close_button.setObjectName("workspaceTabCloseButton")
-        self.close_button.setAutoRaise(True)
-        self.close_button.setFixedSize(22, 22)
-        self.close_button.setIcon(get_icon("window_close"))
-        self.close_button.setIconSize(QSize(12, 12))
-        self.close_button.setToolTip("Close tab")
-        self.close_button.setStyleSheet(
-            "QToolButton { background: transparent; border: none; padding: 0; }"
-            "QToolButton:hover { background: transparent; border: none; }"
-        )
-        tabs.tabBar().setTabButton(index, tabs.tabBar().ButtonPosition.RightSide, self.close_button)
-        self.close_button.clicked.connect(
-            lambda _checked=False, tab_widget=tabs, page=widget: _close_workspace_tab(
-                tab_widget, page
-            )
-        )
-        widget.windowTitleChanged.connect(self._update_title)
-        widget.destroyed.connect(self._remove_tab)
-        self.show()
-
-    def __getattr__(self, name):
-        return getattr(self.workspace_content_widget, name)
-
-    @property
-    def is_valid(self):
-        return isValid(self.workspace_content_widget)
-
-    def _update_title(self, title):
-        index = self.tabs.indexOf(self.workspace_content_widget)
-        if index >= 0:
-            self.tabs.setTabText(index, title)
-
-    def _remove_tab(self, *_args):
-        if isValid(self.workspace_content_widget):
-            index = self.tabs.indexOf(self.workspace_content_widget)
-            if index >= 0:
-                self.tabs.removeTab(index)
-
-    def show(self):
-        if self.is_valid:
-            self.tabs.setCurrentWidget(self.workspace_content_widget)
-            self.workspace_content_widget.show()
-
-    def showNormal(self):
-        self.show()
-
-    def raise_(self):
-        self.show()
-
-    def activateWindow(self):
-        self.show()
-        self.workspace_content_widget.activateWindow()
-
-    def close(self):
-        _close_workspace_tab(self.tabs, self.workspace_content_widget)
-
-
 class DisplaySpaceController(QObject):
     """Arrange MDI windows and keep their title bars reachable."""
 
     MINIMUM_TITLE_BAR_WIDTH = 80
+    MINIMUM_TITLE_BAR_WIDTH_WITH_CONTROLS = 180
     MINIMUM_TITLE_BAR_HEIGHT = 24
     RESIZE_MARGIN = 7
 
@@ -200,29 +126,51 @@ class DisplaySpaceController(QObject):
             or getattr(self, "_frame_windows", {}).get(watched)
             or (watched if isinstance(watched, QMdiSubWindow) else None)
         )
+        if window is not None and event.type() == QEvent.Type.Close:
+            closing_content = getattr(window, "_closing_content", False)
+            if watched is window:
+                if closing_content:
+                    return True
+                content = mdi_content_widget(window)
+                if (
+                    content is not None
+                    and content is not window
+                    and isValid(content)
+                ):
+                    window._closing_content = True
+                    try:
+                        content.close()
+                    finally:
+                        window._closing_content = False
+            elif not closing_content:
+                QTimer.singleShot(
+                    0,
+                    lambda target=window: target.close()
+                    if isValid(target)
+                    else None,
+                )
         if window is not None and watched is window:
             if event.type() == QEvent.Type.WindowStateChange:
                 maximize_button = getattr(self, "_maximize_buttons", {}).get(window)
                 if maximize_button is not None:
                     icon_name = "window_restore" if window.isMaximized() else "window_maximize"
                     maximize_button.setIcon(get_icon(icon_name))
+                if window.isMaximized() and self.workspace_tabs is not None:
+                    self._promote_to_workspace_tab(window)
                 return False
         if window is not None:
             if (
                 title_window is not None
                 and event.type() == QEvent.Type.MouseButtonDblClick
             ):
-                if window.isMaximized():
-                    window.showNormal()
-                else:
-                    window.showMaximized()
+                self.toggle_fullscreen(window)
                 return True
             if event.type() == QEvent.Type.MouseButtonPress:
                 if not window.isMaximized():
                     global_position = event.globalPosition().toPoint()
                     edges = (
                         Qt.Edges()
-                        if isinstance(watched, QToolButton)
+                        if isinstance(watched, (QToolButton, QSplitterHandle))
                         else self._resize_edges(window, global_position)
                     )
                     if edges:
@@ -247,7 +195,9 @@ class DisplaySpaceController(QObject):
                 if window in getattr(self, "_drag_offsets", {}):
                     window.move(global_position - self._drag_offsets[window])
                     return True
-                if not window.isMaximized() and not isinstance(watched, QToolButton):
+                if not window.isMaximized() and not isinstance(
+                    watched, (QToolButton, QSplitterHandle)
+                ):
                     edges = self._resize_edges(window, global_position)
                     if edges:
                         watched.setCursor(self._resize_cursor(edges))
@@ -295,10 +245,98 @@ class DisplaySpaceController(QObject):
 
     def open_document(self, widget: QWidget, title: str):
         if self.workspace_tabs is not None:
-            return WorkspaceTabHandle(self.workspace_tabs, widget, title)
+            return create_workspace_tab(
+                self.workspace_tabs,
+                widget,
+                title,
+            )
+        return self.open_mdi_window(widget, title)
+
+    def open_mdi_window(
+        self,
+        widget: QWidget,
+        title: str | None = None,
+        *,
+        delete_on_close=False,
+    ):
         window = self.mdi_area.addSubWindow(widget)
-        window.setWindowTitle(title)
+        window.setWindowTitle(title or widget.windowTitle())
+        if delete_on_close:
+            window.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        self._track_window(window)
         window.show()
+        return window
+
+    def toggle_fullscreen(self, window: QMdiSubWindow):
+        if self.workspace_tabs is None:
+            if window.isMaximized():
+                window.showNormal()
+            else:
+                window.showMaximized()
+            return window
+        if getattr(window, "workspace_tab_handle", None) is not None:
+            return self._restore_from_workspace_tab(window)
+        return self._promote_to_workspace_tab(window)
+
+    def _promote_to_workspace_tab(self, window: QMdiSubWindow):
+        if getattr(window, "workspace_tab_handle", None) is not None:
+            return window.workspace_tab_handle
+        frame = window.widget()
+        if not getattr(frame, "mdi_window_frame", False):
+            self._track_window(window)
+            frame = window.widget()
+        content = mdi_content_widget(window)
+        content_host = frame.findChild(QWidget, "mdiContentHost")
+        if content_host is None:
+            return window
+
+        normal_geometry = window.normalGeometry() if window.isMaximized() else window.geometry()
+        window._workspace_transition = True
+        window.showNormal()
+        window.hide()
+        self.mdi_area.removeSubWindow(window)
+        content_host.layout().removeWidget(content)
+        content.setParent(None)
+        window.workspace_content_widget = content
+        window.workspace_geometry = normal_geometry
+        title = content.windowTitle() or window.windowTitle()
+        handle = create_workspace_tab(
+            self.workspace_tabs,
+            content,
+            title,
+            on_restore=lambda target=window: self._restore_from_workspace_tab(target),
+            insert_index=1,
+        )
+        window.workspace_tab_handle = handle
+        content.destroyed.connect(
+            lambda *_args, target=window: target.deleteLater()
+            if isValid(target)
+            else None
+        )
+        window._workspace_transition = False
+        return handle
+
+    def _restore_from_workspace_tab(self, window: QMdiSubWindow):
+        handle = getattr(window, "workspace_tab_handle", None)
+        if handle is None:
+            return window
+        content = handle.detach()
+        frame = window.widget()
+        content_host = frame.findChild(QWidget, "mdiContentHost")
+        if content_host is None:
+            return window
+        content_host.layout().addWidget(content)
+        del window.workspace_content_widget
+        window.workspace_tab_handle = None
+        window._workspace_transition = True
+        self.mdi_area.addSubWindow(window)
+        window.setGeometry(window.workspace_geometry)
+        window.showNormal()
+        window.show()
+        content.show()
+        self.mdi_area.setActiveSubWindow(window)
+        window.raise_()
+        window._workspace_transition = False
         return window
 
     def _install_frame(self, window):
@@ -327,9 +365,7 @@ class DisplaySpaceController(QObject):
         window.windowTitleChanged.connect(title_label.setText)
         minimize_button.clicked.connect(window.showMinimized)
         maximize_button.clicked.connect(
-            lambda _checked=False: (
-                window.showNormal() if window.isMaximized() else window.showMaximized()
-            )
+            lambda _checked=False: self.toggle_fullscreen(window)
         )
         close_button.clicked.connect(window.close)
         self._maximize_buttons[window] = maximize_button
@@ -410,7 +446,11 @@ class DisplaySpaceController(QObject):
         geometry = window.geometry()
         title_width = min(self.MINIMUM_TITLE_BAR_WIDTH, max(1, geometry.width()))
         title_height = min(self.MINIMUM_TITLE_BAR_HEIGHT, max(1, geometry.height()))
-        minimum_x = area.left() - geometry.width() + title_width
+        controls_visible_width = min(
+            self.MINIMUM_TITLE_BAR_WIDTH_WITH_CONTROLS,
+            max(1, geometry.width()),
+        )
+        minimum_x = area.left() - geometry.width() + controls_visible_width
         maximum_x = area.right() - title_width + 1
         minimum_y = area.top()
         maximum_y = area.bottom() - title_height + 1

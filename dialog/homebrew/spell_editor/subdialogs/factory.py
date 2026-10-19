@@ -15,6 +15,7 @@ from .model import (
 from .view import (
     CastingTimeDialog,
     DurationDialog,
+    EffectEditor,
     EffectDialog,
     EffectsDialog,
     GrantDialog,
@@ -44,6 +45,10 @@ def create_target_dialog(value=None, parent: QWidget | None = None):
 
 def create_effect_dialog(value=None, parent: QWidget | None = None):
     return EffectDialog(value, parent=parent, editor_model=EffectModel(value))
+
+
+def create_effect_editor(value=None, parent: QWidget | None = None):
+    return EffectEditor(value, parent=parent)
 
 
 def create_effects_dialog(values=None, parent: QWidget | None = None):

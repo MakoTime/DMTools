@@ -27,8 +27,8 @@ _BUILTIN_QUERY_BY_TYPE = {
 
 def _open_document(parent, mdi_area, widget, title):
     display_space = getattr(parent, "display_space_controller", None)
-    if display_space is not None and display_space.workspace_tabs is not None:
-        return display_space.open_document(widget, title)
+    if display_space is not None:
+        return display_space.open_mdi_window(widget, title)
     window = mdi_area.addSubWindow(widget)
     window.setWindowTitle(title)
     return window
@@ -95,10 +95,12 @@ class EntityTreeController:
             self.inspection_controller = EntityInspectionController(
                 project_controller,
                 mdi_area,
-                document_host=getattr(parent, "display_space_controller", None),
                 on_edit=self._open_homebrew_editor,
                 on_class_progression=self._open_class_progression_editor,
                 on_rule=self._open_rule_value,
+                display_space_controller=getattr(
+                    parent, "display_space_controller", None
+                ),
             )
         if hasattr(tree_view, "doubleClicked"):
             tree_view.doubleClicked.connect(self._open_tree_entity)
@@ -243,15 +245,31 @@ class EntityTreeController:
         elif node_type == "rules_value":
             options.append(("View", lambda: self._open_rule(node)))
         elif node_type == "entity" and namespace == "homebrew":
-            options.append(("Edit Homebrew", lambda: self.edit_entity(node)))
+            options.extend(
+                (
+                    ("Edit Homebrew", lambda: self.edit_entity(node)),
+                    ("Delete Homebrew", lambda: self.delete_homebrew_entity(node)),
+                )
+            )
         return create_dropdown_menu(options, parent)
 
     def refresh(self):
         self.project_controller.refresh_project_tree()
         return True
 
-    def search(self, node):
-        existing = self._search_windows.get(node.uid)
+    def search(
+        self,
+        node,
+        *,
+        on_open=None,
+        open_action_text="Open Selected",
+    ):
+        window_key = (
+            node.uid
+            if on_open is None
+            else (node.uid, open_action_text)
+        )
+        existing = self._search_windows.get(window_key)
         if existing is not None:
             existing.showNormal()
             existing.raise_()
@@ -262,10 +280,11 @@ class EntityTreeController:
             store,
             node.entity_type,
             project_controller=self.project_controller,
-            on_open=self._open_entity,
+            on_open=on_open or self._open_entity,
+            open_action_text=open_action_text,
             origin_uid=node.uid,
             parent=self.parent,
-            on_close=lambda model, reason, uid=node.uid: self._search_closed(uid),
+            on_close=lambda model, reason, key=window_key: self._search_closed(key),
         )
         if hasattr(dialog, "exec"):
             if dialog.exec() != QDialog.DialogCode.Accepted:
@@ -280,7 +299,7 @@ class EntityTreeController:
         )
         subwindow.resize(900, 650)
         subwindow.show()
-        self._search_windows[node.uid] = subwindow
+        self._search_windows[window_key] = subwindow
         return subwindow
 
     def _search_closed(self, node_uid):
@@ -303,7 +322,27 @@ class EntityTreeController:
 
     def add_from_source(self, node):
         source_node = compendium_root.category(node.entity_type)
-        return self.search(source_node)
+        return self.search(
+            source_node,
+            on_open=lambda entity: self._clone_homebrew_source(entity.uid),
+            open_action_text="Add to Homebrew",
+        )
+
+    def delete_homebrew_entity(self, node):
+        entity = self.project_controller.resolve_entity(node.entity_uid)
+        if entity.source_namespace != "homebrew":
+            raise ValueError("Only Homebrew entities can be deleted")
+        answer = QMessageBox.question(
+            self.parent,
+            "Delete Homebrew",
+            f"Delete '{entity.name}' from Homebrew? This cannot be undone.",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer != QMessageBox.StandardButton.Yes:
+            return False
+        self.project_controller.delete_homebrew_entity(entity.uid)
+        return True
 
     def run_builtin(self, node, query_key, prompt):
         value, accepted = self.input_provider(node.name, prompt)
@@ -426,6 +465,11 @@ class EntityTreeController:
                 if entity.source_namespace == "homebrew"
                 else None
             ),
+            class_options=(
+                self._spell_class_options()
+                if entity.entity_type == "spell"
+                else ()
+            ),
             parent=getattr(self.parent, "sceneViewer", None),
         )
         mdi_area = getattr(self.parent, "sceneViewer", None)
@@ -433,11 +477,49 @@ class EntityTreeController:
             view.show()
             return view
         subwindow = _open_document(
-            self.parent, mdi_area, view, view.windowTitle()
+            self.parent,
+            mdi_area,
+            view,
+            view.windowTitle(),
         )
         subwindow.resize(680, 560)
         subwindow.show()
         return subwindow
+
+    def _spell_class_options(self):
+        project = getattr(self.project_controller, "project", None)
+        blocks = getattr(project, "blocks", None)
+        if blocks is None:
+            return ()
+        options = set()
+        for namespace in ("compendium", "homebrew"):
+            block_uid = f"dmtools-{namespace}-entity-database"
+            if not blocks.contains(block_uid):
+                continue
+            for record in self.project_controller.entity_database_store(
+                namespace
+            ).all_records():
+                payload = record.payload or {}
+                if record.entity_type == "class":
+                    class_name = record.name or payload.get("name")
+                    if isinstance(class_name, str) and class_name.strip():
+                        options.add(class_name.strip().casefold())
+                elif record.entity_type == "subclass":
+                    class_name = payload.get("class_name") or payload.get("class")
+                    if isinstance(class_name, dict):
+                        class_name = class_name.get("name")
+                    subclass_name = record.name or payload.get("name")
+                    if (
+                        isinstance(class_name, str)
+                        and class_name.strip()
+                        and isinstance(subclass_name, str)
+                        and subclass_name.strip()
+                    ):
+                        options.add(
+                            f"{class_name.strip().casefold()} "
+                            f"({subclass_name.strip().casefold()})"
+                        )
+        return tuple(sorted(options))
 
     def _open_class_progression_editor(self, entity):
         from dialog.progression_editor import create_progression_editor
@@ -455,8 +537,18 @@ class EntityTreeController:
             parent=getattr(self.parent, "sceneViewer", None),
             on_apply=commit,
         )
-        view.show()
-        return view
+        mdi_area = getattr(self.parent, "sceneViewer", None)
+        if mdi_area is None:
+            view.show()
+            return view
+        window = _open_document(
+            self.parent,
+            mdi_area,
+            view,
+            view.windowTitle(),
+        )
+        window.show()
+        return window
 
     def _clone_homebrew_source(self, source_uid):
         clone = self.project_controller.copy_entity_to_homebrew(source_uid)
@@ -478,7 +570,10 @@ class EntityTreeController:
             view.show()
             return view
         subwindow = _open_document(
-            self.parent, mdi_area, view, view.windowTitle()
+            self.parent,
+            mdi_area,
+            view,
+            view.windowTitle(),
         )
         subwindow.resize(1000, 650)
         subwindow.show()

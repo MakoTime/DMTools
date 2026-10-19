@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QEvent, Qt
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -395,7 +395,7 @@ class GrantDialog(SpellChildDialog):
             self.value["distance"] = self.distance.value()
 
 
-class EffectDialog(SpellChildDialog):
+class EffectEditor(QWidget):
     TYPES = (
         "damage", "healing", "max_hit_points", "temporary_hit_points",
         "ability_score", "exhaustion", "attack_hit", "attack_save",
@@ -414,8 +414,8 @@ class EffectDialog(SpellChildDialog):
     ATTACK_TYPES = ("melee_weapon", "ranged_weapon", "melee_spell", "ranged_spell")
     DICE = ("3", "4", "6", "8", "10", "12", "20", "100")
 
-    def __init__(self, value=None, parent=None, editor_model=None):
-        super().__init__("Spell Effect", parent, editor_model=editor_model)
+    def __init__(self, value=None, parent=None):
+        super().__init__(parent)
         value = value or {}
         self.type = QComboBox()
         self.type.addItems(self.TYPES)
@@ -483,13 +483,7 @@ class EffectDialog(SpellChildDialog):
             (value.get("attack_save") or {}).get("failure", [])
         )
         self.effect_grants = deepcopy(value.get("grants", []))
-        self.attack_hit_effects_button = QPushButton(self._nested_summary(self.attack_hit_effects))
-        self.attack_save_success_button = QPushButton(self._nested_summary(self.attack_save_success))
-        self.attack_save_failure_button = QPushButton(self._nested_summary(self.attack_save_failure))
         self.grants_button = QPushButton(self._nested_summary(self.effect_grants))
-        self.attack_hit_effects_button.clicked.connect(self._edit_attack_hit_effects)
-        self.attack_save_success_button.clicked.connect(self._edit_attack_save_success)
-        self.attack_save_failure_button.clicked.connect(self._edit_attack_save_failure)
         self.grants_button.clicked.connect(self._edit_effect_grants)
         form = QFormLayout()
         form.addRow("Effect type", self.type)
@@ -510,16 +504,11 @@ class EffectDialog(SpellChildDialog):
         }
         for label, widget in self._fields.values():
             form.addRow(label, widget)
-        form.addRow("Attack hit effects", self.attack_hit_effects_button)
-        form.addRow("Save success effects", self.attack_save_success_button)
-        form.addRow("Save failure effects", self.attack_save_failure_button)
         form.addRow("Grants", self.grants_button)
         self.type.currentTextChanged.connect(self._update_fields)
         self.roll_mode.currentTextChanged.connect(self._update_roll_fields)
         layout = QVBoxLayout(self)
         layout.addLayout(form)
-        layout.addWidget(QLabel("Complex attack and roll details can be expanded in the dedicated editors."))
-        layout.addWidget(self.buttons)
         self._update_fields()
 
     def _update_fields(self):
@@ -545,9 +534,6 @@ class EffectDialog(SpellChildDialog):
         for name, (label, widget) in self._fields.items():
             label.setVisible(visible[name])
             widget.setVisible(visible[name])
-        self.attack_hit_effects_button.setVisible(kind == "attack_hit")
-        self.attack_save_success_button.setVisible(kind == "attack_save")
-        self.attack_save_failure_button.setVisible(kind == "attack_save")
         self.grants_button.setVisible(kind == "grants")
         self._update_roll_fields()
 
@@ -561,37 +547,6 @@ class EffectDialog(SpellChildDialog):
             text += f"; +{len(summaries) - 2} more"
         return text
 
-    def _edit_effect_list(self, values, button, setter):
-        from .factory import create_effects_dialog
-
-        dialog = create_effects_dialog(values, self)
-        dialog.on_apply = lambda updated: (
-            setter(updated),
-            button.setText(self._nested_summary(updated)),
-        )
-        self.show_child(dialog)
-
-    def _edit_attack_hit_effects(self):
-        self._edit_effect_list(
-            self.attack_hit_effects,
-            self.attack_hit_effects_button,
-            lambda value: setattr(self, "attack_hit_effects", value),
-        )
-
-    def _edit_attack_save_success(self):
-        self._edit_effect_list(
-            self.attack_save_success,
-            self.attack_save_success_button,
-            lambda value: setattr(self, "attack_save_success", value),
-        )
-
-    def _edit_attack_save_failure(self):
-        self._edit_effect_list(
-            self.attack_save_failure,
-            self.attack_save_failure_button,
-            lambda value: setattr(self, "attack_save_failure", value),
-        )
-
     def _edit_effect_grants(self):
         from .factory import create_grants_dialog
 
@@ -601,6 +556,24 @@ class EffectDialog(SpellChildDialog):
             self.grants_button.setText(self._nested_summary(value)),
         )
         self.show_child(dialog)
+
+    def show_child(self, dialog):
+        children = getattr(self, "_child_dialogs", None)
+        if children is None:
+            children = []
+            self._child_dialogs = children
+        children.append(dialog)
+        dialog.setWindowModality(Qt.WindowModality.NonModal)
+        dialog.setMinimumSize(520, 360)
+        dialog.adjustSize()
+        dialog.finished.connect(
+            lambda _result: children.remove(dialog)
+            if dialog in children
+            else None
+        )
+        dialog.show()
+        dialog.raise_()
+        dialog.activateWindow()
 
     def _update_roll_fields(self):
         active = not self._fields["roll_mode"][1].isHidden()
@@ -663,6 +636,27 @@ class EffectDialog(SpellChildDialog):
             self.value["grants"] = self.effect_grants
 
 
+class EffectDialog(SpellChildDialog):
+    """Standalone dialog wrapper around the reusable effect form."""
+
+    def __init__(self, value=None, parent=None, editor_model=None):
+        super().__init__("Spell Effect", parent, editor_model=editor_model)
+        self.effect_editor = EffectEditor(value, self)
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.effect_editor)
+        layout.addWidget(self.buttons)
+
+    def __getattr__(self, name):
+        effect_editor = self.__dict__.get("effect_editor")
+        if effect_editor is not None:
+            return getattr(effect_editor, name)
+        raise AttributeError(name)
+
+    def apply_values(self):
+        self.effect_editor.apply_values()
+        self.value = self.effect_editor.value
+
+
 class EffectsDialog(SpellChildDialog):
     def __init__(self, values, parent=None, editor_model=None):
         super().__init__("Spell Effects", parent, editor_model=editor_model)
@@ -723,6 +717,9 @@ class EffectsDialog(SpellChildDialog):
         layout.addWidget(self.buttons)
         self._refresh_child_options()
         self.save_effect.setEnabled(False)
+        accept_button = self.buttons.button(QDialogButtonBox.StandardButton.Ok)
+        accept_button.setAutoDefault(False)
+        accept_button.setDefault(False)
 
     def _refresh(self):
         selected_path = None
@@ -794,11 +791,11 @@ class EffectsDialog(SpellChildDialog):
         del parent[path[-1]]
 
     def _add(self):
-        from .factory import create_effect_dialog
+        from .factory import create_effect_editor
 
         self._editing_path = None
         self._editing_collection = None
-        self._set_effect_editor(create_effect_dialog(parent=self))
+        self._set_effect_editor(create_effect_editor(parent=self))
 
     def _nested_collections(self, value):
         collections = []
@@ -844,25 +841,40 @@ class EffectsDialog(SpellChildDialog):
             return
         path = tuple(item.data(0, Qt.ItemDataRole.UserRole))
         parent_key, child_key = self.child_collection.currentData()
-        from .factory import create_effect_dialog
+        from .factory import create_effect_editor
 
         self._editing_path = None
         self._editing_collection = (path, parent_key, child_key)
-        self._set_effect_editor(create_effect_dialog(parent=self))
+        self._set_effect_editor(create_effect_editor(parent=self))
 
     def _set_effect_editor(self, editor):
         if self.effect_editor is not None:
             self.effect_editor.deleteLater()
         self.effect_editor = editor
-        editor.setWindowFlags(Qt.WindowType.Widget)
-        editor.buttons.hide()
+        for spinbox in editor.findChildren(QSpinBox):
+            spinbox.installEventFilter(self)
         self.editor_layout.addWidget(editor)
         editor.show()
         self.save_effect.setEnabled(True)
 
+    def eventFilter(self, watched, event):
+        if (
+            isinstance(watched, QSpinBox)
+            and event.type() == QEvent.Type.KeyPress
+            and event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter)
+        ):
+            watched.interpretText()
+            return True
+        return super().eventFilter(watched, event)
+
     def _save_effect(self):
         if self.effect_editor is None:
             return
+        selected_collection = (
+            self._editing_collection[1:]
+            if self._editing_collection is not None
+            else None
+        )
         self.effect_editor.apply_values()
         value = self.effect_editor.value
         if self._editing_collection is not None:
@@ -876,6 +888,13 @@ class EffectsDialog(SpellChildDialog):
         else:
             self._set_value_at_path(self._editing_path, value)
         self._refresh()
+        if selected_collection is not None:
+            index = self.child_collection.findData(selected_collection)
+            if index >= 0:
+                self._refreshing_child_options = True
+                self.child_collection.setCurrentIndex(index)
+                self._refreshing_child_options = False
+                self._selected_child_collection = selected_collection
         self._editing_path = None
         self._editing_collection = None
         self.effect_editor.deleteLater()
@@ -890,11 +909,11 @@ class EffectsDialog(SpellChildDialog):
         value = self._value_at_path(path)
         if not isinstance(value, dict) or "type" in value:
             return
-        from .factory import create_effect_dialog
+        from .factory import create_effect_editor
 
         self._editing_path = path
         self._editing_collection = None
-        self._set_effect_editor(create_effect_dialog(value, self))
+        self._set_effect_editor(create_effect_editor(value, self))
 
     def _remove(self):
         item = self.tree.currentItem()
